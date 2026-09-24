@@ -10,7 +10,7 @@
 
 **ProsperoEden is an unofficial PlayStation 5 port of [Eden](https://github.com/eden-emulator/mirror).** All credit for the emulator core belongs to the Eden project and its contributors. ProsperoEden is not affiliated with or endorsed by the Eden team, Nintendo, or Sony.
 
-This is an early alpha. Hollow Knight has been confirmed working with video, audio, controller input, and saves. Compatibility and performance will vary between games.
+This is an early alpha. Hollow Knight has been confirmed working with video, audio, controller input, and saves. Compatibility and performance will vary between games. The current release is **v1.000.005**.
 
 ![ProsperoEden launcher](docs/images/prosperoeden.png)
 
@@ -34,7 +34,7 @@ This is an early alpha. Hollow Knight has been confirmed working with video, aud
 1. Download and extract the release ZIP.
 2. Copy the included `PPSA99008` folder to `/data/homebrew/PPSA99008` on the PS5.
 3. Supply your own legally dumped keys, firmware, and games using the paths below.
-4. Launch **ProsperoEden** and choose **Load ROM**.
+4. Launch **ProsperoEden** and choose **Load ROM**. Setup is checked when the app opens; after adding or replacing keys or firmware, close and reopen it.
 
 The final layout should look like this:
 
@@ -44,8 +44,8 @@ The final layout should look like this:
 │   ├── keys/
 │   │   ├── prod.keys
 │   │   └── title.keys                 # optional
-│   ├── nand/system/Contents/registered/
-│   │   └── *.nca                      # your dumped Switch firmware
+│   ├── firmware/
+│   │   └── *.nca                      # extracted Switch firmware NCAs
 │   └── roms/
 │       ├── Game.nsp
 │       └── Game.xci
@@ -54,6 +54,8 @@ The final layout should look like this:
 ```
 
 ProsperoEden does not include Nintendo Switch keys, firmware, games, or other copyrighted console data. Dump these files from hardware and software you own. Do not download or redistribute them.
+
+If upgrading from the first alpha, move your firmware `.nca` files from `assets/nand/system/Contents/registered/` to `assets/firmware/`. Leave your `assets/keys/` and `assets/roms/` files in place. The release ZIP contains no user files, so copy its app files over your installation without deleting your own data.
 
 ## In-game shortcuts
 
