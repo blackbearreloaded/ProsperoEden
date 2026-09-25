@@ -10,7 +10,7 @@
 
 **ProsperoEden is an unofficial PlayStation 5 port of [Eden](https://github.com/eden-emulator/mirror)** - an accurate, high-performance emulator for the Nintendo Switch. All credit for the emulator core belongs to the Eden project and its contributors. ProsperoEden is not affiliated with or endorsed by the Eden team, Nintendo, or Sony.
 
-This is an early alpha. Hollow Knight has been confirmed working with video, audio, controller input, and saves. Compatibility and performance will vary between games. The current release is **v1.000.005**.
+This is an early alpha. Hollow Knight has been confirmed working with video, audio, controller input, and saves. Compatibility and performance will vary between games. The current release is **v1.000.010**.
 
 ![ProsperoEden launcher](docs/images/prosperoeden.jpg)
 
@@ -34,7 +34,7 @@ This is an early alpha. Hollow Knight has been confirmed working with video, aud
 1. Download and extract the release ZIP.
 2. Copy the included `PPSA99008` folder to `/data/homebrew/PPSA99008` on the PS5.
 3. Supply your own legally dumped keys, firmware, and games using the paths below.
-4. Launch **ProsperoEden** and choose **Load ROM**. Setup is checked when the app opens; after adding or replacing keys or firmware, close and reopen it.
+4. Launch **ProsperoEden** and open **Library**. Setup is checked when the app opens; after adding or replacing keys or firmware, close and reopen it.
 
 The final layout should look like this:
 
@@ -56,6 +56,17 @@ The final layout should look like this:
 ProsperoEden does not include Nintendo Switch keys, firmware, games, or other copyrighted console data. Dump these files from hardware and software you own. Do not download or redistribute them.
 
 If upgrading from the first alpha, move your firmware `.nca` files from `assets/nand/system/Contents/registered/` to `assets/firmware/`. Leave your `assets/keys/` and `assets/roms/` files in place. The release ZIP contains no user files, so copy its app files over your installation without deleting your own data.
+
+## Changes in v1.000.010
+
+- Updated OpenGL rendering and performance, including multisample operations and render-target compatibility.
+- Improved game loading and shutdown handling, including fixes for Metroid Dread startup and returning from Super Mario 3D World to the launcher.
+- Added a per-game **Handheld / Docked** setting in game details. The selected mode applies on the next launch.
+- Includes the normal launcher; no development autoboot or scripted input.
+
+Recent development checks reached roughly 33–36 FPS in Horizon Chase Turbo's menu, 35–53 FPS at Super Mario 3D World's animated title, 59–60 FPS at Metroid Dread's title/file selection, and 30 FPS at Mario vs. Donkey Kong's title. These are menu/title checkpoints, **not gameplay guarantees or measurements of the final release ZIP**.
+
+**Known issues:** Pokémon Legends Z-A remains very slow and may crash when exiting. Repeatedly switching games can still encounter stability problems. Mario Kart 8 Deluxe has improved but does not yet sustain 60 FPS in docked gameplay. This is a testing pre-release, not a compatibility guarantee.
 
 ## In-game shortcuts
 
