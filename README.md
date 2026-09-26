@@ -16,7 +16,9 @@ This is an early alpha. Hollow Knight has been confirmed working with video, aud
 > **[Game compatibility — grades and FPS](COMPATIBILITY.md)**
 > Tested a game? **Pull requests are welcome** to add or update results. Include your app version, handheld/docked mode, and what you tested; see the contribution guidance in the table.
 
-![ProsperoEden launcher](docs/images/prosperoeden.jpg)
+[![ProsperoEden launcher](docs/images/prosperoeden.png)](https://i.imgur.com/MrBj1xB.mp4)
+
+*Click the image above to watch the video.*
 
 ## 🚧 Source code coming soon
 
