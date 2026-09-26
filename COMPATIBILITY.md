@@ -20,6 +20,7 @@ Last updated: **September 25, 2026**.
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
 | Summerhouse | B — Playable (owner-reported) | 25 (owner-reported) |
 | Super Mario 3D World | B — Good; plays well (owner-confirmed) | Gameplay FPS not measured; 35–53 previously at animated title |
+| The Legend of Zelda: Breath of the Wild | D — Not playable (owner-reported) | 30 at menu, 8–10 average in gameplay (owner-reported) |
 
 ## How to read the grades
 
@@ -45,6 +46,8 @@ The recent development checks used **PS5 firmware 6.02 and OpenGL**. These resul
 - **Super Mario 3D World:** the owner reports that gameplay plays well after deployment of v1.000.010. Updated to Good based on that report; gameplay FPS and test duration were not provided. The earlier 35–53 FPS measurement applies only to the animated title.
 - **Pokémon Legends Z-A:** slow language selection and a repeatable shutdown crash remain unresolved.
 - **Summerhouse:** the owner now reports B — Playable and 25 FPS, superseding the earlier limited startup/display observation. Test scene, mode, and duration were not supplied; this is not a measured average or guaranteed minimum.
+
+- **The Legend of Zelda: Breath of the Wild:** the owner reports grade D. Menu ran at ~30 FPS in both docked and handheld mode. In gameplay, FPS averaged 8–10 in both modes and assets failed to load fully — the screen appeared mostly dark with some blue elements visible — making the game unplayable.
 
 Mode was not recorded in this summary for titles other than Mario Kart; do not infer handheld or docked mode from their FPS. Repeated switching between games can still expose stability problems across the app.
 
