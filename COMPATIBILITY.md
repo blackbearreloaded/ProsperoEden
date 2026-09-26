@@ -16,7 +16,7 @@ Last updated: **September 25, 2026**.
 | Jay and Silent Bob: Chronic Blunt Punch | C — Runs with major issues (owner-reported) | 30 (owner-reported) |
 | Mario Kart 8 Deluxe | C — Runs with major issues | 39.50 average in a short docked gameplay window; not sustained 60 |
 | Mario vs. Donkey Kong | C — Runs with major issues (owner-reported) | 40 (owner-reported) |
-| Metroid Dread | Intro/menu only — gameplay unverified | 59–60 at title/file selection |
+| Metroid Dread | B — Playable (owner-reported) | 40 (owner-reported) |
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
 | Summerhouse | B — Playable (owner-reported) | 25 (owner-reported) |
 | Super Mario 3D World | B — Good; plays well (owner-confirmed) | Gameplay FPS not measured; 35–53 previously at animated title |
@@ -40,6 +40,7 @@ The recent development checks used **PS5 firmware 6.02 and OpenGL**. These resul
 - **Hollow Knight:** the owner confirmed gameplay, audio, controller input, and saving in earlier builds. First-use spikes and variable speed were also reported. No full-game completion or controlled sustained 60 FPS result is recorded here.
 - **Jay and Silent Bob: Chronic Blunt Punch:** the owner reports grade C and 30 FPS. The specific issue, test scene, mode, and duration were not supplied; this is not a measured average or guaranteed minimum.
 - **Mario Kart 8 Deluxe:** 39.50 FPS is the average over a 20-second docked gameplay window in an accepted development candidate. It is a single, unreplicated result, not an all-course average or a minimum. Stable 60 FPS remains unresolved.
+- **Metroid Dread:** the owner reports playable gameplay at 40 FPS and confirmed loading after closing another game in the same app session with development fix `a9186dd`. That allocation fix is not included in the published v1.000.010 release. The FPS report is not a measured average or guaranteed minimum.
 - **Horizon Chase Turbo, Mario vs. Donkey Kong, Metroid Dread, and Super Mario 3D World:** recent title/menu checks showed successful return or shutdown. This does not establish repeated game switching or long-session stability.
 - **Super Mario 3D World:** the owner reports that gameplay plays well after deployment of v1.000.010. Updated to Good based on that report; gameplay FPS and test duration were not provided. The earlier 35–53 FPS measurement applies only to the animated title.
 - **Pokémon Legends Z-A:** slow language selection and a repeatable shutdown crash remain unresolved.
