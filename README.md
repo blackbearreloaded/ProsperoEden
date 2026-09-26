@@ -12,6 +12,10 @@
 
 This is an early alpha. Hollow Knight has been confirmed working with video, audio, controller input, and saves. Compatibility and performance will vary between games. The current release is **v1.000.010**.
 
+> [!IMPORTANT]
+> **[Game compatibility — grades and FPS](COMPATIBILITY.md)**
+> Tested a game? **Pull requests are welcome** to add or update results. Include your app version, handheld/docked mode, and what you tested; see the contribution guidance in the table.
+
 ![ProsperoEden launcher](docs/images/prosperoeden.jpg)
 
 ## 🚧 Source code coming soon
