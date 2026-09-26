@@ -18,7 +18,7 @@ Last updated: **September 25, 2026**.
 | Mario vs. Donkey Kong | C — Runs with major issues (owner-reported) | 40 (owner-reported) |
 | Metroid Dread | Intro/menu only — gameplay unverified | 59–60 at title/file selection |
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
-| Summerhouse | Limited historical result — current build needs retesting | About 30 previously reported after startup; gameplay scope unverified |
+| Summerhouse | B — Playable (owner-reported) | 25 (owner-reported) |
 | Super Mario 3D World | B — Good; plays well (owner-confirmed) | Gameplay FPS not measured; 35–53 previously at animated title |
 
 ## How to read the grades
@@ -43,7 +43,7 @@ The recent development checks used **PS5 firmware 6.02 and OpenGL**. These resul
 - **Horizon Chase Turbo, Mario vs. Donkey Kong, Metroid Dread, and Super Mario 3D World:** recent title/menu checks showed successful return or shutdown. This does not establish repeated game switching or long-session stability.
 - **Super Mario 3D World:** the owner reports that gameplay plays well after deployment of v1.000.010. Updated to Good based on that report; gameplay FPS and test duration were not provided. The earlier 35–53 FPS measurement applies only to the animated title.
 - **Pokémon Legends Z-A:** slow language selection and a repeatable shutdown crash remain unresolved.
-- **Summerhouse:** the earlier startup/display result needs a fresh, scene-specific check on the public release.
+- **Summerhouse:** the owner now reports B — Playable and 25 FPS, superseding the earlier limited startup/display observation. Test scene, mode, and duration were not supplied; this is not a measured average or guaranteed minimum.
 
 Mode was not recorded in this summary for titles other than Mario Kart; do not infer handheld or docked mode from their FPS. Repeated switching between games can still expose stability problems across the app.
 
