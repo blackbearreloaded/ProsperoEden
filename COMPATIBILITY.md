@@ -4,7 +4,7 @@ Community-maintained results for **ProsperoEden on PS5**, not desktop or Android
 Last updated: **September 25, 2026**.
 
 > [!IMPORTANT]
-> These are early, limited tests. Recent development results informed v1.000.010, but the final release ZIP has not been separately console-tested. Older observations are labeled below. Reaching a menu does **not** establish playable gameplay or a completed game.
+> These are early, limited tests. The initial measurements came from development builds that informed v1.000.010; subsequent owner gameplay reports are identified below. Older observations are labeled below. Reaching a menu does **not** establish playable gameplay or a completed game.
 
 ## Results
 
@@ -17,12 +17,12 @@ Last updated: **September 25, 2026**.
 | Metroid Dread | Intro/menu only — gameplay unverified | 59–60 at title/file selection |
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
 | Summerhouse | Limited historical result — current build needs retesting | About 30 previously reported after startup; gameplay scope unverified |
-| Super Mario 3D World | Intro/title only — gameplay unverified | 35–53 at animated title |
+| Super Mario 3D World | B — Good; plays well (owner-confirmed) | Gameplay FPS not measured; 35–53 previously at animated title |
 
 ## How to read the grades
 
 - **A — Excellent:** extended gameplay tested with no significant known issues; report the tested scope. No current entry qualifies for this grade.
-- **B — Playable:** gameplay works in the tested sections, with some limitations. This does not imply a full playthrough.
+- **B — Good / Playable:** gameplay works in the tested sections, with some limitations. This does not imply a full playthrough.
 - **C — Runs with major issues:** reaches gameplay, but speed, rendering, or stability significantly affects play.
 - **D — Not playable:** fails to reach usable gameplay or has a blocking problem. This can include a game that boots.
 - **Intro/menu only:** reaches an intro, title, or menu; gameplay has not been qualified.
@@ -37,6 +37,7 @@ The recent development checks used **PS5 firmware 6.02 and OpenGL**. These resul
 - **Hollow Knight:** the owner confirmed gameplay, audio, controller input, and saving in earlier builds. First-use spikes and variable speed were also reported. No full-game completion or controlled sustained 60 FPS result is recorded here.
 - **Mario Kart 8 Deluxe:** 39.50 FPS is the average over a 20-second docked gameplay window in an accepted development candidate. It is a single, unreplicated result, not an all-course average or a minimum. Stable 60 FPS remains unresolved.
 - **Horizon Chase Turbo, Mario vs. Donkey Kong, Metroid Dread, and Super Mario 3D World:** recent title/menu checks showed successful return or shutdown. This does not establish repeated game switching or long-session stability.
+- **Super Mario 3D World:** the owner reports that gameplay plays well after deployment of v1.000.010. Updated to Good based on that report; gameplay FPS and test duration were not provided. The earlier 35–53 FPS measurement applies only to the animated title.
 - **Pokémon Legends Z-A:** slow language selection and a repeatable shutdown crash remain unresolved.
 - **Summerhouse:** the earlier startup/display result needs a fresh, scene-specific check on the public release.
 
