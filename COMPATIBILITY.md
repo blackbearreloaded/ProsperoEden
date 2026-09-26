@@ -10,10 +10,11 @@ Last updated: **September 25, 2026**.
 
 | Game | Grade | FPS |
 | --- | --- | --- |
+| Cuphead | B — Playable (owner-reported) | 60 (owner-reported) |
 | Hollow Knight | B — Playable in tested sections; first-use stutter observed | Up to 60 observed in earlier builds; not a sustained benchmark |
-| Horizon Chase Turbo | Intro/menu only — gameplay unverified | 33–36 in main menu |
+| Horizon Chase Turbo | B — Playable (owner-reported) | 50 (owner-reported) |
 | Mario Kart 8 Deluxe | C — Runs in-game, below target speed | 39.50 average in a short docked gameplay window; not sustained 60 |
-| Mario vs. Donkey Kong | Intro/menu only — gameplay unverified | 30 at title screen |
+| Mario vs. Donkey Kong | C — Runs with major issues (owner-reported) | 40 (owner-reported) |
 | Metroid Dread | Intro/menu only — gameplay unverified | 59–60 at title/file selection |
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
 | Summerhouse | Limited historical result — current build needs retesting | About 30 previously reported after startup; gameplay scope unverified |
@@ -34,6 +35,7 @@ FPS alone does not determine the grade. A fast menu can coexist with slow or bro
 
 The recent development checks used **PS5 firmware 6.02 and OpenGL**. These results do not establish compatibility with other firmware or a Vulkan backend.
 
+- **Cuphead, Horizon Chase Turbo, and Mario vs. Donkey Kong:** subsequent owner reports give B / 60 FPS, B / 50 FPS, and C / 40 FPS respectively. These are reported observations, not measured averages or guaranteed minimums; scene, mode, duration, and the specific issue behind the C grade were not supplied. Earlier Horizon menu (33–36 FPS) and Mario vs. Donkey Kong title (30 FPS) measurements refer to different test scopes.
 - **Hollow Knight:** the owner confirmed gameplay, audio, controller input, and saving in earlier builds. First-use spikes and variable speed were also reported. No full-game completion or controlled sustained 60 FPS result is recorded here.
 - **Mario Kart 8 Deluxe:** 39.50 FPS is the average over a 20-second docked gameplay window in an accepted development candidate. It is a single, unreplicated result, not an all-course average or a minimum. Stable 60 FPS remains unresolved.
 - **Horizon Chase Turbo, Mario vs. Donkey Kong, Metroid Dread, and Super Mario 3D World:** recent title/menu checks showed successful return or shutdown. This does not establish repeated game switching or long-session stability.
