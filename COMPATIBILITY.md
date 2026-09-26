@@ -13,7 +13,7 @@ Last updated: **September 25, 2026**.
 | Cuphead | B — Playable (owner-reported) | 60 (owner-reported) |
 | Hollow Knight | B — Playable in tested sections; first-use stutter observed | Up to 60 observed in earlier builds; not a sustained benchmark |
 | Horizon Chase Turbo | B — Playable (owner-reported) | 50 (owner-reported) |
-| Mario Kart 8 Deluxe | C — Runs in-game, below target speed | 39.50 average in a short docked gameplay window; not sustained 60 |
+| Mario Kart 8 Deluxe | C — Runs with major issues | 39.50 average in a short docked gameplay window; not sustained 60 |
 | Mario vs. Donkey Kong | C — Runs with major issues (owner-reported) | 40 (owner-reported) |
 | Metroid Dread | Intro/menu only — gameplay unverified | 59–60 at title/file selection |
 | Pokémon Legends Z-A | D — Not playable in tested state; shutdown crash | About 5.5 at language selection |
