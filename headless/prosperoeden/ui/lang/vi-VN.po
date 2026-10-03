@@ -57,6 +57,10 @@ msgstr "Trợ năng"
 msgid "ACCESSIBILITY"
 msgstr "TRỢ NĂNG"
 
+#: pe/ui/profiles.cpp
+msgid "Add"
+msgstr "Thêm"
+
 #. Label: a game's updates, DLC and mods.
 #: pe/ui/library.cpp
 msgid "ADD-ONS"
@@ -66,6 +70,10 @@ msgstr "BỔ SUNG"
 #: pe/ui/home.cpp
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Bổ sung: {0}  /  Ngôn ngữ: {1}"
+
+#: pe/ui/profiles.cpp
+msgid "Added. Cross plays as this profile; left and right change its name."
+msgstr "Đã thêm. Chéo để chơi bằng hồ sơ này; trái và phải đổi tên."
 
 #: pe/ui/settings.cpp
 msgid "Adjust the essentials without leaving your library behind."
@@ -83,16 +91,21 @@ msgstr "AMD FSR"
 msgid "Another language"
 msgstr "Ngôn ngữ khác"
 
-#: pe/ui/settings.cpp
-msgid "ASYNCHRONOUS SHADERS"
-msgstr "SHADER BẤT ĐỒNG BỘ"
+#. The button mapping has not been changed.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "As usual"
+msgstr "Như thường lệ"
 
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
 msgstr "Shader bất đồng bộ"
 
 #: pe/ui/settings.cpp
+msgid "ASYNCHRONOUS SHADERS"
+msgstr "SHADER BẤT ĐỒNG BỘ"
+
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Audio"
 msgstr "Âm thanh"
 
@@ -105,7 +118,7 @@ msgid "Australia"
 msgstr "Úc"
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Back"
 msgstr "Quay lại"
 
@@ -132,18 +145,32 @@ msgstr "Duyệt trò chơi"
 msgid "Browse settings"
 msgstr "Duyệt cài đặt"
 
+#. Which controller button presses each of the game's buttons.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Button mapping"
+msgstr "Gán nút"
+
+#: pe/ui/settings.cpp
+msgid "BUTTON MAPPING"
+msgstr "GÁN NÚT"
+
 #: eden_services.cpp
 msgid "Cannot read firmware/ in {0}. Install extracted firmware NCAs."
 msgstr "Không đọc được firmware/ trong {0}. Hãy cài đặt các tệp NCA firmware đã trích xuất."
 
 #. Button hint: change the highlighted setting.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Change"
 msgstr "Thay đổi"
 
 #: pe/ui/library.cpp
 msgid "Change mode. Saved per game."
 msgstr "Đổi chế độ. Lưu theo từng trò chơi."
+
+#. The button mapping has been changed.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Changed"
+msgstr "Đã đổi"
 
 #. What a mod is made of: cheat codes.
 #: eden_services.cpp, host/fake_services.cpp
@@ -179,14 +206,19 @@ msgstr "Chọn thư mục chứa khóa, firmware và trò chơi của bạn"
 msgid "Choose the language games use"
 msgstr "Chọn ngôn ngữ dùng trong trò chơi"
 
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Circle"
+msgstr "Tròn"
+
+#. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Compile ahead"
+msgstr "Biên dịch trước"
+
 #: pe/ui/settings.cpp
 msgid "COMPILE AHEAD"
 msgstr "BIÊN DỊCH TRƯỚC"
-
-#. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
-#: pe/ui/settings.cpp
-msgid "Compile ahead"
-msgstr "Biên dịch trước"
 
 #: pe/ui/settings.cpp
 msgid "Compiles the code a game used before as it starts, so new areas stutter less."
@@ -208,7 +240,7 @@ msgstr "Lối tắt trên bộ điều khiển và các tính năng được h�
 msgid "CONTROLLERS"
 msgstr "BỘ ĐIỀU KHIỂN"
 
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Controls"
 msgstr "Điều khiển"
 
@@ -232,9 +264,14 @@ msgstr "Không thể lưu cài đặt. Vui lòng thử lại."
 msgid "Could not save the folder. Please try again."
 msgstr "Không thể lưu thư mục. Vui lòng thử lại."
 
-#: pe/ui/browse.cpp, pe/ui/library.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp
 msgid "Could not save. Please try again."
 msgstr "Không thể lưu. Vui lòng thử lại."
+
+#. The DualSense button labelled CREATE: keep the label if the language's players do.
+#: pe/ui/game_options.cpp
+msgid "Create"
+msgstr "Create"
 
 #. Button hint: make the folder a game's mods go in.
 #: pe/ui/library.cpp
@@ -250,8 +287,13 @@ msgstr "Đã tạo {0}. Hãy chép thư mục của từng mod vào đó."
 msgid "Credits and setup"
 msgstr "Ghi công và thiết lập"
 
+#. A DualSense button (the X-shaped one). Name the shape, not the letter.
+#: pe/ui/game_options.cpp
+msgid "Cross"
+msgstr "Chéo"
+
 #. A per-game setting that follows the general setting; {0} is its value.
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp
 msgid "Default ({0})"
 msgstr "Mặc định ({0})"
 
@@ -309,6 +351,10 @@ msgstr "Hiển thị chữ nhỏ trong menu lớn hơn."
 msgid "Dutch"
 msgstr "Tiếng Hà Lan"
 
+#: pe/ui/profiles.cpp
+msgid "Each profile keeps its own save data, settings and recent games."
+msgstr "Mỗi hồ sơ có dữ liệu lưu, cài đặt và trò chơi gần đây riêng."
+
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
 msgstr "Trình giả lập Eden cho PlayStation 5"
@@ -348,36 +394,36 @@ msgstr "Xuất thất bại. Hãy kiểm tra xem có ghi được vào thư mụ
 msgid "Exported to {0}."
 msgstr "Đã xuất ra {0}."
 
+#. A switch: the emulated processor's floating-point math is less exact and faster. CPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster CPU emulation"
+msgstr "Giả lập CPU nhanh hơn"
+
 #: pe/ui/settings.cpp
 msgid "FASTER CPU EMULATION"
 msgstr "GIẢ LẬP CPU NHANH HƠN"
 
-#. A switch: the emulated processor's floating-point math is less exact and faster. CPU stays.
-#: pe/ui/settings.cpp
-msgid "Faster CPU emulation"
-msgstr "Giả lập CPU nhanh hơn"
+#. A switch: memory transfers to the emulated graphics processor are less exact and faster. DMA is a name (unchanged).
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster DMA"
+msgstr "DMA nhanh hơn"
 
 #: pe/ui/settings.cpp
 msgid "FASTER DMA"
 msgstr "DMA NHANH HƠN"
 
-#. A switch: memory transfers to the emulated graphics processor are less exact and faster. DMA is a name (unchanged).
-#: pe/ui/settings.cpp
-msgid "Faster DMA"
-msgstr "DMA nhanh hơn"
-
 #: pe/ui/settings.cpp
 msgid "Faster games, at some cost in accuracy."
 msgstr "Trò chơi nhanh hơn, đổi lại kém chính xác hơn một chút."
 
+#. A switch: the emulated graphics processor is less exact and faster. GPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster GPU emulation"
+msgstr "Giả lập GPU nhanh hơn"
+
 #: pe/ui/settings.cpp
 msgid "FASTER GPU EMULATION"
 msgstr "GIẢ LẬP GPU NHANH HƠN"
-
-#. A switch: the emulated graphics processor is less exact and faster. GPU stays.
-#: pe/ui/settings.cpp
-msgid "Faster GPU emulation"
-msgstr "Giả lập GPU nhanh hơn"
 
 #: pe/ui/library.cpp
 msgid "FILE"
@@ -412,18 +458,27 @@ msgstr "Dữ liệu SystemVersion của firmware bị thiếu hoặc không đ�
 msgid "FOLDERS"
 msgstr "THƯ MỤC"
 
+#. A kind of setting that this game takes from the launcher's Settings menu.
+#: pe/ui/library.cpp
+msgid "Follows Settings"
+msgstr "Theo Cài đặt"
+
+#: pe/ui/game_options.cpp
+msgid "For every controller. A game can have its own."
+msgstr "Cho mọi tay cầm. Mỗi trò chơi có thể có cách gán riêng."
+
 #: pe/ui/library.cpp
 msgid "FORMAT"
 msgstr "ĐỊNH DẠNG"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "FPS overlay"
+msgstr "Bộ đếm FPS"
 
 #. Label: the frames-per-second counter drawn over a game.
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "BỘ ĐẾM FPS"
-
-#: pe/ui/settings.cpp
-msgid "FPS overlay"
-msgstr "Bộ đếm FPS"
 
 #: settings_store.h
 msgid "French"
@@ -467,13 +522,13 @@ msgstr "TỆP TRÒ CHƠI"
 msgid "Game settings"
 msgstr "Cài đặt trò chơi"
 
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Game volume"
+msgstr "Âm lượng trò chơi"
+
 #: pe/ui/settings.cpp
 msgid "GAME VOLUME"
 msgstr "ÂM LƯỢNG TRÒ CHƠI"
-
-#: pe/ui/settings.cpp
-msgid "Game volume"
-msgstr "Âm lượng trò chơi"
 
 #: pe/ui/settings.cpp
 msgid "Game volume, and the sounds of this menu."
@@ -585,7 +640,7 @@ msgstr "Hàn Quốc"
 msgid "Korean"
 msgstr "Tiếng Hàn"
 
-#: pe/ui/browse.cpp, pe/ui/settings.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Language"
 msgstr "Ngôn ngữ"
 
@@ -614,6 +669,11 @@ msgstr "Trò chơi mở gần nhất"
 #: pe/ui/home.cpp
 msgid "Launch game"
 msgstr "Mở trò chơi"
+
+#. Pressing the left stick down like a button.
+#: pe/ui/game_options.cpp
+msgid "Left stick press"
+msgstr "Nhấn cần trái"
 
 #: pe/ui/settings.cpp
 msgid "Less exact floating-point math: faster, and a few games misbehave."
@@ -670,13 +730,13 @@ msgstr "MOD"
 msgid "Mods"
 msgstr "Mod"
 
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Mute"
+msgstr "Tắt tiếng"
+
 #: pe/ui/settings.cpp
 msgid "MUTE"
 msgstr "TẮT TIẾNG"
-
-#: pe/ui/settings.cpp
-msgid "Mute"
-msgstr "Tắt tiếng"
 
 #: pe/ui/settings.cpp
 msgid "Muted"
@@ -695,6 +755,10 @@ msgstr "Gần nhất"
 #: pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Cần chú ý"
+
+#: pe/ui/profiles.cpp
+msgid "New profile"
+msgstr "Hồ sơ mới"
 
 #. {0} is the folder used the next time the app starts.
 #: pe/ui/browse.cpp
@@ -755,12 +819,12 @@ msgid "Nothing to import"
 msgstr "Không có gì để nhập"
 
 #. A setting that is switched off.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Tắt"
 
 #. A setting that is switched on.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "On"
 msgstr "Bật"
 
@@ -774,13 +838,18 @@ msgid "OPEN"
 msgstr "MỞ"
 
 #. Button hint: open the highlighted folder.
-#: pe/ui/browse.cpp, pe/ui/library.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Open"
 msgstr "Mở"
 
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr "Mở thư viện"
+
+#. The DualSense button labelled OPTIONS: keep the label if the language's players do.
+#: pe/ui/game_options.cpp
+msgid "Options"
+msgstr "Options"
 
 #. Label: see 'Output resolution'.
 #: pe/ui/settings.cpp
@@ -807,13 +876,29 @@ msgid "Patch"
 msgstr "Bản vá"
 
 #. A settings category: options that make games run faster, at some cost in accuracy.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Performance"
 msgstr "Hiệu năng"
 
 #: pe/ui/settings.cpp
 msgid "PERFORMANCE"
 msgstr "HIỆU NĂNG"
+
+#: pe/ui/profiles.cpp
+msgid "Play as"
+msgstr "Chơi bằng"
+
+#: pe/ui/profiles.cpp
+msgid "Playing"
+msgstr "Đang chơi"
+
+#: pe/ui/settings.cpp
+msgid "PLAYING"
+msgstr "ĐANG CHƠI"
+
+#: pe/ui/profiles.cpp
+msgid "Playing as {0}"
+msgstr "Đang chơi: {0}"
 
 #: settings_store.h
 msgid "Polish"
@@ -853,6 +938,14 @@ msgstr "Đã tìm thấy prod.keys"
 msgid "prod.keys missing"
 msgstr "Thiếu prod.keys"
 
+#: pe/ui/profiles.cpp, pe/ui/settings.cpp
+msgid "Profiles"
+msgstr "Hồ sơ"
+
+#: pe/ui/settings.cpp
+msgid "PROFILES"
+msgstr "HỒ SƠ"
+
 #: pe/ui/browse.cpp
 msgid "PROJECT CREDITS"
 msgstr "GHI CÔNG DỰ ÁN"
@@ -880,14 +973,14 @@ msgstr "PHIÊN BẢN PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "PHIÊN BẢN PS5  /  {0}"
 
+#. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Reactive flushing"
+msgstr "Xả phản ứng"
+
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "XẢ PHẢN ỨNG"
-
-#. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
-#: pe/ui/settings.cpp
-msgid "Reactive flushing"
-msgstr "Xả phản ứng"
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -907,7 +1000,7 @@ msgid "Reduce motion"
 msgstr "Giảm chuyển động"
 
 #. Setting: how many times a second the TV picture is refreshed while a game runs (60 or 120 Hz).
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Refresh rate"
 msgstr "Tần số quét"
 
@@ -920,7 +1013,15 @@ msgstr "TẦN SỐ QUÉT"
 msgid "REGION"
 msgstr "KHU VỰC"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/profiles.cpp
+msgid "Remove"
+msgstr "Bỏ"
+
+#: pe/ui/profiles.cpp
+msgid "Rename"
+msgstr "Đổi tên"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Renderer"
 msgstr "Trình kết xuất"
 
@@ -928,7 +1029,11 @@ msgstr "Trình kết xuất"
 msgid "RENDERER"
 msgstr "TRÌNH KẾT XUẤT"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp
+msgid "Reset"
+msgstr "Đặt lại"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Resolution"
 msgstr "Độ phân giải"
 
@@ -936,7 +1041,11 @@ msgstr "Độ phân giải"
 msgid "RESOLUTION"
 msgstr "ĐỘ PHÂN GIẢI"
 
-#: eden_services.cpp
+#: pe/ui/game_options.cpp
+msgid "Right stick press"
+msgstr "Nhấn cần phải"
+
+#: eden_services.cpp, pe/ui/launcher.cpp
 msgid "ROM missing from the game files folder"
 msgstr "Không có ROM trong thư mục tệp trò chơi"
 
@@ -964,12 +1073,12 @@ msgstr "Dữ liệu đã lưu"
 msgid "Save folder found"
 msgstr "Đã tìm thấy thư mục lưu"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Đã lưu cho trò chơi này. Áp dụng từ lần mở tới."
 
 #. Shown after choosing 120 Hz.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Saved. A display that cannot show 120 Hz stays at 60 Hz."
 msgstr "Đã lưu. Màn hình không hỗ trợ 120 Hz sẽ giữ ở 60 Hz."
 
@@ -982,7 +1091,7 @@ msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Đã lưu. Hãy mở lại ProsperoEden để dùng thư mục này."
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Select"
 msgstr "Chọn"
 
@@ -997,11 +1106,6 @@ msgstr "Chọn một trò chơi để bắt đầu"
 #: pe/ui/library.cpp
 msgid "Select a readable game to configure its mode."
 msgstr "Chọn một trò chơi đọc được để thiết lập chế độ."
-
-#. Select is a button's name (unchanged).
-#: pe/ui/settings.cpp
-msgid "Select is the touchpad button on PS5."
-msgstr "Trên PS5, Select là nút bàn rê cảm ứng."
 
 #. Heading: the language highlighted in the list.
 #: pe/ui/browse.cpp
@@ -1039,10 +1143,6 @@ msgid "Setup validation failed. Check that firmware and key files are readable a
 msgstr "Xác thực thiết lập thất bại. Hãy kiểm tra xem các tệp firmware và khóa có đọc được và hợp lệ không."
 
 #: pe/ui/settings.cpp
-msgid "Shortcuts during a game, and vibration."
-msgstr "Lối tắt trong khi chơi và chế độ rung."
-
-#: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Hiện hoặc ẩn bộ đếm FPS"
 
@@ -1050,14 +1150,14 @@ msgstr "Hiện hoặc ẩn bộ đếm FPS"
 msgid "SIZE"
 msgstr "DUNG LƯỢNG"
 
+#. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Skip CPU invalidation"
+msgstr "Bỏ qua vô hiệu hóa CPU"
+
 #: pe/ui/settings.cpp
 msgid "SKIP CPU INVALIDATION"
 msgstr "BỎ QUA VÔ HIỆU HÓA CPU"
-
-#. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
-#: pe/ui/settings.cpp
-msgid "Skip CPU invalidation"
-msgstr "Bỏ qua vô hiệu hóa CPU"
 
 #: pe/ui/settings.cpp
 msgid "Skips some checks when a game changes memory the GPU uses: faster, and textures can be stale."
@@ -1074,6 +1174,15 @@ msgstr "Tiếng Tây Ban Nha"
 #: settings_store.h
 msgid "Spanish (Latin America)"
 msgstr "Tiếng Tây Ban Nha (Mỹ Latinh)"
+
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Square"
+msgstr "Vuông"
+
+#: pe/ui/profiles.cpp
+msgid "Square again takes {0} off the list. Its save data stays on the console."
+msgstr "Vuông lần nữa sẽ bỏ {0} khỏi danh sách. Dữ liệu lưu vẫn ở trên máy."
 
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
@@ -1096,6 +1205,10 @@ msgstr "Tự chuẩn bị tệp của bạn"
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Đài Loan"
+
+#: pe/ui/profiles.cpp
+msgid "Taken off the list. Its save data stays on the console."
+msgstr "Đã bỏ khỏi danh sách. Dữ liệu lưu vẫn ở trên máy."
 
 #: settings_store.h
 msgid "Thai"
@@ -1123,6 +1236,10 @@ msgstr "Trò chơi đã hết bộ nhớ đồ họa. Hãy giảm độ phân gi
 msgid "The language games use when they offer it."
 msgstr "Ngôn ngữ trò chơi sẽ dùng nếu có hỗ trợ."
 
+#: pe/ui/profiles.cpp
+msgid "The profile that is playing stays. Choose another one first."
+msgstr "Hồ sơ đang chơi được giữ lại. Hãy chọn hồ sơ khác trước."
+
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
 msgstr "THƯ MỤC NÀY"
@@ -1130,6 +1247,11 @@ msgstr "THƯ MỤC NÀY"
 #: pe/ui/browse.cpp
 msgid "This folder cannot be opened."
 msgstr "Không thể mở thư mục này."
+
+#. The game has a button mapping of its own.
+#: pe/ui/game_options.cpp
+msgid "This game"
+msgstr "Trò chơi này"
 
 #: eden_services.cpp
 msgid "This game has no save to export yet."
@@ -1143,6 +1265,16 @@ msgstr "Không thể lưu cài đặt cho trò chơi này (thiếu ID trò chơi
 #: eden_services.cpp
 msgid "To import, copy a Ryujinx folder to ryujinx/ or a save to save-import/{0}/, next to roms/."
 msgstr "Để nhập, hãy sao chép thư mục Ryujinx vào ryujinx/ hoặc bản lưu vào save-import/{0}/, cạnh roms/."
+
+#. The DualSense controller's touch pad, pressed as a button. Use the name players know.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Touchpad"
+msgstr "Bàn di cảm ứng"
+
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Triangle"
+msgstr "Tam giác"
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1158,6 +1290,11 @@ msgstr "Không khả dụng"
 msgid "UP"
 msgstr "LÊN"
 
+#. Notification title: a newer release of this app is listed (not a game update).
+#: pe/ui/launcher.cpp
+msgid "Update available"
+msgstr "Có bản cập nhật"
+
 #. A game update; {0} is its version, for example 1.2.0.
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Update {0}"
@@ -1167,7 +1304,7 @@ msgstr "Cập nhật {0}"
 msgid "UPDATES, DLC"
 msgstr "CẬP NHẬT, DLC"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Upscaling filter"
 msgstr "Bộ lọc phóng to"
 
@@ -1187,13 +1324,18 @@ msgstr "Hãy dùng các tệp NCA firmware đã trích xuất. Chọn thư mục
 msgid "Use this folder"
 msgstr "Dùng thư mục này"
 
+#. {0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.
+#: pe/ui/launcher.cpp
+msgid "Version {0} is on homebrew.page"
+msgstr "Phiên bản {0} có trên homebrew.page"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Vibration"
+msgstr "Rung"
+
 #: pe/ui/settings.cpp
 msgid "VIBRATION"
 msgstr "RUNG"
-
-#: pe/ui/settings.cpp
-msgid "Vibration"
-msgstr "Rung"
 
 #: pe/ui/settings.cpp
 msgid "Vibration off"
@@ -1204,6 +1346,10 @@ msgid "Vibration on"
 msgstr "Rung: Bật"
 
 #: pe/ui/settings.cpp
+msgid "Vibration, button mapping and the shortcuts during a game."
+msgstr "Rung, gán nút và phím tắt khi đang chơi."
+
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Video"
 msgstr "Video"
 
@@ -1220,6 +1366,10 @@ msgstr "XEM TẤT CẢ TRÒ CHƠI"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (khuyên dùng)"
 
+#: pe/ui/settings.cpp
+msgid "Who is playing. Each profile keeps its own save data and settings."
+msgstr "Ai đang chơi. Mỗi hồ sơ có dữ liệu lưu và cài đặt riêng."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Trò chơi của bạn"
@@ -1228,6 +1378,11 @@ msgstr "Trò chơi của bạn"
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Cuộc phiêu lưu tiếp theo"
+
+#. How many settings of a kind this game has of its own; {0} is a number.
+#: pe/ui/library.cpp
+msgid "{0} changed"
+msgstr "Đã đổi {0}"
 
 #. {0} is how many DLC (add-on content) a game has installed.
 #: eden_services.cpp, host/fake_services.cpp
@@ -1300,7 +1455,7 @@ msgid "{0} of {1} on"
 msgstr "Bật {0}/{1}"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

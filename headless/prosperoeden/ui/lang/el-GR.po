@@ -57,6 +57,10 @@ msgstr "Προσβασιμότητα"
 msgid "ACCESSIBILITY"
 msgstr "ΠΡΟΣΒΑΣΙΜΟΤΗΤΑ"
 
+#: pe/ui/profiles.cpp
+msgid "Add"
+msgstr "Προσθήκη"
+
 #. Label: a game's updates, DLC and mods.
 #: pe/ui/library.cpp
 msgid "ADD-ONS"
@@ -66,6 +70,10 @@ msgstr "ΠΡΟΣΘΕΤΑ"
 #: pe/ui/home.cpp
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Πρόσθετα: {0}  /  Γλώσσα: {1}"
+
+#: pe/ui/profiles.cpp
+msgid "Added. Cross plays as this profile; left and right change its name."
+msgstr "Προστέθηκε. Σταυρός για παιχνίδι με αυτό το προφίλ· αριστερά και δεξιά αλλάζουν το όνομα."
 
 #: pe/ui/settings.cpp
 msgid "Adjust the essentials without leaving your library behind."
@@ -83,16 +91,21 @@ msgstr "AMD FSR"
 msgid "Another language"
 msgstr "Άλλη γλώσσα"
 
-#: pe/ui/settings.cpp
-msgid "ASYNCHRONOUS SHADERS"
-msgstr "ΑΣΥΓΧΡΟΝΟΙ SHADERS"
+#. The button mapping has not been changed.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "As usual"
+msgstr "Ως συνήθως"
 
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
 msgstr "Ασύγχρονοι shaders"
 
 #: pe/ui/settings.cpp
+msgid "ASYNCHRONOUS SHADERS"
+msgstr "ΑΣΥΓΧΡΟΝΟΙ SHADERS"
+
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Audio"
 msgstr "Ήχος"
 
@@ -105,7 +118,7 @@ msgid "Australia"
 msgstr "Αυστραλία"
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Back"
 msgstr "Πίσω"
 
@@ -132,18 +145,32 @@ msgstr "Περιήγηση στα παιχνίδια"
 msgid "Browse settings"
 msgstr "Περιήγηση στις ρυθμίσεις"
 
+#. Which controller button presses each of the game's buttons.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Button mapping"
+msgstr "Αντιστοίχιση κουμπιών"
+
+#: pe/ui/settings.cpp
+msgid "BUTTON MAPPING"
+msgstr "ΑΝΤΙΣΤΟΙΧΙΣΗ ΚΟΥΜΠΙΩΝ"
+
 #: eden_services.cpp
 msgid "Cannot read firmware/ in {0}. Install extracted firmware NCAs."
 msgstr "Δεν είναι δυνατή η ανάγνωση του firmware/ στο {0}. Εγκαταστήστε τα εξαγμένα NCA του firmware."
 
 #. Button hint: change the highlighted setting.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Change"
 msgstr "Αλλαγή"
 
 #: pe/ui/library.cpp
 msgid "Change mode. Saved per game."
 msgstr "Αλλαγή λειτουργίας. Αποθηκεύεται ανά παιχνίδι."
+
+#. The button mapping has been changed.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Changed"
+msgstr "Αλλαγμένη"
 
 #. What a mod is made of: cheat codes.
 #: eden_services.cpp, host/fake_services.cpp
@@ -179,14 +206,19 @@ msgstr "Επιλέξτε τον φάκελο με τα κλειδιά, το firm
 msgid "Choose the language games use"
 msgstr "Επιλέξτε τη γλώσσα που χρησιμοποιούν τα παιχνίδια"
 
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Circle"
+msgstr "Κύκλος"
+
+#. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Compile ahead"
+msgstr "Μεταγλώττιση εκ των προτέρων"
+
 #: pe/ui/settings.cpp
 msgid "COMPILE AHEAD"
 msgstr "ΜΕΤΑΓΛΩΤΤΙΣΗ ΕΚ ΤΩΝ ΠΡΟΤΕΡΩΝ"
-
-#. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
-#: pe/ui/settings.cpp
-msgid "Compile ahead"
-msgstr "Μεταγλώττιση εκ των προτέρων"
 
 #: pe/ui/settings.cpp
 msgid "Compiles the code a game used before as it starts, so new areas stutter less."
@@ -208,7 +240,7 @@ msgstr "Συντομεύσεις χειριστηρίου και υποστηρ�
 msgid "CONTROLLERS"
 msgstr "ΧΕΙΡΙΣΤΗΡΙΑ"
 
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Controls"
 msgstr "Χειρισμός"
 
@@ -232,9 +264,14 @@ msgstr "Οι ρυθμίσεις δεν αποθηκεύτηκαν. Δοκιμά�
 msgid "Could not save the folder. Please try again."
 msgstr "Ο φάκελος δεν αποθηκεύτηκε. Δοκιμάστε ξανά."
 
-#: pe/ui/browse.cpp, pe/ui/library.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp
 msgid "Could not save. Please try again."
 msgstr "Η αποθήκευση απέτυχε. Δοκιμάστε ξανά."
+
+#. The DualSense button labelled CREATE: keep the label if the language's players do.
+#: pe/ui/game_options.cpp
+msgid "Create"
+msgstr "Create"
 
 #. Button hint: make the folder a game's mods go in.
 #: pe/ui/library.cpp
@@ -250,8 +287,13 @@ msgstr "Δημιουργήθηκε το {0}. Αντιγράψτε εκεί το�
 msgid "Credits and setup"
 msgstr "Συντελεστές και ρύθμιση"
 
+#. A DualSense button (the X-shaped one). Name the shape, not the letter.
+#: pe/ui/game_options.cpp
+msgid "Cross"
+msgstr "Σταυρός"
+
 #. A per-game setting that follows the general setting; {0} is its value.
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp
 msgid "Default ({0})"
 msgstr "Προεπιλογή ({0})"
 
@@ -309,6 +351,10 @@ msgstr "Εμφανίζει μεγαλύτερο το μικρό κείμενο �
 msgid "Dutch"
 msgstr "Ολλανδικά"
 
+#: pe/ui/profiles.cpp
+msgid "Each profile keeps its own save data, settings and recent games."
+msgstr "Κάθε προφίλ έχει δικά του αποθηκευμένα δεδομένα, ρυθμίσεις και πρόσφατα παιχνίδια."
+
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
 msgstr "Εξομοιωτής Eden για PlayStation 5"
@@ -348,36 +394,36 @@ msgstr "Η εξαγωγή απέτυχε. Ελέγξτε ότι ο φάκελο�
 msgid "Exported to {0}."
 msgstr "Έγινε εξαγωγή στο {0}."
 
+#. A switch: the emulated processor's floating-point math is less exact and faster. CPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster CPU emulation"
+msgstr "Ταχύτερη εξομοίωση CPU"
+
 #: pe/ui/settings.cpp
 msgid "FASTER CPU EMULATION"
 msgstr "ΤΑΧΥΤΕΡΗ ΕΞΟΜΟΙΩΣΗ CPU"
 
-#. A switch: the emulated processor's floating-point math is less exact and faster. CPU stays.
-#: pe/ui/settings.cpp
-msgid "Faster CPU emulation"
-msgstr "Ταχύτερη εξομοίωση CPU"
+#. A switch: memory transfers to the emulated graphics processor are less exact and faster. DMA is a name (unchanged).
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster DMA"
+msgstr "Ταχύτερο DMA"
 
 #: pe/ui/settings.cpp
 msgid "FASTER DMA"
 msgstr "ΤΑΧΥΤΕΡΟ DMA"
 
-#. A switch: memory transfers to the emulated graphics processor are less exact and faster. DMA is a name (unchanged).
-#: pe/ui/settings.cpp
-msgid "Faster DMA"
-msgstr "Ταχύτερο DMA"
-
 #: pe/ui/settings.cpp
 msgid "Faster games, at some cost in accuracy."
 msgstr "Πιο γρήγορα παιχνίδια, με κάποιο κόστος στην ακρίβεια."
 
+#. A switch: the emulated graphics processor is less exact and faster. GPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Faster GPU emulation"
+msgstr "Ταχύτερη εξομοίωση GPU"
+
 #: pe/ui/settings.cpp
 msgid "FASTER GPU EMULATION"
 msgstr "ΤΑΧΥΤΕΡΗ ΕΞΟΜΟΙΩΣΗ GPU"
-
-#. A switch: the emulated graphics processor is less exact and faster. GPU stays.
-#: pe/ui/settings.cpp
-msgid "Faster GPU emulation"
-msgstr "Ταχύτερη εξομοίωση GPU"
 
 #: pe/ui/library.cpp
 msgid "FILE"
@@ -412,18 +458,27 @@ msgstr "Τα δεδομένα SystemVersion του firmware λείπουν ή δ
 msgid "FOLDERS"
 msgstr "ΦΑΚΕΛΟΙ"
 
+#. A kind of setting that this game takes from the launcher's Settings menu.
+#: pe/ui/library.cpp
+msgid "Follows Settings"
+msgstr "Όπως στις Ρυθμίσεις"
+
+#: pe/ui/game_options.cpp
+msgid "For every controller. A game can have its own."
+msgstr "Για κάθε χειριστήριο. Ένα παιχνίδι μπορεί να έχει δική του."
+
 #: pe/ui/library.cpp
 msgid "FORMAT"
 msgstr "ΜΟΡΦΗ"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "FPS overlay"
+msgstr "Ένδειξη FPS"
 
 #. Label: the frames-per-second counter drawn over a game.
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "ΕΝΔΕΙΞΗ FPS"
-
-#: pe/ui/settings.cpp
-msgid "FPS overlay"
-msgstr "Ένδειξη FPS"
 
 #: settings_store.h
 msgid "French"
@@ -467,13 +522,13 @@ msgstr "ΑΡΧΕΙΑ ΠΑΙΧΝΙΔΙΩΝ"
 msgid "Game settings"
 msgstr "Ρυθμίσεις παιχνιδιού"
 
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Game volume"
+msgstr "Ένταση παιχνιδιού"
+
 #: pe/ui/settings.cpp
 msgid "GAME VOLUME"
 msgstr "ΕΝΤΑΣΗ ΠΑΙΧΝΙΔΙΟΥ"
-
-#: pe/ui/settings.cpp
-msgid "Game volume"
-msgstr "Ένταση παιχνιδιού"
 
 #: pe/ui/settings.cpp
 msgid "Game volume, and the sounds of this menu."
@@ -585,7 +640,7 @@ msgstr "Κορέα"
 msgid "Korean"
 msgstr "Κορεατικά"
 
-#: pe/ui/browse.cpp, pe/ui/settings.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Language"
 msgstr "Γλώσσα"
 
@@ -614,6 +669,11 @@ msgstr "Τελευταίο παιχνίδι"
 #: pe/ui/home.cpp
 msgid "Launch game"
 msgstr "Έναρξη παιχνιδιού"
+
+#. Pressing the left stick down like a button.
+#: pe/ui/game_options.cpp
+msgid "Left stick press"
+msgstr "Πάτημα αριστερού μοχλού"
 
 #: pe/ui/settings.cpp
 msgid "Less exact floating-point math: faster, and a few games misbehave."
@@ -670,13 +730,13 @@ msgstr "MODS"
 msgid "Mods"
 msgstr "Mods"
 
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Mute"
+msgstr "Σίγαση"
+
 #: pe/ui/settings.cpp
 msgid "MUTE"
 msgstr "ΣΙΓΑΣΗ"
-
-#: pe/ui/settings.cpp
-msgid "Mute"
-msgstr "Σίγαση"
 
 #: pe/ui/settings.cpp
 msgid "Muted"
@@ -695,6 +755,10 @@ msgstr "Πλησιέστερο"
 #: pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Χρειάζεται προσοχή"
+
+#: pe/ui/profiles.cpp
+msgid "New profile"
+msgstr "Νέο προφίλ"
 
 #. {0} is the folder used the next time the app starts.
 #: pe/ui/browse.cpp
@@ -755,12 +819,12 @@ msgid "Nothing to import"
 msgstr "Τίποτα για εισαγωγή"
 
 #. A setting that is switched off.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Όχι"
 
 #. A setting that is switched on.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "On"
 msgstr "Ναι"
 
@@ -774,13 +838,18 @@ msgid "OPEN"
 msgstr "ΑΝΟΙΓΜΑ"
 
 #. Button hint: open the highlighted folder.
-#: pe/ui/browse.cpp, pe/ui/library.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Open"
 msgstr "Άνοιγμα"
 
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr "Άνοιγμα βιβλιοθήκης"
+
+#. The DualSense button labelled OPTIONS: keep the label if the language's players do.
+#: pe/ui/game_options.cpp
+msgid "Options"
+msgstr "Options"
 
 #. Label: see 'Output resolution'.
 #: pe/ui/settings.cpp
@@ -807,13 +876,29 @@ msgid "Patch"
 msgstr "Patch"
 
 #. A settings category: options that make games run faster, at some cost in accuracy.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Performance"
 msgstr "Απόδοση"
 
 #: pe/ui/settings.cpp
 msgid "PERFORMANCE"
 msgstr "ΑΠΟΔΟΣΗ"
+
+#: pe/ui/profiles.cpp
+msgid "Play as"
+msgstr "Παιχνίδι ως"
+
+#: pe/ui/profiles.cpp
+msgid "Playing"
+msgstr "Παίζει"
+
+#: pe/ui/settings.cpp
+msgid "PLAYING"
+msgstr "ΠΑΙΖΕΙ"
+
+#: pe/ui/profiles.cpp
+msgid "Playing as {0}"
+msgstr "Παίζει: {0}"
 
 #: settings_store.h
 msgid "Polish"
@@ -853,6 +938,14 @@ msgstr "Το prod.keys βρέθηκε"
 msgid "prod.keys missing"
 msgstr "Το prod.keys λείπει"
 
+#: pe/ui/profiles.cpp, pe/ui/settings.cpp
+msgid "Profiles"
+msgstr "Προφίλ"
+
+#: pe/ui/settings.cpp
+msgid "PROFILES"
+msgstr "ΠΡΟΦΙΛ"
+
 #: pe/ui/browse.cpp
 msgid "PROJECT CREDITS"
 msgstr "ΣΥΝΤΕΛΕΣΤΕΣ ΤΟΥ ΕΡΓΟΥ"
@@ -880,14 +973,14 @@ msgstr "ΕΚΔΟΣΗ PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "ΕΚΔΟΣΗ PS5  /  {0}"
 
+#. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Reactive flushing"
+msgstr "Αντιδραστικό flushing"
+
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "ΑΝΤΙΔΡΑΣΤΙΚΟ FLUSHING"
-
-#. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
-#: pe/ui/settings.cpp
-msgid "Reactive flushing"
-msgstr "Αντιδραστικό flushing"
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -907,7 +1000,7 @@ msgid "Reduce motion"
 msgstr "Μείωση κίνησης"
 
 #. Setting: how many times a second the TV picture is refreshed while a game runs (60 or 120 Hz).
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Refresh rate"
 msgstr "Ρυθμός ανανέωσης"
 
@@ -920,7 +1013,15 @@ msgstr "ΡΥΘΜΟΣ ΑΝΑΝΕΩΣΗΣ"
 msgid "REGION"
 msgstr "ΠΕΡΙΟΧΗ"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/profiles.cpp
+msgid "Remove"
+msgstr "Αφαίρεση"
+
+#: pe/ui/profiles.cpp
+msgid "Rename"
+msgstr "Μετονομασία"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Renderer"
 msgstr "Απόδοση γραφικών"
 
@@ -928,7 +1029,11 @@ msgstr "Απόδοση γραφικών"
 msgid "RENDERER"
 msgstr "ΑΠΟΔΟΣΗ ΓΡΑΦΙΚΩΝ"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp
+msgid "Reset"
+msgstr "Επαναφορά"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Resolution"
 msgstr "Ανάλυση"
 
@@ -936,7 +1041,11 @@ msgstr "Ανάλυση"
 msgid "RESOLUTION"
 msgstr "ΑΝΑΛΥΣΗ"
 
-#: eden_services.cpp
+#: pe/ui/game_options.cpp
+msgid "Right stick press"
+msgstr "Πάτημα δεξιού μοχλού"
+
+#: eden_services.cpp, pe/ui/launcher.cpp
 msgid "ROM missing from the game files folder"
 msgstr "Το ROM λείπει από τον φάκελο των αρχείων παιχνιδιών"
 
@@ -964,12 +1073,12 @@ msgstr "Δεδομένα αποθήκευσης"
 msgid "Save folder found"
 msgstr "Βρέθηκε φάκελος αποθήκευσης"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Αποθηκεύτηκε για αυτό το παιχνίδι. Ισχύει από την επόμενη εκκίνηση."
 
 #. Shown after choosing 120 Hz.
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Saved. A display that cannot show 120 Hz stays at 60 Hz."
 msgstr "Αποθηκεύτηκε. Μια οθόνη χωρίς 120 Hz παραμένει στα 60 Hz."
 
@@ -982,7 +1091,7 @@ msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Αποθηκεύτηκε. Ανοίξτε ξανά το ProsperoEden για να χρησιμοποιηθεί αυτός ο φάκελος."
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Select"
 msgstr "Επιλογή"
 
@@ -997,11 +1106,6 @@ msgstr "Επιλέξτε ένα παιχνίδι για να ξεκινήσετ�
 #: pe/ui/library.cpp
 msgid "Select a readable game to configure its mode."
 msgstr "Επιλέξτε ένα παιχνίδι που διαβάζεται για να ορίσετε τη λειτουργία του."
-
-#. Select is a button's name (unchanged).
-#: pe/ui/settings.cpp
-msgid "Select is the touchpad button on PS5."
-msgstr "Το Select είναι το κουμπί της επιφάνειας αφής στο PS5."
 
 #. Heading: the language highlighted in the list.
 #: pe/ui/browse.cpp
@@ -1039,10 +1143,6 @@ msgid "Setup validation failed. Check that firmware and key files are readable a
 msgstr "Η επαλήθευση της ρύθμισης απέτυχε. Ελέγξτε ότι τα αρχεία firmware και κλειδιών διαβάζονται και είναι έγκυρα."
 
 #: pe/ui/settings.cpp
-msgid "Shortcuts during a game, and vibration."
-msgstr "Συντομεύσεις κατά τη διάρκεια του παιχνιδιού και δόνηση."
-
-#: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Εμφάνιση ή απόκρυψη της ένδειξης FPS"
 
@@ -1050,14 +1150,14 @@ msgstr "Εμφάνιση ή απόκρυψη της ένδειξης FPS"
 msgid "SIZE"
 msgstr "ΜΕΓΕΘΟΣ"
 
+#. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Skip CPU invalidation"
+msgstr "Παράλειψη ακύρωσης CPU"
+
 #: pe/ui/settings.cpp
 msgid "SKIP CPU INVALIDATION"
 msgstr "ΠΑΡΑΛΕΙΨΗ ΑΚΥΡΩΣΗΣ CPU"
-
-#. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
-#: pe/ui/settings.cpp
-msgid "Skip CPU invalidation"
-msgstr "Παράλειψη ακύρωσης CPU"
 
 #: pe/ui/settings.cpp
 msgid "Skips some checks when a game changes memory the GPU uses: faster, and textures can be stale."
@@ -1074,6 +1174,15 @@ msgstr "Ισπανικά"
 #: settings_store.h
 msgid "Spanish (Latin America)"
 msgstr "Ισπανικά (Λατινική Αμερική)"
+
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Square"
+msgstr "Τετράγωνο"
+
+#: pe/ui/profiles.cpp
+msgid "Square again takes {0} off the list. Its save data stays on the console."
+msgstr "Τετράγωνο ξανά αφαιρεί το {0} από τη λίστα. Τα αποθηκευμένα δεδομένα μένουν στην κονσόλα."
 
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
@@ -1096,6 +1205,10 @@ msgstr "Χρησιμοποιήστε τα δικά σας αρχεία"
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Ταϊβάν"
+
+#: pe/ui/profiles.cpp
+msgid "Taken off the list. Its save data stays on the console."
+msgstr "Αφαιρέθηκε από τη λίστα. Τα αποθηκευμένα δεδομένα μένουν στην κονσόλα."
 
 #: settings_store.h
 msgid "Thai"
@@ -1123,6 +1236,10 @@ msgstr "Το παιχνίδι εξάντλησε τη μνήμη γραφικώ�
 msgid "The language games use when they offer it."
 msgstr "Η γλώσσα που χρησιμοποιούν τα παιχνίδια όταν τη διαθέτουν."
 
+#: pe/ui/profiles.cpp
+msgid "The profile that is playing stays. Choose another one first."
+msgstr "Το προφίλ που παίζει παραμένει. Διάλεξε πρώτα άλλο."
+
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
 msgstr "ΑΥΤΟΣ Ο ΦΑΚΕΛΟΣ"
@@ -1130,6 +1247,11 @@ msgstr "ΑΥΤΟΣ Ο ΦΑΚΕΛΟΣ"
 #: pe/ui/browse.cpp
 msgid "This folder cannot be opened."
 msgstr "Αυτός ο φάκελος δεν μπορεί να ανοίξει."
+
+#. The game has a button mapping of its own.
+#: pe/ui/game_options.cpp
+msgid "This game"
+msgstr "Αυτό το παιχνίδι"
 
 #: eden_services.cpp
 msgid "This game has no save to export yet."
@@ -1143,6 +1265,16 @@ msgstr "Οι ρυθμίσεις αυτού του παιχνιδιού δεν μ
 #: eden_services.cpp
 msgid "To import, copy a Ryujinx folder to ryujinx/ or a save to save-import/{0}/, next to roms/."
 msgstr "Για εισαγωγή, αντιγράψτε έναν φάκελο Ryujinx στο ryujinx/ ή μια αποθήκευση στο save-import/{0}/, δίπλα στο roms/."
+
+#. The DualSense controller's touch pad, pressed as a button. Use the name players know.
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Touchpad"
+msgstr "Επιφάνεια αφής"
+
+#. A DualSense button.
+#: pe/ui/game_options.cpp
+msgid "Triangle"
+msgstr "Τρίγωνο"
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1158,6 +1290,11 @@ msgstr "Μη διαθέσιμο"
 msgid "UP"
 msgstr "ΠΑΝΩ"
 
+#. Notification title: a newer release of this app is listed (not a game update).
+#: pe/ui/launcher.cpp
+msgid "Update available"
+msgstr "Διαθέσιμη ενημέρωση"
+
 #. A game update; {0} is its version, for example 1.2.0.
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Update {0}"
@@ -1167,7 +1304,7 @@ msgstr "Ενημέρωση {0}"
 msgid "UPDATES, DLC"
 msgstr "ΕΝΗΜΕΡΩΣΕΙΣ, DLC"
 
-#: pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Upscaling filter"
 msgstr "Φίλτρο κλιμάκωσης"
 
@@ -1187,13 +1324,18 @@ msgstr "Χρησιμοποιήστε εξαγμένα αρχεία NCA του fi
 msgid "Use this folder"
 msgstr "Χρήση αυτού του φακέλου"
 
+#. {0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.
+#: pe/ui/launcher.cpp
+msgid "Version {0} is on homebrew.page"
+msgstr "Η έκδοση {0} βρίσκεται στο homebrew.page"
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Vibration"
+msgstr "Δόνηση"
+
 #: pe/ui/settings.cpp
 msgid "VIBRATION"
 msgstr "ΔΟΝΗΣΗ"
-
-#: pe/ui/settings.cpp
-msgid "Vibration"
-msgstr "Δόνηση"
 
 #: pe/ui/settings.cpp
 msgid "Vibration off"
@@ -1204,6 +1346,10 @@ msgid "Vibration on"
 msgstr "Δόνηση ενεργή"
 
 #: pe/ui/settings.cpp
+msgid "Vibration, button mapping and the shortcuts during a game."
+msgstr "Δόνηση, αντιστοίχιση κουμπιών και οι συντομεύσεις στο παιχνίδι."
+
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Video"
 msgstr "Βίντεο"
 
@@ -1220,6 +1366,10 @@ msgstr "ΟΛΑ ΤΑ ΠΑΙΧΝΙΔΙΑ"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (συνιστάται)"
 
+#: pe/ui/settings.cpp
+msgid "Who is playing. Each profile keeps its own save data and settings."
+msgstr "Ποιος παίζει. Κάθε προφίλ έχει δικά του αποθηκευμένα δεδομένα και ρυθμίσεις."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Τα παιχνίδια σας"
@@ -1228,6 +1378,11 @@ msgstr "Τα παιχνίδια σας"
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Η επόμενη περιπέτειά σας"
+
+#. How many settings of a kind this game has of its own; {0} is a number.
+#: pe/ui/library.cpp
+msgid "{0} changed"
+msgstr "{0} αλλαγές"
 
 #. {0} is how many DLC (add-on content) a game has installed.
 #: eden_services.cpp, host/fake_services.cpp
@@ -1300,7 +1455,7 @@ msgid "{0} of {1} on"
 msgstr "{0} από {1} ενεργά"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

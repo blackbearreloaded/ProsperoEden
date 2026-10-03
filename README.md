@@ -44,7 +44,9 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 - **Folder browser** - pick the game files folder in **Settings > Game files**. It shows how many keys, firmware files, and games each folder holds. Hold L1/R1 to page quickly.
 - **Library** - game covers, **Continue Playing**, and **Recently Played**, which keep working after you move your files.
 - **Launcher** - an animated interface drawn with OpenGL, with sound effects (their level is in **Settings > Audio**) and a loading screen while a game starts. The home screen shows which controllers are connected.
-- **Per-game settings** - renderer, resolution, upscaling filter, refresh rate and Handheld / Docked mode for each game (Triangle in the Library).
+- **Profiles** - everyone who plays has their own save data, settings and recently played games: **Settings > Profiles**; see [Profiles](#profiles).
+- **Settings per game** - a game can differ from Settings in its video, performance, audio, controls and language, and has its own Handheld / Docked mode (Triangle in the Library); see [Settings per game](#settings-per-game).
+- **Button mapping** - choose which DualSense button presses each of the game's buttons, for every controller, in **Settings > Controls**, or for one game in its settings; see [Button mapping](#button-mapping).
 - **Your language** - the launcher follows the language the PS5 is set to (29 languages; English otherwise).
 - **Accessibility** - larger text, high contrast and reduced motion, in **Settings > Accessibility**.
 - **Save data in and out** - import a game's save from a folder or from a Ryujinx data folder, and export a copy (Triangle in the Library, then **Save data**).
@@ -52,8 +54,9 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 - **Mods** - patches, replacement game files and cheats for a game, from a `mods` folder next to `roms`, each switched on or off in the game's settings (Triangle in the Library, then **Mods**).
 - **Performance switches** - seven switches that trade accuracy for speed (compiling a game's code ahead, asynchronous shaders, faster GPU, CPU and DMA emulation, and more) in **Settings > Performance**; see [Performance settings](#performance-settings).
 - **Shader cache** - shaders compiled in earlier sessions are loaded when a game starts, so an effect stutters only the first time it appears.
-- **In-game shortcuts** - a performance overlay (Select + R1), and Select + L1 to end the game and return to the library.
+- **In-game shortcuts** - a performance overlay (Touchpad + R1), and Touchpad + L1 to end the game and return to the library. Leaving takes ten seconds at most, also while a game is still loading.
 - **Settings in one place** - a single JSON file under `/data/prosperoeden`, with game volume, mute, and detailed logging options. Logs keep the previous session.
+- **Update notice** - when a newer release is listed on [homebrew.page](https://homebrew.page/ps5), the menu says so at the top right for ten seconds; see [Updating](#updating).
 - **Crash reports** - if ProsperoEden stops because of an error, it saves a report with that session's logs, starts again and shows where the report is.
 - **Controllers, audio, and saves** - up to four DualSense controllers (one per signed-in PS5 user) with rumble and motion controls, game audio, and save data work out of the box.
 
@@ -109,6 +112,8 @@ ProsperoEden does not include keys, firmware, games, or other copyrighted consol
 
 Close ProsperoEden first. Your settings, saves, covers and logs are in `/data/prosperoeden`, outside the app, so an update keeps them. Afterwards the About screen shows the version that is running.
 
+Once each time it starts, ProsperoEden asks [homebrew.page](https://homebrew.page/ps5) which release of it is listed there. If that release is newer than the one running, the menu shows **Update available** with its version at the top right for ten seconds. The request carries the app's title ID and nothing else; nothing is downloaded or installed, so updating stays the steps below. Without a network, or without an answer, nothing is shown.
+
 - **Folder install.** Copy the `PPSA99008` folder from the new release ZIP over `/data/homebrew/PPSA99008`, replacing the files it has, then start ProsperoEden. Files you put there yourself, such as `language.txt`, stay.
 - **Package image (`.ffpfsc`).** Delete the old image, copy the new one to the same place, then restart ShadowMountPlus (send its payload again, or restart the console) and start ProsperoEden. ShadowMountPlus 1.6 keeps the old image mounted until it restarts; 1.7 finds a replaced image by itself at its next scan, and a restart does no harm there. Keep one image only, and no `PPSA99008` folder next to it: two copies of the app are reported as a duplicate. The image install is still untested (see the [Roadmap](#roadmap)), so these steps follow how ShadowMountPlus handles images.
 
@@ -150,7 +155,7 @@ ProsperoEden does not include or download mods.
 | Reactive flushing | `reactive_flushing` | on | Keeps what a game reads back from the GPU exact. Off is faster; some effects break. |
 | Skip CPU invalidation | `skip_invalidation` | off | Skips some checks when a game changes memory the GPU uses. Textures can be stale. |
 
-One game can have its own values, in the settings file only: close ProsperoEden, edit `/data/prosperoeden/config/prosperoeden.json`, and start it again. `"performance"` at the top level is what the switches set, and one inside a game's entry under `"games"` is for that game, whose values go first:
+A game can have its own values: in its settings, **Performance** (see [Settings per game](#settings-per-game)). In the settings file, `"performance"` at the top level is what the switches set, and one inside a game's entry under `"games"` is that game's, whose values go first:
 
 ```json
 {
@@ -163,6 +168,39 @@ One game can have its own values, in the settings file only: close ProsperoEden,
 The accuracy switches help only where a game is held back by what they relax. In the scene they were measured in on the console, a large game standing at its frame rate limit, switching all of them on changed neither the frame rate nor how busy the emulated processor and the graphics thread were. Leave them off unless a game runs under its frame rate, and switch them back off if its graphics go wrong.
 
 Resolution, the upscaling filter, the renderer and the refresh rate, which change speed too, are in **Settings > Video** and in a game's own settings.
+
+### Profiles
+
+**Settings > Profiles** lists the people who play on this console, up to eight. Each profile keeps its own save data, its own settings (everything under Settings, and each game's own settings) and its own Continue Playing and Recently Played. The game files folder is the console's and is the same for everyone.
+
+- **Cross** plays as the highlighted profile. The home screen names who is playing once there is more than one profile.
+- **New profile** adds one. It starts with the settings of the profile that made it, and with no save data.
+- **Left and right** change a profile's name: the names of the PS5 users signed in, then "Player 1" to "Player 8".
+- **Square**, pressed twice, takes a profile off the list. Its save data stays on the console.
+
+The menu opens with the profile that the PS5 user in front chose last. If you used an earlier version, your saves, settings and recently played games are the first profile's, where they always were.
+
+### Settings per game
+
+**Settings** holds what every game uses. A game can differ from it: in the Library, press Triangle on the game. Its settings list **Video**, **Performance**, **Audio**, **Controls** and **Language**, and each one says how many of its settings the game changes. Inside, a setting shows **Default** with the value Settings has until you choose another one for this game; going past the last choice comes back to **Default**. A change applies the next time the game starts.
+
+| Kind | What a game can have of its own |
+|---|---|
+| Video | Renderer, resolution, upscaling filter, refresh rate, FPS overlay |
+| Performance | Each of the seven switches |
+| Audio | Game volume, mute |
+| Controls | Vibration, and a button mapping of its own |
+| Language | The language the game is given |
+
+The output resolution, the menu's sounds and the accessibility settings are the same for every game.
+
+### Button mapping
+
+**Settings > Controls > Button mapping** lists the game's buttons (A, B, X, Y, L, R, ZL, ZR, Plus, Minus and the two stick presses) with the DualSense button that presses each one. Left and right choose another DualSense button; when another game button had it, the two swap, so one DualSense button never presses two game buttons. Square puts every button back. The mapping applies to every controller.
+
+A game can have its own: in its settings, **Controls**, set **Button mapping** to **This game**, then press Cross to change it. It starts as a copy of the one in Settings.
+
+The D-pad, the sticks and the [in-game shortcuts](#in-game-shortcuts) do not change. With the usual mapping the touchpad is the game's Minus; the Create button presses whatever the touchpad presses, unless it has a game button of its own.
 
 ### Language and accessibility
 
@@ -181,7 +219,7 @@ Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That f
 - **Save data in and out.** Import a game's save from a folder or from a Ryujinx data folder, and export a copy. See [Moving save data](#moving-save-data).
 - **A ten-second slowdown with the AMD FSR filter is fixed.** In a large open-world game, gameplay could start at 3-9 FPS for about ten seconds, and frames of about a tenth of a second kept coming afterwards. The texture cache was throwing away images the GPU had drawn, with a wait for the GPU each time, as soon as memory use passed a mark that the FSR filter's own images pushed it over. It now keeps them until graphics memory is really short.
 - **Smoother heavy scenes.** The renderer hands its work to the Vulkan worker in larger batches, and the emulated cores wait less on the GPU caches' locks. In the heaviest area of a test walk this removed drops to 26-28 FPS and cut the GPU thread's work by about a quarter.
-- **Touchpad as Select in games.** A tap of the touchpad presses the game's Select (Minus) button, and a longer press holds it. The Select + L1 and Select + R1 shortcuts never reach the game as a press.
+- **Touchpad as Minus in games.** A tap of the touchpad presses the game's Minus button, and a longer press holds it. The Touchpad + L1 and Touchpad + R1 shortcuts never reach the game as a press.
 - **A crash a few seconds into some games is fixed.** The motion sensors' updates could reach a part of the controller service that was not set up yet.
 - **Games' own system screens.** A game's error dialog, profile picker and similar screens use Eden's built-in versions, and its error dialog now answers the game instead of leaving it waiting. The firmware's versions could end a session with an out-of-memory error.
 - **More graphics memory.** The PS5 gives an app one pool of memory that the CPU and the GPU share, and ProsperoEden held about 3 GiB of it without using it: its heap took 3 GiB at start and the emulated console's page table 1 GiB. Both now take memory as they need it, which gives graphics about 2.6 GiB more in the largest game tested. That game ran out of graphics memory while loading at 2x; it now runs at 2x with the AMD FSR filter at a steady 30 FPS, with about 2 GiB to spare. The texture cache also measures its memory use from what is really left of the pool, instead of a driver figure that counted every allocation twice.
@@ -207,9 +245,9 @@ Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That f
 - **Smoother first-time gameplay.** The emulated CPU cores now share the code they compile, so each part of a game is compiled once instead of once per core. In large open-world games this halves the compile work and removes most of the stutter when gameplay starts or a new area loads.
 - **Faster compiling.** Compiling a game's code now takes about 40% less CPU time, which shortens the remaining stutter when gameplay starts or a new area loads.
 - **Startup hang fixed.** A game could stop for good right after starting, because the emulator's memory allocator could leave high-priority threads waiting on each other forever. Development builds also report where a slow start is stuck.
-- **Games close in about a second.** Select + L1 used to take 10-25 seconds to return to the library; logging no longer waits on the console's storage, and the emulator skips needless teardown work.
+- **Games close in about a second.** Touchpad + L1 used to take 10-25 seconds to return to the library; logging no longer waits on the console's storage, and the emulator skips needless teardown work.
 - **Up to four controllers.** Each signed-in PS5 user's controller becomes the next player (player 1 is whoever launched the game); controllers can join or leave during a game, and games that ask for controllers connect every one in use.
-- The Select + L1 and Select + R1 shortcuts work from any controller.
+- The Touchpad + L1 and Touchpad + R1 shortcuts work from any controller.
 - **Vibration and motion.** DualSense rumble for games that use it (turn it off in **Settings > Controls**), and the controller's gyro and accelerometer for motion controls.
 - **Resolution and upscaling.** **Settings > Video** now sets the internal rendering resolution (0.5x to 2x) and the filter that scales it to the TV: Bilinear, AMD FSR, Bicubic or Nearest.
 - **Per-game settings.** Press Triangle on a game in the Library to give it its own renderer, resolution and upscaling filter.
@@ -226,28 +264,23 @@ Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That f
 - **Faster Library navigation**, and covers and recent games that survive folder moves.
 - **New icons** for controller actions, pages, and the Handheld / Docked mode.
 
-**Known issues:** Ending a game with Select + L1 can take several seconds. Some games can still hang on the loading screen, and some demanding games remain slow. This is a testing pre-release, not a compatibility guarantee.
+**Known issues:** Ending a game with Touchpad + L1 can take several seconds. Some games can still hang on the loading screen, and some demanding games remain slow. This is a testing pre-release, not a compatibility guarantee.
 
 ## In-game shortcuts
 
-“Select” means pressing the DualSense touchpad itself, as in ProsperoLight. On its own, a tap of the touchpad is the game's Select (Minus) button, and a longer press holds it.
+The touchpad is pressed as a button. On its own, a tap of the touchpad presses the game's Minus button (with the usual [button mapping](#button-mapping)), and a longer press holds it; a shortcut never reaches the game.
 
 | Shortcut | Action |
 |---|---|
-| Select + R1 | Toggle the performance HUD |
-| Select + L1 | End the running game and return to the library |
+| Touchpad + R1 | Toggle the performance HUD |
+| Touchpad + L1 | End the running game and return to the library |
 
 ## Roadmap
 
 - **FPKG support** - install ProsperoEden as a fake package, alongside the current homebrew folder install. Each release includes a ShadowMountPlus package image (`.ffpfsc`); installing it still needs testing.
 - **More performance** - CPU and GPU work to keep demanding games at their target frame rate: the short stutter when a game reaches new areas (the block list, **Compile ahead** in **Settings > Performance**, once it has run in more games and can be on by default), heavy cutscenes, and games that run slower in Docked mode than in Handheld.
-- **More reliable game loading** - fix the remaining hangs on the loading screen.
-- **Faster exit in every game** - a few games still take up to several minutes to close.
-- **Controller selection screen** - some games wait forever on the screen that asks you to choose a controller. Games that take single Joy-Cons should now get past it; other cases still need a log from a game that does it.
-- **Button mapping** - choose which DualSense button acts as each of the game's buttons, in **Settings > Controls**.
+- **More reliable game loading** - a game that hangs while it loads can now be left with Touchpad + L1; the hangs themselves still need a log from a game that does it.
 - **DualShock 4 controllers** - use DualShock 4 controllers as players too, next to the DualSense, so multiplayer games do not need four DualSense controllers.
-- **Touchpad by its name** - the documents and the launcher say "Select" for a press of the DualSense touchpad; they will say Touchpad.
-- **Settings per game** - let each game override more of the settings from its own settings screen, for fine tuning one game without changing the others.
 - **Better OpenGL performance** - make the OpenGL renderer faster, and add tuning options for it.
 - **More game compatibility** - validate more games on the PS5, and fix what keeps them from running well, such as games that crash at launch.
 

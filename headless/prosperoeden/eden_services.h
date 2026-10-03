@@ -21,6 +21,8 @@ public:
 
     std::vector<pe::ui::Game> games() override;
     std::string game_path(const std::string& file) override;
+    bool game_exists(const std::string& file) override;
+    bool take_update(std::string* version) override;
     bool docked(std::uint64_t title_id) override;
     bool set_docked(std::uint64_t title_id, bool docked) override;
     pe::ui::GameSettings game_settings(std::uint64_t title_id) override;
@@ -43,6 +45,12 @@ public:
     bool set_files_folder(const std::string& directory) override;
     int filesystem_access() override;
 
+    std::vector<pe::ui::Profile> profiles() override;
+    bool choose_profile(int index) override;
+    int add_profile() override;
+    bool rename_profile(int index, int step) override;
+    bool remove_profile(int index) override;
+
     bool save_transfer_available() override;
     pe::ui::SaveSource save_import_source(std::uint64_t title_id) override;
     bool save_import(std::uint64_t title_id, std::string* message) override;
@@ -60,6 +68,7 @@ public:
     bool load_image(const std::string& path, pe::gfx::Image* image) override;
 
 private:
+    int user_ = -1; // the PS5 user in front when the menu opened (negative: unknown)
     std::string launch_error_;
     std::string setup_; // what is missing from keys and firmware; empty when ready
     std::mutex bridge_; // Eden's metadata reader keeps state between calls: one caller at a time

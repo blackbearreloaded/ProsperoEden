@@ -7,6 +7,7 @@
 #include "pe/core/strings.hpp"
 #include "pe/ui/services.hpp"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -42,9 +43,72 @@ class FakeServices final : public ui::Services
     {
         return "v1.000.040";
     }
+    // The people who play on the preview's console.
+    std::vector<ui::Profile> people{{"Eden", true}};
+    std::vector<ui::Profile> profiles() override
+    {
+        return people;
+    }
+    bool choose_profile(int index) override
+    {
+        if (index < 0 || index >= static_cast<int>(people.size()))
+            return false;
+        for (std::size_t i = 0; i < people.size(); ++i)
+            people[i].playing = static_cast<int>(i) == index;
+        return true;
+    }
+    int add_profile() override
+    {
+        if (people.size() >= 8)
+            return -1;
+        static constexpr const char *kNames[] = {"Marina", "Player 2", "Player 3", "Player 4",
+                                                 "Player 5", "Player 6", "Player 7", "Player 8"};
+        people.push_back({kNames[people.size() - 1], false});
+        return static_cast<int>(people.size()) - 1;
+    }
+    bool rename_profile(int index, int step) override
+    {
+        if (index < 0 || index >= static_cast<int>(people.size()))
+            return false;
+        static constexpr const char *kNames[] = {"Eden", "Marina", "Player 1", "Player 2"};
+        int at = 0;
+        for (int i = 0; i < 4; ++i)
+            if (people[static_cast<std::size_t>(index)].name == kNames[i])
+                at = i;
+        people[static_cast<std::size_t>(index)].name = kNames[((at + step) % 4 + 4) % 4];
+        return true;
+    }
+    bool remove_profile(int index) override
+    {
+        if (people.size() < 2 || index < 0 || index >= static_cast<int>(people.size()) ||
+            people[static_cast<std::size_t>(index)].playing)
+            return false;
+        people.erase(people.begin() + index);
+        return true;
+    }
+    // A newer release for the preview to announce: handed over once.
+    std::string update_version;
+    bool take_update(std::string *version) override
+    {
+        if (update_version.empty())
+            return false;
+        *version = update_version;
+        update_version.clear();
+        return true;
+    }
+    // Game files the preview takes away from the folder, as a player would by deleting them.
+    std::vector<std::string> removed;
+    bool game_exists(const std::string &file) override
+    {
+        return std::find(removed.begin(), removed.end(), file) == removed.end();
+    }
     std::vector<ui::Game> games() override
     {
-        return games_;
+        std::vector<ui::Game> present;
+        for (const ui::Game &game : games_)
+            if (game_exists(game.file))
+                present.push_back(game);
+        return present;
     }
     std::string game_path(const std::string &file) override
     {

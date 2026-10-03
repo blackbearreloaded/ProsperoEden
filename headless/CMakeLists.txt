@@ -2112,7 +2112,7 @@ void Initialize() {
     endif()
     add_executable(eden-headless "${EDEN_PORT_DIR}/main.cpp" "${PORT_ROOT}/src/aligned_alloc.c"
         "${EDEN_PORT_DIR}/heap_pages.cpp" "${EDEN_PORT_DIR}/performance.cpp"
-        "${EDEN_PORT_DIR}/crash_report.cpp"
+        "${EDEN_PORT_DIR}/crash_report.cpp" "${EDEN_PORT_DIR}/stop_limit.cpp"
         "${EDEN_PORT_DIR}/elevation/elevation.cpp"
         "${eden_app_crt}" "${PORT_ROOT}/src/lifecycle.c"
         "${PORT_BUILD_DIR}/app_heap.c")
@@ -2127,7 +2127,8 @@ void Initialize() {
     endif()
     target_compile_definitions(common PRIVATE PS5_NATIVE=1)
 else()
-    add_executable(eden-headless "${EDEN_PORT_DIR}/main.cpp" "${PORT_ROOT}/src/aligned_alloc.c")
+    add_executable(eden-headless "${EDEN_PORT_DIR}/main.cpp" "${PORT_ROOT}/src/aligned_alloc.c"
+        "${EDEN_PORT_DIR}/stop_limit.cpp")
     target_link_options(eden-headless PRIVATE -Wl,--wrap=aligned_alloc)
     add_executable(eden-romfs-check "${EDEN_PORT_DIR}/romfs_check.cpp")
     target_include_directories(eden-romfs-check PRIVATE "${PROJECT_SOURCE_DIR}/src")
@@ -2155,6 +2156,15 @@ else()
     add_executable(eden-devices-check "${EDEN_PORT_DIR}/devices_check.cpp")
     target_link_libraries(eden-devices-check PRIVATE core eden-pad eden-device-mock)
     target_compile_options(eden-devices-check PRIVATE -fno-rtti)
+    # The player profiles (profiles.h): Eden's profile file and the choice in the settings file.
+    add_executable(eden-profiles-check "${EDEN_PORT_DIR}/profiles_check.cpp")
+    target_link_libraries(eden-profiles-check PRIVATE core)
+    target_compile_options(eden-profiles-check PRIVATE -UNDEBUG)
+    # The update check's decision, without its network side (update_notice.h).
+    add_executable(eden-update-check
+        "${EDEN_PORT_DIR}/update_check_check.cpp" "${EDEN_PORT_DIR}/update_check/update_check.c")
+    target_compile_definitions(eden-update-check PRIVATE UPDATE_CHECK_NO_NETWORK=1)
+    target_compile_options(eden-update-check PRIVATE -UNDEBUG)
 endif()
 target_include_directories(eden-headless PRIVATE "${PROJECT_SOURCE_DIR}/src")
 # The app version has one home, sce_sys/param.json (contentVersion), which the package carries as
@@ -2289,6 +2299,8 @@ endif()
                 "${launcher_dir}/pe/platform/audio_out.cpp"
                 "${launcher_dir}/pe/platform/display_egl.cpp"
                 "${launcher_dir}/pe/ui/browse.cpp"
+                "${launcher_dir}/pe/ui/game_options.cpp"
+                "${launcher_dir}/pe/ui/profiles.cpp"
                 "${launcher_dir}/pe/ui/home.cpp"
                 "${launcher_dir}/pe/ui/launcher.cpp"
                 "${launcher_dir}/pe/ui/library.cpp"
@@ -2296,6 +2308,50 @@ endif()
                 "${launcher_dir}/pe/ui/textures.cpp"
                 "${launcher_dir}/pe/ui/widgets.cpp")
             target_sources(eden-headless PRIVATE ${launcher_sources})
+            # The update check (update_notice.h). Its network side is the boilerplate's
+            # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew
+            # prefix that already supplies OpenSSL and zlib (zstd is Eden's own). They are linked
+            # into one object first, and what console_curl.c puts in place of libc for libcurl
+            # (name lookup, fcntl on sockets, a few more functions) gets a name of its own there
+            # (console_curl_getaddrinfo, ...): the emulator's network and file code keeps the
+            # functions it had, so the update check changes nothing else. The boilerplate wraps
+            # fcntl for the whole program (--wrap=fcntl); here only this object's calls go
+            # through the wrapper.
+            get_filename_component(update_libraries "${OPENSSL_SSL_LIBRARY}" DIRECTORY)
+            if(NOT EXISTS "${update_libraries}/libcurl.a" OR NOT EXISTS "${update_libraries}/libpsl.a")
+                message(FATAL_ERROR "libcurl is missing from the PacBrew prefix (${update_libraries}): run make deps")
+            endif()
+            find_program(UPDATE_CHECK_LINKER NAMES ld.lld-18 ld.lld REQUIRED)
+            find_program(UPDATE_CHECK_OBJCOPY NAMES llvm-objcopy-18 llvm-objcopy REQUIRED)
+            add_library(update-check OBJECT
+                "${EDEN_PORT_DIR}/update_check/update_check.c"
+                "${EDEN_PORT_DIR}/update_check/console_curl.c")
+            target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}")
+            target_compile_definitions(update-check PRIVATE CURL_STATICLIB=1)
+            # Every function console_curl.c defines under a libc name.
+            set(update_own
+                getaddrinfo freeaddrinfo gai_strerror gethostbyname getnameinfo fnmatch getpwuid_r
+                _setjmp _longjmp openlog closelog dladdr if_nametoindex pipe2 recvmmsg sendmmsg
+                popen pclose isatty mkstemp gmtime_r ZSTD_trace_compress_begin
+                ZSTD_trace_compress_end ZSTD_trace_decompress_begin ZSTD_trace_decompress_end)
+            set(update_rename --redefine-sym fcntl=__wrap_fcntl --redefine-sym __real_fcntl=fcntl)
+            foreach(name IN LISTS update_own)
+                list(APPEND update_rename --redefine-sym "${name}=console_curl_${name}")
+            endforeach()
+            set(update_object "${CMAKE_CURRENT_BINARY_DIR}/update-check.o")
+            add_custom_command(OUTPUT "${update_object}"
+                COMMAND "${UPDATE_CHECK_LINKER}" -r -o "${update_object}.all"
+                    "$<TARGET_OBJECTS:update-check>"
+                    "${update_libraries}/libcurl.a" "${update_libraries}/libpsl.a"
+                COMMAND "${UPDATE_CHECK_OBJCOPY}" ${update_rename}
+                    "${update_object}.all" "${update_object}"
+                DEPENDS update-check "$<TARGET_OBJECTS:update-check>"
+                    "${update_libraries}/libcurl.a" "${update_libraries}/libpsl.a"
+                COMMAND_EXPAND_LISTS VERBATIM)
+            set_source_files_properties("${update_object}" PROPERTIES EXTERNAL_OBJECT TRUE GENERATED TRUE)
+            target_sources(eden-headless PRIVATE "${EDEN_PORT_DIR}/update_notice.cpp" "${update_object}")
+            target_link_libraries(eden-headless PRIVATE
+                "${OPENSSL_SSL_LIBRARY}" "${OPENSSL_CRYPTO_LIBRARY}" "${ZLIB_LIBRARY}")
             # The launcher calls OpenGL by name (the SDK's headers), not through glad.
             set(launcher_definitions "GL_GLEXT_PROTOTYPES=1")
             if(EXISTS "${EDEN_PORT_DIR}/ryujinx_saves.h")

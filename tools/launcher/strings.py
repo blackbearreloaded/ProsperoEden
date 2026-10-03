@@ -42,6 +42,8 @@ ONE = re.compile(r'"((?:[^"\\]|\\.)*)"')
 
 # What a translator cannot tell from the text alone.
 NOTES = {
+    "Update available": "Notification title: a newer release of this app is listed (not a game update).",
+    "Version {0} is on homebrew.page": "{0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.",
     "Select": "Button hint: choose the highlighted item (not the Select button).",
     "Back": "Button hint: go back one screen.",
     "Change": "Button hint: change the highlighted setting.",
@@ -166,6 +168,20 @@ NOTES = {
                          "exact. Keep the term the language's emulator players use, or translate it plainly.",
     "Skip CPU invalidation": "A switch: fewer checks when a game changes memory the graphics processor uses. "
                              "CPU stays.",
+    "Touchpad": "The DualSense controller's touch pad, pressed as a button. Use the name players know.",
+    "Button mapping": "Which controller button presses each of the game's buttons.",
+    "As usual": "The button mapping has not been changed.",
+    "Changed": "The button mapping has been changed.",
+    "Cross": "A DualSense button (the X-shaped one). Name the shape, not the letter.",
+    "Circle": "A DualSense button.",
+    "Square": "A DualSense button.",
+    "Triangle": "A DualSense button.",
+    "Options": "The DualSense button labelled OPTIONS: keep the label if the language's players do.",
+    "Create": "The DualSense button labelled CREATE: keep the label if the language's players do.",
+    "Left stick press": "Pressing the left stick down like a button.",
+    "Follows Settings": "A kind of setting that this game takes from the launcher's Settings menu.",
+    "{0} changed": "How many settings of a kind this game has of its own; {0} is a number.",
+    "This game": "The game has a button mapping of its own.",
     "{0}%": "A percentage (a volume): write it as the language does, for example with a space before the sign.",
     "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) "
     "and start it again.": "Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the "

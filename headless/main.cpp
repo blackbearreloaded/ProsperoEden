@@ -89,9 +89,15 @@ extern "C" std::int64_t sceKernelGetDirectMemorySize();
 extern "C" bool eden_jit_shared;  // headless/dynarmic/jit_group_support.inc
 #endif
 #include "video_core/gpu.h"
+#include "profiles.h"
+#include "stop_limit.h"
 namespace Common {
 bool SparseTablesAvailable() noexcept; // src/memory_pages.cpp
 }
+#if defined(EDEN_DEV_PROFILE) || defined(EDEN_DEV_ROM_ID)
+static bool dev_stop_hang = false; // dev-settings stop_hang=on
+static bool dev_load_hang = false; // dev-settings load_hang=on
+#endif
 
 class HeadlessWindow final : public Core::Frontend::EmuWindow {
 public:
@@ -233,6 +239,14 @@ int main(int argc, char** argv) {
         // Whether Eden's large tables can be sparse on this console (src/memory_pages.cpp),
         // decided now: every session's log says it, with or without a game.
         (void)Common::SparseTablesAvailable();
+        {
+            // A game that would not stop made the app start again (stop_limit.h): this log says so.
+            const std::string note = Eden::LogFile("stop-limit.txt");
+            if (std::remove(note.c_str()) == 0)
+                Eden::Report("exit", "The last game did not stop (or finish loading) within ten seconds of being "
+                                     "asked to, so ProsperoEden started again");
+            Eden::StopLimit::Start(note);
+        }
         report = std::fopen(Eden::LogFile("result.tsv").c_str(), "w");
         if (!report) { report = stdout; return 2; }
         std::puts("[headless-startup] directories_ready");
@@ -324,6 +338,7 @@ int main(int argc, char** argv) {
 #endif
 #endif
         for (;;) {
+        Eden::StopLimit::End();  // whatever game ran before is gone
 #ifdef EDEN_PS5_OPENGL
         std::error_code trim_error;
         const auto cache_entries = Eden::ReadNativeDirectory(native_shader_cache, trim_error);
@@ -443,6 +458,13 @@ int main(int argc, char** argv) {
         const bool game = std::filesystem::is_regular_file(selected_game);
         if (!game) throw std::runtime_error("Selected ROM is no longer available");
         const char* guest = selected_game.c_str();
+        // The audio and the renderer read this game's own settings (Library > Game settings).
+#ifdef PS5_NATIVE
+        const uint64_t game_title = game ? eden_game_title_id(guest) : 0;
+#else
+        const uint64_t game_title = 0;
+#endif
+        Eden::session_title.store(game_title);
         const unsigned cycles = game ? 1 : 3;
         const bool devices = EDEN_DEVICE_FRONTEND;
         if (game) {
@@ -456,6 +478,7 @@ int main(int argc, char** argv) {
         constexpr bool shutdown_sweep = false;
 #else
         const char* guest = argc >= 2 ? argv[1] : nullptr;
+        const uint64_t game_title = 0;  // the host build has no game's own settings
         unsigned cycles = 1;
         bool devices = false;
         bool game = false;
@@ -618,6 +641,10 @@ int main(int argc, char** argv) {
                 } else if (entry == "large_pages=off" || entry == "sparse_tables=off" || entry == "heap=whole") {
                     // Read directly by the page allocator (src/memory_pages.cpp) before this parse:
                     // 16 KiB pages only; Eden's large tables dense; the heap's 3 GiB taken at start.
+                } else if (entry == "stop_hang=on") {
+                    dev_stop_hang = true;
+                } else if (entry == "load_hang=on") {
+                    dev_load_hang = true;
                 } else if (entry == "graphics_usage=driver") {
                     // The caches' "memory in use" as the driver counts it (performance.h).
                     Eden::Performance::graphics_usage_from_pool = false;
@@ -747,15 +774,16 @@ int main(int argc, char** argv) {
             static constexpr Settings::ScalingFilter filters[] = {
                 Settings::ScalingFilter::Bilinear, Settings::ScalingFilter::Fsr, Settings::ScalingFilter::Bicubic,
                 Settings::ScalingFilter::NearestNeighbor};
-            const auto video = Eden::LoadPreferences();
-            const int resolution = game_video.resolution >= 0 ? game_video.resolution : video.resolution;
-            const int filter = game_video.upscaling_filter >= 0 ? game_video.upscaling_filter : video.upscaling_filter;
+            // Settings > Video, with what the game does differently (Library > Game settings > Video).
+            const auto video = Eden::PreferencesFor(eden_game_title_id(guest));
+            const int resolution = video.resolution;
+            const int filter = video.upscaling_filter;
             Settings::values.resolution_setup.SetValue(resolutions[resolution]);
             Settings::values.scaling_filter.SetValue(filters[filter]);
             Settings::UpdateRescalingInfo();
             // The output's refresh rate while the game runs (display_refresh.h): the renderer asks
             // for it as it opens the output.
-            const int refresh = game_video.refresh >= 0 ? game_video.refresh : video.refresh;
+            const int refresh = video.refresh;
             Eden::Display::requested_hz.store(Eden::kRefreshHz[refresh]);
             Eden::Display::output_millihertz.store(0);
             setenv(Eden::Display::kVulkanSwitch, refresh ? "1" : "0", 1);
@@ -871,7 +899,7 @@ int main(int argc, char** argv) {
             // Without them it hands the game the chosen language as it is, and a game that does not
             // know it (an older one given pt-BR) falls back to Japanese. So the game gets its own
             // closest language, the one the launcher shows for it (eden_game_language).
-            const int choice = Eden::LoadPreferences().language;
+            const int choice = Eden::PreferencesFor(game_title).language;
             int language = Eden::kLanguageSettings[choice];
 #ifdef PS5_NATIVE
             if (game && guest)
@@ -890,7 +918,13 @@ int main(int argc, char** argv) {
             pad = std::make_unique<Eden::Pad>();
             if (!pad->Open()) throw std::runtime_error("PS5 controller initialization failed");
             Settings::values.audio_output_device_id = "ps5";
-            Settings::values.vibration_enabled.SetValue(Eden::LoadPreferences().vibration);
+            // Settings > Controls, or the game's own (Library > Game settings > Controls).
+            const auto controls = Eden::PreferencesFor(game_title);
+            Settings::values.vibration_enabled.SetValue(controls.vibration);
+            pad->SetMapping(controls.mapping);
+            Eden::Report("launch", (std::string("Controls: vibration ") + (controls.vibration ? "on" : "off") +
+                                    ", buttons " + (controls.mapping == Eden::kDefaultMapping ? std::string("as usual") :
+                                    Eden::Settings::MappingJson(controls.mapping).dump())).c_str());
             // One Pro Controller per signed-in user's DualSense; later changes apply mid-game.
             const unsigned connected = pad->ConnectedPlayers();
             (void)pad->TakeConnectionChanges();
@@ -919,6 +953,18 @@ int main(int argc, char** argv) {
             // system, so it is emptied before the system goes (a second launch crashed when it
             // released the first session's files after their file system).
             FileSys::ManualContentProvider game_contents;
+#ifdef PS5_NATIVE
+            if (game) {
+                // Who is playing (profiles.h): Eden opens this user of its list, and the game's
+                // save data is that user's.
+                const auto who = Eden::Profiles::Resolve();
+                Settings::values.current_user = who.current;
+                if (!who.profiles.empty())
+                    Eden::Report("launch", ("Profile: " + who.profiles[static_cast<std::size_t>(who.current)].name +
+                                            " (" + std::to_string(who.current + 1) + " of " +
+                                            std::to_string(who.profiles.size()) + ")").c_str());
+            }
+#endif
             Core::System system;
             SCOPE_EXIT { game_contents.ClearAllEntries(); };
             passed("core_constructed");
@@ -975,6 +1021,35 @@ int main(int argc, char** argv) {
                 Service::AM::FrontendAppletParameters params{
                     .applet_id = Service::AM::AppletId::Application,
                 };
+#ifdef PS5_NATIVE
+                // While a game loads nothing else reads the controller, so Touchpad + L1 did nothing
+                // until the game ran: a load that hung could only be left by closing ProsperoEden.
+                // Now it is heard here too. The stop limit starts at the press (stop_limit.h): a
+                // load that finishes within it ends as a normal stop, one that does not ends with
+                // the app starting again at the launcher.
+                std::atomic<bool> left_while_loading{false};
+                std::jthread load_watch;
+                if (pad && game) load_watch = std::jthread([&](std::stop_token stop) {
+                    while (!stop.stop_requested()) {
+                        pad->Poll();
+                        (void)pad->TakeHudToggle();
+#if defined(EDEN_DEV_PROFILE) || defined(EDEN_DEV_ROM_ID)
+                        // The runner's stand-in for the press: its input commands are read only
+                        // once the game runs.
+                        const bool asked = std::remove(Eden::AppFile("leave-loading.txt").c_str()) == 0;
+#else
+                        const bool asked = false;
+#endif
+                        if (pad->TakeReturnToMenu() || asked) {
+                            Eden::Report("exit", "Touchpad + L1 while the game loads: leaving as soon as it can be stopped");
+                            Eden::StopLimit::Begin();
+                            left_while_loading = true;
+                            break;
+                        }
+                        std::this_thread::sleep_for(std::chrono::milliseconds(8));
+                    }
+                });
+#endif
                 Core::SystemResultStatus loaded;
                 try {
                     loaded = system.Load(window, guest, params);
@@ -1002,6 +1077,13 @@ int main(int argc, char** argv) {
                 }
 #endif
                 passed(game ? "game_loaded" : "nro_loaded");
+#if defined(PS5_NATIVE) && (defined(EDEN_DEV_PROFILE) || defined(EDEN_DEV_ROM_ID))
+                if (dev_load_hang) {
+                    // dev-settings load_hang=on: a load that never finishes, to check leaving it.
+                    Eden::Report("loader", "Development: holding the load to check leaving it");
+                    for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+#endif
                 Eden::Report("loader", "Game loaded; initializing renderer");
 #ifdef EDEN_PS5_OPENGL
                 // Retain the failure, then release CPU readiness and complete normal
@@ -1143,6 +1225,15 @@ int main(int argc, char** argv) {
                 Eden::Stall::Trace("main running");
                 Eden::Stall::Disarm();
 #endif
+#ifdef PS5_NATIVE
+                // The controller goes to the session's own reader from here.
+                load_watch.request_stop();
+                if (load_watch.joinable()) load_watch.join();
+                if (left_while_loading) {
+                    std::lock_guard lock(completion->mutex);
+                    completion->return_to_menu = true;
+                }
+#endif
                 const auto session_start = std::chrono::steady_clock::now();
                 [[maybe_unused]] double session_seconds = 0;  // guest-fault relaunch (PS5 only)
                 std::jthread input_worker;
@@ -1247,6 +1338,8 @@ int main(int argc, char** argv) {
                         (void)pad->TakeHudToggle();
 #endif
                         if (pad->TakeReturnToMenu()) {
+                            // From here the player is waiting to leave (stop_limit.h).
+                            Eden::StopLimit::Begin();
                             std::lock_guard lock(completion->mutex);
                             completion->return_to_menu = true;
                             completion->wake.notify_one();
@@ -1366,10 +1459,19 @@ int main(int argc, char** argv) {
                     const auto neutral = ps5::pad::neutral_data();
                     pad->Consume({&neutral, 1});
                 }
+                // A game that ended itself or failed is being stopped too (stop_limit.h).
+                Eden::StopLimit::Begin();
                 jit_list.Finish();  // while the JITs still exist: their block list is saved
                 // Shutdown requests cancellation before suspending cores; Pause can
                 // block while a CPU producer is waiting on a full GPU queue.
                 Eden::ReportStep("shutdown", "Stopping the game");
+#if defined(EDEN_DEV_PROFILE) || defined(EDEN_DEV_ROM_ID)
+                if (dev_stop_hang) {
+                    // dev-settings stop_hang=on: a stop that never finishes, to check its limit.
+                    Eden::Report("shutdown", "Development: holding the stop to check its limit");
+                    for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+#endif
                 system.ShutdownMainProcess();
                 Eden::Report("shutdown", "Game stopped; releasing renderer");
 #ifndef PS5_NATIVE

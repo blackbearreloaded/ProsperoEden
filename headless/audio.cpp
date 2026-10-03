@@ -25,7 +25,7 @@ AudioStream::AudioStream(Core::System& system, u32 channels, const std::string& 
     handle = sceAudioOutOpen(0xff, 0, 0, kAudioOutGrain, kAudioOutRate, kAudioOutStereoS16);
     if (handle < 0) throw std::runtime_error("sceAudioOutOpen failed");
     std::array<int, 8> volumes;
-    volumes.fill(AudioVolume(LoadPreferences()));
+    volumes.fill(AudioVolume(PreferencesFor(session_title.load())));
     if (sceAudioOutSetVolume(handle, 3, volumes.data()) < 0) {
         sceAudioOutClose(handle);
         handle = -1;

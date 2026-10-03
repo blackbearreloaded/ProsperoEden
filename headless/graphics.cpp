@@ -479,6 +479,13 @@ private:
 void ToggleHud() {
     const bool enabled = !hud_enabled.load(std::memory_order_relaxed);
     hud_enabled.store(enabled, std::memory_order_relaxed);
+    // A game with its own FPS overlay setting keeps the change for itself.
+    const uint64_t title = session_title.load();
+    if (auto game = LoadGameSettings(title); title && game.hud >= 0) {
+        game.hud = enabled ? 1 : 0;
+        if (!SaveGameSettings(title, game)) Report("settings", "Could not save the game's HUD setting");
+        return;
+    }
     auto preferences = LoadPreferences();
     preferences.hud = enabled;
     if (!SavePreferences(preferences)) Report("settings", "Could not save HUD preference");
@@ -510,7 +517,7 @@ GraphicsWindow::GraphicsWindow(bool use_vulkan) : vulkan(use_vulkan) {
     vulkan_loading_start = -1;
     vulkan_loading_frames = 0;
     vulkan_loading_pace = {};
-    hud_enabled.store(LoadPreferences().hud, std::memory_order_relaxed);
+    hud_enabled.store(PreferencesFor(session_title.load()).hud, std::memory_order_relaxed);
 #ifdef EDEN_PS5_VULKAN
     if (vulkan) {
         vulkan_hud_clock = {};

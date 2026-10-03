@@ -20,9 +20,10 @@ constexpr Rect kListPanel{108.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDetailPanel{980.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDialog{550.0f, 180.0f, 820.0f, 720.0f};
 constexpr float kRowsTop = 264.0f;
-constexpr float kRowHeight = 72.0f;
+constexpr float kRowHeight = 64.0f;
 enum Category
 {
+    kProfiles,
     kVideo,
     kPerformance,
     kAudio,
@@ -34,12 +35,12 @@ enum Category
     kCategoryCount,
 };
 constexpr const char *kCategories[kCategoryCount] = {
-    TR("Video"), TR("Performance"), TR("Audio"), TR("Controls"), TR("Accessibility"), TR("Diagnostics"),
-    TR("Game files"), TR("Language")};
+    TR("Profiles"), TR("Video"), TR("Performance"), TR("Audio"), TR("Controls"), TR("Accessibility"),
+    TR("Diagnostics"), TR("Game files"), TR("Language")};
 // The same as headings: capitals differ by language, so each is its own text.
 constexpr const char *kHeadings[kCategoryCount] = {
-    TR("VIDEO"), TR("PERFORMANCE"), TR("AUDIO"), TR("CONTROLS"), TR("ACCESSIBILITY"), TR("DIAGNOSTICS"),
-    TR("GAME FILES"), TR("LANGUAGE")};
+    TR("PROFILES"), TR("VIDEO"), TR("PERFORMANCE"), TR("AUDIO"), TR("CONTROLS"), TR("ACCESSIBILITY"),
+    TR("DIAGNOSTICS"), TR("GAME FILES"), TR("LANGUAGE")};
 
 // The Video dialog's rows, and the window that shows five of them (placed as a game's settings
 // are).
@@ -135,6 +136,9 @@ void Launcher::press_settings(Key key)
             open(Screen::language, true);
             enter_language();
             break;
+        case kProfiles:
+            open_profiles();
+            break;
         case kVideo:
             open_modal(Modal::video);
             video_rows_.visible = kVideoRowsShown;
@@ -181,6 +185,7 @@ void Launcher::draw_settings(Canvas &c)
         plate_rest(c, kRowPlate, row_rect(row));
     plate_focus(c, kRowPlate, {150.0f, kRowsTop + settings_.cursor(), 736.0f, kRowHeight}, 1.0f);
     const std::string summaries[kCategoryCount] = {
+        playing_,
         prefs_.renderer != 0 ? "Vulkan" : "OpenGL",
         prefs_.async_shaders || prefs_.fast_gpu || prefs_.unsafe_cpu || prefs_.unsafe_dma ||
                 !prefs_.reactive_flushing || prefs_.skip_invalidation ? tr("On") : "",
@@ -230,6 +235,10 @@ void Launcher::draw_settings(Canvas &c)
     const std::string saved_folder = services_.saved_files_folder();
     switch (settings_.selected)
     {
+    case kProfiles:
+        about = tr("Who is playing. Each profile keeps its own save data and settings.");
+        lines = {{tr("PLAYING"), playing_}, {tr("PROFILES"), std::to_string(profiles_.size())}};
+        break;
     case kVideo:
         about = tr("Graphics backend and how games are scaled to your TV.");
         lines = {{tr("RENDERER"), prefs_.renderer != 0 ? tr("Vulkan (recommended)") : "OpenGL"},
@@ -256,10 +265,11 @@ void Launcher::draw_settings(Canvas &c)
                  {tr("MENU SOUNDS"), prefs_.menu_volume > 0 ? percent(prefs_.menu_volume) : tr("Off")}};
         break;
     case kControls:
-        about = tr("Shortcuts during a game, and vibration.");
+        about = tr("Vibration, button mapping and the shortcuts during a game.");
         lines = {{tr("VIBRATION"), on_off(prefs_.vibration)},
-                 {tr("END GAME"), "Select + L1"},
-                 {tr("FPS OVERLAY"), "Select + R1"}};
+                 {tr("BUTTON MAPPING"), prefs_.mapping == kDefaultMapping ? tr("As usual") : tr("Changed")},
+                 {tr("END GAME"), std::string(tr("Touchpad")) + " + L1"},
+                 {tr("FPS OVERLAY"), std::string(tr("Touchpad")) + " + R1"}};
         break;
     case kAccessibility:
         about = tr("Make the menu easier to see and follow.");
@@ -325,9 +335,12 @@ int Launcher::dialog_rows(Modal modal) const
     case Modal::accessibility:
         return 3;
     case Modal::game:
-        // Console mode, renderer, resolution, filter, refresh rate, mods; save data in builds that
-        // move saves.
-        return services_.save_transfer_available() ? 7 : 6;
+        // Console mode, video, performance, audio, controls, language, mods; save data in builds
+        // that move saves.
+        return services_.save_transfer_available() ? 8 : 7;
+    case Modal::controls:
+        // Vibration, the button mapping.
+        return 2;
     default:
         return 1;
     }
@@ -346,6 +359,8 @@ float Launcher::dialog_row_top(Modal modal, int row) const
         return kVideoRowsTop + kVideoRowPitch * static_cast<float>(row) - video_rows_.scroll();
     case Modal::game:
         return 334.0f + 96.0f * static_cast<float>(row);
+    case Modal::controls: // under the shortcuts
+        return 560.0f + 96.0f * static_cast<float>(row);
     default:
         return 670.0f;
     }
@@ -439,6 +454,13 @@ void Launcher::press_dialog(Key key)
         break;
     }
     case Modal::controls:
+        if (option_ == 1)
+        {
+            // The button mapping has its own list (game_options.cpp).
+            if (activate)
+                open_mapping(false);
+            return;
+        }
         prefs_.vibration = !prefs_.vibration;
         break;
     case Modal::accessibility:
@@ -608,26 +630,31 @@ void Launcher::draw_dialog(Canvas &c, Modal modal, float open)
         // Each shortcut: its buttons as a key cap, then what it does.
         struct Shortcut
         {
-            const char *keys;
+            const char *key;
             const char *action;
         };
         static constexpr Shortcut kShortcuts[] = {
-            {"Select + L1", TR("End the game and return to this menu")},
-            {"Select + R1", TR("Show or hide the FPS overlay")}};
+            {" + L1", TR("End the game and return to this menu")},
+            {" + R1", TR("Show or hide the FPS overlay")}};
         for (int i = 0; i < 2; ++i)
         {
             const float top = 366.0f + 78.0f * static_cast<float>(i);
             list.bordered_rect({592.0f, top, 186.0f, 54.0f}, 12.0f, Color::rgb(0x15231d, 0.9f),
                                1.0f, theme::kRowEdge.with_alpha(0.6f));
-            text(c, kShortcuts[i].keys, 685.0f, baseline(top, 54.0f, theme::kSmall), theme::kSmall,
-                 theme::kLimePale, Align::center);
+            text_shrink(c, std::string(tr("Touchpad")) + kShortcuts[i].key, 685.0f,
+                        baseline(top, 54.0f, theme::kSmall), theme::kSmall, theme::kLimePale, 170.0f,
+                        Align::center);
             text_shrink(c, tr(kShortcuts[i].action), 802.0f, baseline(top, 54.0f, 22.0f), 22.0f,
                         theme::kBody, 526.0f);
         }
-        text_shrink(c, tr("Select is the touchpad button on PS5."), 592.0f,
-                    baseline(540.0f, 36.0f, theme::kSmall), theme::kSmall, theme::kMeta, 736.0f);
         label(0, tr("Vibration"), kToggle);
         toggle(c, 1292.0f, row_centre(0), knob);
+        // The button mapping: as usual or changed, opened with Cross.
+        const float shown = text_shrink(
+            c, prefs_.mapping == kDefaultMapping ? tr("As usual") : tr("Changed"), 1292.0f,
+            baseline(dialog_row_top(modal, 1), 94.0f, theme::kSmall), theme::kSmall,
+            prefs_.mapping == kDefaultMapping ? theme::kMeta : theme::kLimePale, 320.0f, Align::right);
+        label(1, tr("Button mapping"), shown);
         break;
     }
     case Modal::performance:
@@ -710,6 +737,12 @@ void Launcher::draw_dialog(Canvas &c, Modal modal, float open)
     {
         notice(c, message_, 592.0f, foot + 7.0f, theme::kSmall,
                message_warning_ ? theme::kWarning : theme::kLimePale, 736.0f, message_warning_);
+    }
+    else if (modal == Modal::controls && option_ == 1)
+    {
+        static constexpr Hint kOpen[] = {
+            {Pad::updown, TR("Select")}, {Pad::cross, TR("Open")}, {Pad::circle, TR("Back")}};
+        draw_hints(c, kOpen, 3, 592.0f, foot, theme::kCopy, 736.0f);
     }
     else if (rows > 1)
     {

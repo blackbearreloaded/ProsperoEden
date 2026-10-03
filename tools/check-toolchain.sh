@@ -15,7 +15,7 @@ need() {
     missing=$((missing + 1))
 }
 echo "Compilers and LLVM 18:"
-for tool in clang-18 clang++-18 ld.lld-18 llvm-ar-18 llvm-ranlib-18 llvm-nm-18 llvm-readobj-18; do need "$tool" "$tool"; done
+for tool in clang-18 clang++-18 ld.lld-18 llvm-ar-18 llvm-ranlib-18 llvm-nm-18 llvm-readobj-18 llvm-objcopy-18; do need "$tool" "$tool"; done
 echo "Build tools:"
 for tool in cmake ninja ccache make nasm meson rsync git; do need "$tool" "$tool"; done
 need glslangValidator glslangValidator

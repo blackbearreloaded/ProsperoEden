@@ -11,6 +11,7 @@
 #include "audio_core/sink/sink.h"
 #include "input_common/drivers/virtual_gamepad.h"
 #include "input_common/input_engine.h"
+#include "button_mapping.h"
 #include "ps5_pad.hpp"
 
 namespace Eden {
@@ -68,6 +69,9 @@ public:
     unsigned ConnectedPlayers() const { return connected_players.load(); }
     unsigned TakeConnectionChanges() { return connection_changes.exchange(0); }
     void Close();
+    // Which DualSense button presses each of the game's buttons (button_mapping.h), for every
+    // controller. Set before the first poll of a session.
+    void SetMapping(const ButtonMapping& value) { mapping = ValidMapping(value) ? value : kDefaultMapping; }
     void Consume(std::span<const ps5::pad::Data> samples) { Consume(0, samples); }
     void Consume(std::size_t player, std::span<const ps5::pad::Data> samples);
     PadEngine& Engine() { return *engine; }
@@ -77,11 +81,11 @@ private:
         int handle = -1;
         u32 last_buttons = 0;
         u64 last_motion_us = 0;
-        // The touchpad as Select (the guest's Minus), see Consume.
+        // The touchpad as a game button (the guest's Minus unless mapped otherwise), see Consume.
         bool touch_chord = false;  // this press was part of a shortcut
-        bool select_held = false;  // a long press: Minus stays down until the release
+        bool select_held = false;  // a long press: its button stays down until the release
         unsigned touch_polls = 0;  // polls the touchpad has been down
-        unsigned select_pulse = 0; // polls left of a tap's Minus press
+        unsigned select_pulse = 0; // polls left of a tap's press
     };
     void Rescan();
     void OpenSlot(std::size_t player, int user);
@@ -89,6 +93,7 @@ private:
     std::shared_ptr<PadEngine> engine;
     float deadzone;
     float trigger_threshold;
+    ButtonMapping mapping = kDefaultMapping;
     std::array<Slot, kMaxPlayers> slots{};
     bool owns_user_service = false;
     std::atomic<bool> return_to_menu = false;

@@ -16,6 +16,11 @@ builds on the following projects, each under its own license.
 - **[OpenSSL](https://www.openssl.org)**, Apache-2.0, and
   **[zlib](https://zlib.net)**, zlib license. Taken from the
   [pacbrew](https://github.com/ps5-payload-dev/pacbrew-repo) PS5 packages.
+- **[curl](https://curl.se)** (libcurl), curl license, and
+  **[libpsl](https://github.com/rockdaboot/libpsl)**, MIT. From the same pacbrew
+  packages; the update check uses them.
+- **[PS5 Native App Boilerplate](https://github.com/blackbearreloaded/ps5-native-app-boilerplate)**,
+  GPL-3.0-or-later. Its update check (`headless/update_check`).
 - **LLVM compiler-rt** `emutls.c`, Apache-2.0 WITH LLVM-exception.
 
 ## Graphics

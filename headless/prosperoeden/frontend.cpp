@@ -8,6 +8,7 @@
 #include "audio_out_init.h"
 #include "diagnostics.h"
 #include "eden_services.h"
+#include "update_notice.h"
 #include "pe/audio/sounds.hpp"
 #include "pe/core/file.hpp"
 #include "pe/core/strings.hpp"
@@ -21,6 +22,7 @@
 #ifdef EDEN_DEV_ROM_ID
 #include "crash_trigger.h"
 #include "development_input.h"
+#include "stop_limit.h"
 #include <fstream>
 #endif
 
@@ -215,6 +217,8 @@ std::string RunApp(const std::string& launch_error, bool first_start) {
 
         const bool input_ready = radio_input_init();
         if (!input_ready) Eden::Report("menu failure", "The controller could not be opened");
+        // Once per launch: is a newer release listed? The launcher shows the answer when it comes.
+        Eden::UpdateNotice::Start();
         pe::ui::Launcher launcher(services, textures, fonts, first_start);
         int menu_volume = launcher.menu_volume();
         mixer->set_bus_gain(pe::audio::Bus::ui, MenuGain(menu_volume));
@@ -259,6 +263,13 @@ std::string RunApp(const std::string& launch_error, bool first_start) {
                 }
                 // The runner's crash request, to test the crash report in the launcher.
                 Eden::Crash::DevelopmentRequest(Eden::AppFile("crash-app.txt"));
+                // The check of what a stop that runs into its limit does (stop_limit.h): the app
+                // starts again, here from an idle launcher.
+                if (std::remove(Eden::AppFile("restart-app.txt").c_str()) == 0) {
+                    std::fprintf(stderr, "EDEN_DEV_RESTART requested=1\n");
+                    Eden::StopLimit::RestartNow();
+                    std::fprintf(stderr, "EDEN_DEV_RESTART refused=1\n");
+                }
             }
             if (!development_input.active) radio_input_poll();
             if (const auto sample = development_input.Sample(now)) {

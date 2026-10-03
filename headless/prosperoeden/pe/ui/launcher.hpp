@@ -78,7 +78,10 @@ class Launcher
         accessibility,
         diagnostics,
         game,
-        mods, // a game's mods, opened from its settings
+        mods,         // a game's mods, opened from its settings
+        game_options, // one category of a game's own settings, opened from its settings
+        mapping,      // the button mapping: Settings > Controls', or a game's own
+        profiles,     // who is playing: Settings > Profiles
     };
 
     // ---- shell (launcher.cpp) ----
@@ -95,6 +98,8 @@ class Launcher
     void draw_frame(Canvas &c, const char *title, const char *copy);
     void draw_footer(Canvas &c, const Hint *hints, int count);
     void draw_launch(Canvas &c);
+    // The notification of a newer release, at the top right for ten seconds.
+    void draw_update_notice(Canvas &c);
     // quiet: a change that shows at once needs no "Saved" line.
     bool save_preferences(bool quiet = false);
     // The switches of a dialog as the preferences have them, in the order of its rows.
@@ -119,6 +124,9 @@ class Launcher
     void read_home();
     // A game's mods as its list has them: how many, and how many are switched on.
     void count_mods(Game &game, const std::vector<Mod> &mods);
+    // Games whose file left the game files folder leave the home screen and the Library.
+    void check_games_present();
+    bool drop_missing_games();
     // Reads a game's mods for its dialogs, with the rows of the Mods list.
     void read_mods(Game &game);
     // What a game comes with, on one line: "Update 1.2.0, 2 DLC, 2 mods"; "None" without any.
@@ -135,6 +143,25 @@ class Launcher
     void draw_game(Canvas &c, float open);
     void press_mods(Key key);
     void draw_mods(Canvas &c, float open);
+
+    // ---- a game's own settings by category, and the button mapping (game_options.cpp) ----
+    // Categories, in the order of the game settings' rows: video, performance, audio, controls,
+    // language.
+    static constexpr int kGameOptionCategories = 5;
+    void open_game_options(int category);
+    void press_game_options(Key key);
+    void draw_game_options(Canvas &c, float open);
+    // How many of a category's settings the game has of its own.
+    int game_overrides(int category) const;
+    // ---- profiles (profiles.cpp) ----
+    void read_profiles();
+    int profile_row_count() const;
+    void open_profiles();
+    void press_profiles(Key key);
+    void draw_profiles(Canvas &c, float open);
+    void open_mapping(bool for_game);
+    void press_mapping(Key key);
+    void draw_mapping(Canvas &c, float open);
 
     // ---- settings and its dialogs (settings.cpp) ----
     void press_settings(Key key);
@@ -161,6 +188,10 @@ class Launcher
     std::vector<audio::Cue> cues_;
     float time_ = 0.0f;
     float clock_wait_ = 0.0f;
+    float presence_wait_ = 0.0f; // time since the shown games' files were last looked at
+    std::string update_version_;       // the newer release being announced
+    float update_notice_left_ = 0.0f;  // seconds its notification still shows
+    tween::Spring update_notice_in_;   // 0 away .. 1 in place
     std::string clock_;
     std::string version_;
 
@@ -230,6 +261,14 @@ class Launcher
     };
     std::vector<ModRow> mod_list_;
     ListView mod_rows_;
+    int game_options_ = 0;          // the category a game's own settings dialog shows
+    ListView option_rows_;          // its rows
+    bool mapping_for_game_ = false; // the mapping dialog edits the game's own mapping
+    ListView mapping_rows_;
+    std::vector<Profile> profiles_; // the people who play on this console
+    std::string playing_;           // the one games start as
+    ListView profile_rows_;
+    int profile_remove_ = -1;       // the row Square was pressed on once (asked twice)
 
     // game files
     std::string browse_dir_;

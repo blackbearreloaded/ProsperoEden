@@ -20,8 +20,9 @@ __attribute__((noreturn)) void catchReturnFromMain(int status) {
     for (;;) sceKernelUsleep(100000);
 }
 // Start this app again in a fresh process: the system ends this one and runs the app's own
-// executable. After a crash report was written (headless/crash_report.cpp). No stdio: the caller
-// is a helper beside a crashed thread. Returns only when the system refuses.
+// executable. After a crash report was written (headless/crash_report.cpp), and for a game that
+// will not stop (headless/stop_limit.h). No stdio: the caller is a helper beside a crashed or a
+// stuck thread. Returns only when the system refuses.
 int eden_restart_app(void) {
     char marker[96];
     sceKernelDebugOutText(0, "EDEN_PPSA99121_RESTART\n");

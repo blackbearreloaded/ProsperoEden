@@ -247,8 +247,13 @@ void Launcher::draw_home(Canvas &c)
                            {0.0f, 0.0f, 1.0f, 1.0f}, 16.0f, kWhite);
     text(c, "PROSPEROEDEN", 216.0f, baseline(72.0f, 44.0f, theme::kBrand), theme::kBrand,
          theme::kText, Align::left, 3.0f);
-    text(c, fill(tr("PS5 EDITION  /  {0}"), {version_}), 216.0f, baseline(120.0f, 28.0f, theme::kSmall),
-         theme::kSmall, Color::rgb(0x9fac9e), Align::left, 1.0f);
+    // Who is playing is named once there is more than one profile to be.
+    const float edition = text(c, fill(tr("PS5 EDITION  /  {0}"), {version_}), 216.0f,
+                               baseline(120.0f, 28.0f, theme::kSmall), theme::kSmall, Color::rgb(0x9fac9e),
+                               Align::left, 1.0f);
+    if (profiles_.size() > 1 && !playing_.empty())
+        text_shrink(c, "/  " + playing_, 216.0f + edition + 16.0f, baseline(120.0f, 28.0f, theme::kSmall),
+                    theme::kSmall, theme::kLimePale, 300.0f);
     static constexpr const char *kNav[] = {TR("Library"), TR("Settings"), TR("About")};
     Rect nav[3];
     float nav_right = kNavRight;

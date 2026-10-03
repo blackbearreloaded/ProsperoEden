@@ -204,7 +204,17 @@ ui::Home FakeServices::home()
                     return game;
             return games_.front();
         };
-        const ui::Game &last = find("Echoes of the Valley");
+        // As the console does: a game taken away is not offered, the next recent one is.
+        const char *const recent[] = {"Echoes of the Valley", "Kart Carnival Deluxe", "Starfall Odyssey",
+                                      "Caf\xC3\xA9 Nocturne"};
+        const char *first = recent[0];
+        for (const char *name : recent)
+            if (game_exists(find(name).file))
+            {
+                first = name;
+                break;
+            }
+        const ui::Game &last = find(first);
         home.last_file = last.file;
         home.last_exists = true;
         home.last_title = last.name;
@@ -214,11 +224,11 @@ ui::Home FakeServices::home()
         home.last_title_id = last.title_id;
         home.last_addons = last.addons;
         home.last_language = last.language;
-        for (const char *name : {"Echoes of the Valley", "Kart Carnival Deluxe", "Starfall Odyssey",
-                                 "Caf\xC3\xA9 Nocturne"})
+        for (const char *name : recent)
         {
             const ui::Game &game = find(name);
-            home.recents.push_back({game.file, game.name, game.cover});
+            if (game_exists(game.file))
+                home.recents.push_back({game.file, game.name, game.cover});
         }
     }
     home.system_status = fill(tr("{0} games installed"), {std::to_string(games_.size())}) + "  /  " +

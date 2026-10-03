@@ -1,6 +1,7 @@
 #include "metadata_bridge.h"
 #include "assets_dir.h"
 #include "diagnostics.h"
+#include "profiles.h"
 #include "ryujinx_saves.h"
 #if defined(__PROSPERO__)
 #include "native_directory.h"
@@ -288,25 +289,12 @@ int eden_game_addons(uint64_t title_id, char* update_version, size_t capacity, u
 }
 
 namespace {
-// The save folder name of the profile games use: Eden's user 0, the first valid entry of
-// profiles.dat (0x10-byte header, then 0xC8-byte entries starting with the 16-byte UUID), written
-// as Eden's save paths spell it (upper 64 bits, then lower). Eden creates the file on the first
-// game boot; without it the one existing user save folder is used.
+// The save folder name of the profile games use (profiles.h), as Eden's save paths spell it.
+// Without a profile file (no game has run yet) the one existing user save folder is used.
 std::string EdenUserFolder(const std::filesystem::path& saves, std::string& error) {
-    std::vector<char> data;
-    const std::string profiles = Eden::UserDir() + "/nand/system/save/8000000000000010/su/avators/profiles.dat";
-    if (Eden::RyujinxSaves::ReadFile(profiles, data) && data.size() >= 0x650) {
-        for (std::size_t offset = 0x10; offset + 0xC8 <= 0x650; offset += 0xC8) {
-            uint64_t low = 0, high = 0;
-            std::memcpy(&low, data.data() + offset, sizeof(low));
-            std::memcpy(&high, data.data() + offset + 8, sizeof(high));
-            if (!low && !high) continue;
-            char name[33];
-            std::snprintf(name, sizeof(name), "%016llX%016llX", static_cast<unsigned long long>(high),
-                          static_cast<unsigned long long>(low));
-            return name;
-        }
-    }
+    // The chosen profile's (profiles.h): a save goes in and comes out for whoever is playing.
+    if (const auto profiles = Eden::Profiles::Read(); !profiles.empty())
+        return profiles[static_cast<std::size_t>(Eden::Profiles::CurrentIndex())].Key();
     std::error_code list_error;
     std::vector<std::string> users;
     for (const auto& entry : Eden::RyujinxSaves::ListFolder(saves, list_error)) {

@@ -187,6 +187,75 @@ int main() {
     assert(!speed.skip_invalidation && !speed.reactive_flushing);
     assert(Eden::LoadPerformance(quest, by_hand).skip_invalidation && Eden::LoadPerformance(quest, by_hand).reactive_flushing);
 
+    // Button mapping (button_mapping.h): the usual one, a changed one, and one the file names
+    // badly. Choosing a button another game button has swaps the two.
+    {
+        auto prefs = Eden::LoadPreferences(file);
+        assert(prefs.mapping == Eden::kDefaultMapping);
+        prefs.mapping = Eden::Assign(prefs.mapping, Eden::game_a, Eden::pad_cross);
+        assert(prefs.mapping[Eden::game_a] == Eden::pad_cross && prefs.mapping[Eden::game_b] == Eden::pad_circle);
+        assert(Eden::ValidMapping(prefs.mapping) && Eden::Assign(prefs.mapping, Eden::game_a, Eden::pad_cross) == prefs.mapping);
+        assert(Eden::SavePreferences(prefs, file));
+        assert(Eden::LoadPreferences(file).mapping == prefs.mapping);
+        assert(Read(file).find("\"mapping\": {") != std::string::npos &&
+               Read(file).find("\"a\": \"cross\"") != std::string::npos &&
+               Read(file).find("\"x\":") == std::string::npos);  // only what differs is written
+        auto twice = prefs;
+        twice.mapping[Eden::game_x] = twice.mapping[Eden::game_y];
+        assert(!Eden::ValidMapping(twice.mapping) && !Eden::SavePreferences(twice, file));
+        prefs.mapping = Eden::kDefaultMapping;
+        assert(Eden::SavePreferences(prefs, file) && Read(file).find("\"mapping\"") == std::string::npos);
+        const std::string by_hand = std::string(directory) + "/mapping.json";
+        std::ofstream(by_hand) << R"({"controls": {"mapping": {"a": "cross", "b": "cross"}}})";
+        assert(Eden::LoadPreferences(by_hand).mapping == Eden::kDefaultMapping);  // Cross twice
+        std::ofstream(by_hand) << R"({"controls": {"mapping": {"a": "cross", "b": "circle", "zl": "touchpad", "minus": "l2"}}})";
+        const auto read = Eden::LoadPreferences(by_hand).mapping;
+        assert(read[Eden::game_a] == Eden::pad_cross && read[Eden::game_zl] == Eden::pad_touchpad &&
+               read[Eden::game_minus] == Eden::pad_l2 && read[Eden::game_x] == Eden::pad_triangle);
+        std::ofstream(by_hand) << R"({"controls": {"mapping": {"a": "share"}}})";
+        assert(Eden::LoadPreferences(by_hand).mapping == Eden::kDefaultMapping);  // no such button
+    }
+
+    // A game's own settings over Settings: video, audio, controls, language and Performance,
+    // each one on its own, and back to Settings.
+    {
+        Eden::GameSettings game = Eden::LoadGameSettings(quest, file);
+        game.hud = 0;
+        game.volume = 40;
+        game.mute = 1;
+        game.vibration = 0;
+        game.language = 13;
+        game.own_mapping = true;
+        game.mapping = Eden::Assign(Eden::kDefaultMapping, Eden::game_a, Eden::pad_triangle);
+        game.performance[2] = 1;  // fast GPU
+        assert(Eden::SaveGameSettings(quest, game, file));
+        const auto back = Eden::LoadGameSettings(quest, file);
+        assert(back.hud == 0 && back.volume == 40 && back.mute == 1 && back.vibration == 0 && back.language == 13 &&
+               back.own_mapping && back.mapping == game.mapping && back.performance[2] == 1 &&
+               back.performance[0] == -1);
+        const auto general = Eden::LoadPreferences(file);
+        const auto mine = Eden::PreferencesFor(quest, file);
+        assert(!mine.hud && mine.volume == 40 && mine.mute && !mine.vibration && mine.language == 13 &&
+               mine.mapping == game.mapping && mine.resolution == general.resolution);
+        assert(Eden::LoadPerformance(quest, file).fast_gpu);
+        const auto theirs = Eden::PreferencesFor(racer, file);
+        assert(theirs.volume == general.volume && theirs.mapping == general.mapping && theirs.language == general.language);
+        assert(Eden::PreferencesFor(0, file).volume == general.volume);
+        auto wrong = game;
+        wrong.volume = 101;
+        assert(!Eden::SaveGameSettings(quest, wrong, file));
+        wrong = game;
+        wrong.mute = 2;
+        assert(!Eden::SaveGameSettings(quest, wrong, file));
+        wrong = game;
+        wrong.mapping[Eden::game_b] = wrong.mapping[Eden::game_a];
+        assert(!Eden::SaveGameSettings(quest, wrong, file));
+        assert(Eden::SaveGameSettings(quest, Eden::GameSettings{}, file));
+        const auto plain = Eden::LoadGameSettings(quest, file);
+        assert(plain.hud < 0 && plain.volume < 0 && plain.language < 0 && !plain.own_mapping &&
+               plain.performance[2] < 0 && Eden::PreferencesFor(quest, file).volume == general.volume);
+    }
+
     // Game files folder.
     assert(Eden::LoadSavedAssetsDir(file).empty());
     assert(Eden::SaveAssetsDir("/mnt/ext1/eden", file));
