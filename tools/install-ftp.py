@@ -59,7 +59,9 @@ def main(argv):
             with local.open('rb') as source:
                 client.storbinary(f'STOR {target}.partial', source)
             try:
-                client.delete(target)
+                # ftpsrv may report a successful deletion as 226 instead of
+                # the 250 that ftplib.FTP.delete() alone accepts.
+                client.voidcmd(f'DELE {target}')
             except ftplib.error_perm:
                 pass
             client.rename(f'{target}.partial', target)
