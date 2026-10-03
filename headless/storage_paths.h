@@ -3,7 +3,8 @@
 // first thing in main) the app uses real console paths:
 //   app folder     the install location, normally /data/homebrew/PPSA99008
 //   data           /data/prosperoeden: config/ (prosperoeden.json), logs/, covers/, user/
-// Without it (no elfldr, or the request failed) the sandbox paths stay: /app0 and /download0.
+// Without it (no upstream Lapy service, or the request failed) the sandbox paths stay:
+// /app0 and /download0.
 #pragma once
 #include <cstdio>
 #include <string>

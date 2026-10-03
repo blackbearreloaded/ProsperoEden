@@ -14,6 +14,12 @@ Eden for the PS5, and writes the release files to `dist/`:
   ShadowMountPlus installs like a package;
 - `SHA256SUMS` and `release-notes.md`.
 
+The app package intentionally contains no elevation payload. Filesystem access outside the
+sandbox requires an official upstream
+[PS5-Lapy-JB-Daemon](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon) owned-root build to be
+loaded separately before ProsperoEden starts. Both Lapy's one-shot and resident-service modes
+use the same cooperative request. Without Lapy, ProsperoEden falls back to its sandbox paths.
+
 The first build takes a while (RADV and Eden are large). Later builds reuse everything that
 already exists: the dependencies, this checkout's build cache in
 `~/.cache/ps5-eden-headless.<hash>`, and ccache.

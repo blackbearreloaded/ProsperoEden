@@ -17,7 +17,7 @@ import pathlib
 import sys
 
 REMOTE = '/data/homebrew/PPSA99008'
-EXECUTABLES = {'eboot.bin', 'sce_module/libc.prx', 'sandbox-elevator.elf'}
+EXECUTABLES = {'eboot.bin', 'sce_module/libc.prx'}
 
 
 def connect(host, port):
