@@ -1,10 +1,11 @@
 # Filesystem access with upstream Lapy
 
-ProsperoEden uses the cooperative owned-root protocol from
-[PS5-Lapy-JB-Daemon](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). Lapy is loaded
-separately on the console and performs the privileged operation. ProsperoEden only publishes
-the requesting process ID through `/download0/elevate_proc`, waits for the result, and proves
-that `/data` is readable and writable before using it.
+ProsperoEden uses [PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon),
+created by ArkSama, with the cooperative owned-root protocol from
+[mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). Lapy is
+loaded separately on the console and performs the privileged operation. ProsperoEden only
+publishes the requesting process ID through `/download0/elevate_proc`, waits for the result,
+and proves that `/data` is readable and writable before using it.
 
 The application-side request follows Lapy's upstream
 [`cooperative_elevation.c`](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/blob/main/examples/cooperative_elevation.c)
@@ -18,5 +19,6 @@ mutation, or elfldr connection. Use an official upstream Lapy owned-root build i
 resident-service mode. If no compatible Lapy service is waiting, the request times out and the
 app stays on `/app0` and `/download0` paths.
 
-Credits: Lapy and the cooperative elevation design are by
-[mpereiraesaa and the PS5-Lapy-JB-Daemon contributors](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/graphs/contributors).
+Credits: Lapy was created by [ArkSama](https://github.com/ArkSama), and the cooperative
+elevation design used here comes from
+[mpereiraesaa and contributors](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/graphs/contributors).

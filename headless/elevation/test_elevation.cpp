@@ -218,5 +218,3 @@ int main()
     assert(elevation::request(Capability::filesystem) == Status::apply_failed);
     assert(test::state.result == "DATA_OK=0 OPEN_ERRNO=0\n");
 }
-
-
