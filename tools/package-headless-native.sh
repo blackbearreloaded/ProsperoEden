@@ -41,16 +41,15 @@ fi
     --companion-sdk 0x08050001 --file-name eboot.elf
 "$builder" self --sign --in "$out/eboot.elf" --out "$app/eboot.bin" --magic 0x1D3D154F
 cp "$template/runtime/libc.prx" "$app/sce_module/libc.prx"
+# Never retain the deprecated bundled elevation helper in an incremental package.
+rm -f "$app/sandbox-elevator.elf"
 # What the console's home screen shows for the title is in sce_sys/, as it goes into the package
 # (the source pictures beside it stay in the repository).
 cp "$root/sce_sys/"{param.json,icon0.png,pic0.dds,pic1.dds,snd0.at9} "$app/sce_sys/"
 rm -rf "$app/ui"
 cp -a "$root/headless/prosperoeden/ui" "$app/ui"
-# Filesystem access helper (headless/elevation, built for PPSA99008): elfldr runs it at startup.
-make -s -C "$root/headless/elevation/helper" OUTPUT="$root/build/elevation/sandbox-elevator.elf" \
-    PS5_PAYLOAD_SDK="${PS5_ELEVATION_SDK:-/opt/ps5-payload-sdk}"
-python3 "$root/headless/elevation/validate-helper.py" "$root/build/elevation/sandbox-elevator.elf"
-cp "$root/build/elevation/sandbox-elevator.elf" "$app/sandbox-elevator.elf"
+# Elevation is provided by the separately loaded upstream PS5-Lapy-JB-Daemon.
+# The app package deliberately contains no privileged helper or kernel payload.
 python3 - "$root" "$scratch" "$app" "${1:-}" <<'PY'
 import json, pathlib, re, runpy, shutil, sys
 root, scratch, app = map(pathlib.Path, sys.argv[1:4])

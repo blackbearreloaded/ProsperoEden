@@ -17,7 +17,7 @@ import pathlib
 import sys
 
 REMOTE = '/data/homebrew/PPSA99008'
-EXECUTABLES = {'eboot.bin', 'sce_module/libc.prx', 'sandbox-elevator.elf'}
+EXECUTABLES = {'eboot.bin', 'sce_module/libc.prx'}
 
 
 def connect(host, port):
@@ -59,7 +59,9 @@ def main(argv):
             with local.open('rb') as source:
                 client.storbinary(f'STOR {target}.partial', source)
             try:
-                client.delete(target)
+                # ftpsrv may report a successful deletion as 226 instead of
+                # the 250 that ftplib.FTP.delete() alone accepts.
+                client.voidcmd(f'DELE {target}')
             except ftplib.error_perm:
                 pass
             client.rename(f'{target}.partial', target)

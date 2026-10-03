@@ -40,9 +40,14 @@ builds on the following projects, each under its own license.
 - **[PS5 Payload SDK](https://github.com/ps5-payload-dev/sdk)** by John
   Törnblom (ps5-payload-dev).
 - **[PS5 Native App Boilerplate](https://github.com/blackbearreloaded/ps5-native-app-boilerplate)**,
-  GPL-3.0-or-later. The native app runtime, packaging tool and sandbox
-  elevation helper (`headless/elevation`). Its packaging tool translates parts
-  of SvenGDK's [SharpProspero](https://github.com/SvenGDK/SharpProspero).
+  GPL-3.0-or-later. The native app runtime and packaging tool. Its packaging
+  tool translates parts of SvenGDK's
+  [SharpProspero](https://github.com/SvenGDK/SharpProspero).
+- **[PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon)** by
+  ArkSama, with the cooperative owned-root design from
+  **[mpereiraesaa's fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon)**.
+  ProsperoEden's application-side elevation request follows that design; the
+  Lapy daemon is loaded separately and is not bundled.
 - **[ProsperoPuzzles](https://github.com/blackbearreloaded/ProsperoPuzzles)**,
   GPL-3.0-or-later. The launcher's drawing, text, animation and sound code
   (`headless/prosperoeden/pe`) started there.

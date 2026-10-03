@@ -1,11 +1,24 @@
-# Filesystem access (sandbox elevation)
+# Filesystem access with upstream Lapy
 
-From [ps5-native-app-boilerplate](https://github.com/blackbearreloaded/ps5-native-app-boilerplate)
-`examples/sandbox-elevation` at dd44bbd (GPL-3.0-or-later): `elevation.hpp`, `protocol.hpp`,
-`elevation.cpp` (app side), `helper/` (the elfldr helper) and `validate-helper.py`.
+ProsperoEden uses [PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon),
+created by ArkSama, with the cooperative owned-root protocol from
+[mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). Lapy is
+loaded separately on the console and performs the privileged operation. ProsperoEden only
+publishes the requesting process ID through `/download0/elevate_proc`, waits for the result,
+and proves that `/data` is readable and writable before using it.
 
-ProsperoEden changes: the helper's `target_title_id` is `PPSA99008`, and `elevation.cpp` includes
-`elevation.hpp` from this folder. The packager builds the helper with the PS5 payload SDK and
-ships it as `/app0/sandbox-elevator.elf`; `main.cpp` requests `Capability::filesystem` once at
-startup so the Game files folder (default `/data/prosperoeden`, `assets_dir.h`) is readable.
-Without an elfldr on the console the request fails and the app keeps its sandbox and `/app0/assets`.
+The application-side request follows Lapy's upstream
+[`cooperative_elevation.c`](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/blob/main/examples/cooperative_elevation.c)
+example. The result handshake and `/data` proof follow its upstream cooperative test app. The
+request file is written to a temporary file and atomically renamed so Lapy cannot observe a
+partial JSON document.
+
+ProsperoEden does not bundle, fork, or reimplement the Lapy daemon. In particular, the package
+contains no `sandbox-elevator.elf`, kernel offsets, credential mutation, file-descriptor-table
+mutation, or elfldr connection. Use an official upstream Lapy owned-root build in one-shot or
+resident-service mode. If no compatible Lapy service is waiting, the request times out and the
+app stays on `/app0` and `/download0` paths.
+
+Credits: Lapy was created by [ArkSama](https://github.com/ArkSama), and the cooperative
+elevation design used here comes from
+[mpereiraesaa and contributors](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/graphs/contributors).

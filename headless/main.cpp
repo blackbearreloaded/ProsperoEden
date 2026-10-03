@@ -150,7 +150,8 @@ int main(int argc, char** argv) {
         std::setvbuf(report, nullptr, _IONBF, 0);
 #ifdef PS5_NATIVE
         // Filesystem access beyond the sandbox, first: every path below depends on it
-        // (assets_dir.h). Requested once, still single-threaded. Without it the app keeps its
+        // (assets_dir.h). The separately loaded upstream Lapy service handles this cooperative
+        // request. ProsperoEden contains no elevation payload. Without Lapy the app keeps its
         // sandbox paths.
         Eden::FilesystemAccessStatus() = static_cast<int>(elevation::request(elevation::Capability::filesystem));
         // Elevation leaves the effective group (1) apart from the real one (0), and Mesa turns

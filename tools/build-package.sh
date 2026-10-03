@@ -36,8 +36,7 @@ bash tools/build-headless-native.sh --graphics
 python3 -B tools/check-radv-native.py
 echo "== Package $EDEN_PACKAGE_DIR"
 rm -rf "$EDEN_PACKAGE_DIR"
-PS5_ELEVATION_SDK="$root/../ps5-native-app-boilerplate/.deps/native/ps5-payload-sdk" \
-    bash tools/package-headless-native.sh --integration
+bash tools/package-headless-native.sh --integration
 if [[ $mode == release ]]; then
     python3 -B headless/check_package.py --check
 elif [[ -f CANDIDATE.json ]]; then
