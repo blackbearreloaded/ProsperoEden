@@ -21,6 +21,13 @@ At runtime a resident Lapy service gets the first bounded opportunity; otherwise
 sends the packaged helper to the local ELF loader on TCP port 9021. Without that loader or a
 resident service, ProsperoEden falls back to its sandbox paths.
 
+The pinned upstream commit includes the donor-release correction proposed in
+[PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48).
+This exact one-shot integration passed five automated launch/elevate/close cycles on both firmware
+6.02 and 12.70. Each run proved root `/data` access, reaped and balanced donors, a clean helper exit,
+and no fatal signal, app crash, coredump, nonsleeping-lock warning, or kernel panic in its captured
+kernel-log window. Other firmware still requires an attended qualification run.
+
 The first build takes a while (RADV and Eden are large). Later builds reuse everything that
 already exists: the dependencies, this checkout's build cache in
 `~/.cache/ps5-eden-headless.<hash>`, and ccache.
