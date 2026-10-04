@@ -62,6 +62,8 @@ bool DevelopmentOffer(self_update_offer& out) {
     std::snprintf(filled.artifact, sizeof(filled.artifact), "%s", artifact.c_str());
     std::snprintf(filled.sha256, sizeof(filled.sha256), "%s", sha256.c_str());
     filled.size = std::strtoull(size.c_str(), nullptr, 10);
+    // Like the catalog, only a newer version is offered (content versions compare as text).
+    if (std::strcmp(filled.available, filled.installed) <= 0) return false;
     out = filled;
     return true;
 }

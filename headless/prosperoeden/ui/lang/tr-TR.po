@@ -43,6 +43,16 @@ msgstr "Hakkında"
 msgid "About ProsperoEden"
 msgstr "ProsperoEden hakkında"
 
+#. Time left while downloading; {0} is a number of minutes. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} min left"
+msgstr "Yaklaşık {0} dk kaldı"
+
+#. Time left while downloading; {0} is a number of seconds. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} s left"
+msgstr "Yaklaşık {0} sn kaldı"
+
 #. Label: which folders the app can read.
 #: pe/ui/browse.cpp
 msgid "ACCESS"
@@ -154,6 +164,14 @@ msgstr "Tuş atama"
 msgid "BUTTON MAPPING"
 msgstr "TUŞ ATAMA"
 
+#: pe/ui/update.cpp
+msgid "Cancel"
+msgstr "İptal"
+
+#: pe/ui/update.cpp
+msgid "Cancelling"
+msgstr "İptal ediliyor"
+
 #: eden_services.cpp
 msgid "Cannot read firmware/ in {0}. Install extracted firmware NCAs."
 msgstr "{0} içindeki firmware/ okunamıyor. Çıkarılmış firmware NCA dosyalarını yükleyin."
@@ -210,6 +228,10 @@ msgstr "Oyunların kullanacağı dili seçin"
 #: pe/ui/game_options.cpp
 msgid "Circle"
 msgstr "Daire"
+
+#: pe/ui/update.cpp
+msgid "Close"
+msgstr "Kapat"
 
 #. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -338,6 +360,15 @@ msgstr "TANILAMA"
 #: pe/ui/library.cpp
 msgid "Docked"
 msgstr "TV"
+
+#. {0} is a size such as 36.4 MB.
+#: pe/ui/update.cpp
+msgid "Download size: {0}"
+msgstr "İndirme boyutu: {0}"
+
+#: pe/ui/update.cpp
+msgid "Downloading"
+msgstr "İndiriliyor"
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -743,7 +774,7 @@ msgid "Muted"
 msgstr "Sessize alındı"
 
 #. Button hint: move the highlight.
-#: pe/ui/home.cpp
+#: pe/ui/home.cpp, pe/ui/update.cpp
 msgid "Navigate"
 msgstr "Gezin"
 
@@ -842,6 +873,10 @@ msgstr "AÇ"
 msgid "Open"
 msgstr "Aç"
 
+#: pe/ui/update.cpp
+msgid "Open it again to use version {0}."
+msgstr "{0} sürümünü kullanmak için yeniden aç."
+
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr "Kütüphaneyi aç"
@@ -921,6 +956,11 @@ msgstr "Gücünü Eden'den alır"
 msgid "PREFERENCES"
 msgstr "TERCİHLER"
 
+#. Update dialog headline while the download starts.
+#: pe/ui/update.cpp
+msgid "Preparing"
+msgstr "Hazırlanıyor"
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
@@ -950,6 +990,14 @@ msgstr "PROFİLLER"
 msgid "PROJECT CREDITS"
 msgstr "EMEĞİ GEÇENLER"
 
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes now."
+msgstr "ProsperoEden şimdi kapanıyor."
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes to finish the update."
+msgstr "Güncellemeyi tamamlamak için ProsperoEden kapanır."
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden, BlackBearReloaded tarafından sunulan resmi olmayan bir PS5 portudur."
@@ -958,6 +1006,10 @@ msgstr "ProsperoEden, BlackBearReloaded tarafından sunulan resmi olmayan bir PS
 #: eden_services.cpp, host/fake_services.cpp
 msgid "ProsperoEden stopped because of an error. A report was saved to {0}."
 msgstr "ProsperoEden bir hata nedeniyle durdu. Rapor şuraya kaydedildi: {0}."
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden was not changed."
+msgstr "ProsperoEden değiştirilmedi."
 
 #. Why a game did not start.
 #: eden_services.cpp
@@ -1091,7 +1143,7 @@ msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Kaydedildi. Bu klasörü kullanmak için ProsperoEden'i yeniden açın."
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Seç"
 
@@ -1149,6 +1201,11 @@ msgstr "FPS sayacını gösterir veya gizler"
 #: pe/ui/library.cpp
 msgid "SIZE"
 msgstr "BOYUT"
+
+#. Button and hint: not now (the dialog shows again the next time the app opens).
+#: pe/ui/update.cpp
+msgid "Skip"
+msgstr "Atla"
 
 #. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1240,6 +1297,10 @@ msgstr "Oyunlar destekliyorsa kullanılacak dil."
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Oynayan profil kalır. Önce başka birini seçin."
 
+#: pe/ui/update.cpp
+msgid "The update could not finish"
+msgstr "Güncelleme tamamlanamadı"
+
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
 msgstr "BU KLASÖR"
@@ -1276,6 +1337,10 @@ msgstr "Dokunmatik yüzey"
 msgid "Triangle"
 msgstr "Üçgen"
 
+#: pe/ui/update.cpp
+msgid "Try again"
+msgstr "Yeniden dene"
+
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
 msgid "Turn on or off"
@@ -1285,15 +1350,29 @@ msgstr "Aç veya kapat"
 msgid "Unavailable"
 msgstr "Kullanılamıyor"
 
+#. Update dialog headline while the downloaded release is extracted.
+#: pe/ui/update.cpp
+msgid "Unpacking"
+msgstr "Açılıyor"
+
 #. Short tag on the 'Parent folder' row.
 #: pe/ui/browse.cpp
 msgid "UP"
 msgstr "YUKARI"
 
 #. Notification title: a newer release of this app is listed (not a game update).
-#: pe/ui/launcher.cpp
+#: pe/ui/launcher.cpp, pe/ui/update.cpp
 msgid "Update available"
 msgstr "Güncelleme var"
+
+#. Button: download and install the newer release of this app now.
+#: pe/ui/update.cpp
+msgid "Update now"
+msgstr "Şimdi güncelle"
+
+#: pe/ui/update.cpp
+msgid "Update ready"
+msgstr "Güncelleme hazır"
 
 #. A game update; {0} is its version, for example 1.2.0.
 #: eden_services.cpp, host/fake_services.cpp
@@ -1324,10 +1403,20 @@ msgstr "Çıkarılmış firmware NCA dosyalarını kullanın. Klasörü Ayarlar,
 msgid "Use this folder"
 msgstr "Bu klasörü kullan"
 
+#. {0} is the app's new version number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0}"
+msgstr "Sürüm {0}"
+
 #. {0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.
 #: pe/ui/launcher.cpp
 msgid "Version {0} is on homebrew.page"
 msgstr "{0} sürümü homebrew.page adresinde"
+
+#. Update dialog: a newer release of this app; {0} is its number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0} is ready to install."
+msgstr "{0} sürümü yüklenmeye hazır."
 
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Vibration"
@@ -1373,6 +1462,11 @@ msgstr "Kim oynuyor. Her profilin kendi kayıtları ve ayarları vardır."
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Oyunlarınız"
+
+#. Update dialog: installing the new app version keeps the player's files.
+#: pe/ui/update.cpp
+msgid "Your games, saves and settings are kept."
+msgstr "Oyunların, kayıtların ve ayarların korunur."
 
 #. Headline when no game has been played yet.
 #: pe/ui/home.cpp
@@ -1455,7 +1549,7 @@ msgid "{0} of {1} on"
 msgstr "{0}/{1} açık"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr "%{0}"
 

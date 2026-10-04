@@ -389,8 +389,9 @@ void Launcher::draw_update(Canvas &c, float open)
         list.pop_transform();
 
         centred(tr("Update ready"), 506.0f, 60.0f, theme::kDisplay, theme::kTitle);
-        centred(fill_text(tr("ProsperoEden closes now. Open it again to use version {0}."), update_version_), 576.0f,
-                34.0f, theme::kText24, theme::kValue);
+        centred(tr("ProsperoEden closes now."), 568.0f, 34.0f, theme::kText24, theme::kValue);
+        centred(fill_text(tr("Open it again to use version {0}."), update_version_), 602.0f, 30.0f, theme::kSmall,
+                theme::kCopy);
         // The time until it closes.
         const float left = 1.0f - tween::clamp01(t / kClosingSeconds);
         list.rounded_rect({kPanel.x + 96.0f, 640.0f, (kPanel.w - 192.0f) * left, 4.0f}, 2.0f, accent.with_alpha(0.7f));

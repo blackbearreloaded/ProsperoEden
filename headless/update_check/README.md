@@ -11,4 +11,9 @@ with filesystem access.
 
 `eden_paths.h` is ProsperoEden's own. The helper the app sends to the
 console's payload loader is in `headless/self_update_helper` (the boilerplate's
-`examples/self-update-helper`; only its Makefile's source folders differ).
+`examples/self-update-helper`). Two changes there: its Makefile's source
+folders, and `swap_entries` in `updater.cpp`, which moves aside only the
+entries the release replaces. The boilerplate's helper replaces the whole
+folder; ProsperoEden's folder can hold the player's own files (`language.txt`,
+the `assets/` folder of earlier versions with keys, firmware and games), which
+an update must keep.

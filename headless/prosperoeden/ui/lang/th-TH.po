@@ -43,6 +43,16 @@ msgstr "เกี่ยวกับ"
 msgid "About ProsperoEden"
 msgstr "เกี่ยวกับ ProsperoEden"
 
+#. Time left while downloading; {0} is a number of minutes. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} min left"
+msgstr "เหลืออีกประมาณ {0} นาที"
+
+#. Time left while downloading; {0} is a number of seconds. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} s left"
+msgstr "เหลืออีกประมาณ {0} วินาที"
+
 #. Label: which folders the app can read.
 #: pe/ui/browse.cpp
 msgid "ACCESS"
@@ -154,6 +164,14 @@ msgstr "การกำหนดปุ่ม"
 msgid "BUTTON MAPPING"
 msgstr "การกำหนดปุ่ม"
 
+#: pe/ui/update.cpp
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#: pe/ui/update.cpp
+msgid "Cancelling"
+msgstr "กำลังยกเลิก"
+
 #: eden_services.cpp
 msgid "Cannot read firmware/ in {0}. Install extracted firmware NCAs."
 msgstr "อ่าน firmware/ ​ใน {0} ​ไม่ได้ ติดตั้ง​ไฟล์ NCA ​ของ​เฟิร์มแวร์​ที่​แตกไฟล์​แล้ว"
@@ -210,6 +228,10 @@ msgstr "เลือก​ภาษา​ที่​เกม​ใช้"
 #: pe/ui/game_options.cpp
 msgid "Circle"
 msgstr "วงกลม"
+
+#: pe/ui/update.cpp
+msgid "Close"
+msgstr "ปิด"
 
 #. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -338,6 +360,15 @@ msgstr "การวินิจฉัย"
 #: pe/ui/library.cpp
 msgid "Docked"
 msgstr "โหมด TV"
+
+#. {0} is a size such as 36.4 MB.
+#: pe/ui/update.cpp
+msgid "Download size: {0}"
+msgstr "ขนาดดาวน์โหลด: {0}"
+
+#: pe/ui/update.cpp
+msgid "Downloading"
+msgstr "กำลังดาวน์โหลด"
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -743,7 +774,7 @@ msgid "Muted"
 msgstr "ปิดเสียงอยู่"
 
 #. Button hint: move the highlight.
-#: pe/ui/home.cpp
+#: pe/ui/home.cpp, pe/ui/update.cpp
 msgid "Navigate"
 msgstr "เลื่อน"
 
@@ -842,6 +873,10 @@ msgstr "เปิด"
 msgid "Open"
 msgstr "เปิด"
 
+#: pe/ui/update.cpp
+msgid "Open it again to use version {0}."
+msgstr "เปิดอีกครั้งเพื่อใช้เวอร์ชัน {0}"
+
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr "เปิดคลังเกม"
@@ -921,6 +956,11 @@ msgstr "ขับเคลื่อนโดย Eden"
 msgid "PREFERENCES"
 msgstr "การตั้งค่าทั่วไป"
 
+#. Update dialog headline while the download starts.
+#: pe/ui/update.cpp
+msgid "Preparing"
+msgstr "กำลังเตรียม"
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
@@ -950,6 +990,14 @@ msgstr "โปรไฟล์"
 msgid "PROJECT CREDITS"
 msgstr "เครดิตโครงการ"
 
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes now."
+msgstr "ProsperoEden จะปิดตอนนี้"
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes to finish the update."
+msgstr "ProsperoEden จะปิดเพื่อให้การอัปเดตเสร็จสมบูรณ์"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden ​เป็น​พอร์ต PS5 ​อย่าง​ไม่เป็นทางการ​โดย BlackBearReloaded"
@@ -958,6 +1006,10 @@ msgstr "ProsperoEden ​เป็น​พอร์ต PS5 ​อย่าง​
 #: eden_services.cpp, host/fake_services.cpp
 msgid "ProsperoEden stopped because of an error. A report was saved to {0}."
 msgstr "ProsperoEden หยุด​ทำงาน​เนื่องจาก​ข้อผิดพลาด บันทึก​รายงาน​ไว้ที่ {0} แล้ว"
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden was not changed."
+msgstr "ProsperoEden ไม่มีการเปลี่ยนแปลง"
 
 #. Why a game did not start.
 #: eden_services.cpp
@@ -1091,7 +1143,7 @@ msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "บันทึก​แล้ว เปิด ProsperoEden ​ใหม่​เพื่อ​ใช้​โฟลเดอร์​นี้"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "เลือก"
 
@@ -1149,6 +1201,11 @@ msgstr "แสดง​หรือ​ซ่อน​ตัวแสดง FPS"
 #: pe/ui/library.cpp
 msgid "SIZE"
 msgstr "ขนาด"
+
+#. Button and hint: not now (the dialog shows again the next time the app opens).
+#: pe/ui/update.cpp
+msgid "Skip"
+msgstr "ข้าม"
 
 #. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1240,6 +1297,10 @@ msgstr "ภาษา​ที่​เกม​ใช้​เมื่อ​เ
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "โปรไฟล์​ที่​กำลัง​เล่น​ต้อง​อยู่ เลือก​อัน​อื่น​ก่อน"
 
+#: pe/ui/update.cpp
+msgid "The update could not finish"
+msgstr "ไม่สามารถอัปเดตให้เสร็จได้"
+
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
 msgstr "โฟลเดอร์นี้"
@@ -1276,6 +1337,10 @@ msgstr "ทัชแพด"
 msgid "Triangle"
 msgstr "สามเหลี่ยม"
 
+#: pe/ui/update.cpp
+msgid "Try again"
+msgstr "ลองอีกครั้ง"
+
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
 msgid "Turn on or off"
@@ -1285,15 +1350,29 @@ msgstr "เปิด​หรือ​ปิด"
 msgid "Unavailable"
 msgstr "ใช้ไม่ได้"
 
+#. Update dialog headline while the downloaded release is extracted.
+#: pe/ui/update.cpp
+msgid "Unpacking"
+msgstr "กำลังแตกไฟล์"
+
 #. Short tag on the 'Parent folder' row.
 #: pe/ui/browse.cpp
 msgid "UP"
 msgstr "ขึ้น"
 
 #. Notification title: a newer release of this app is listed (not a game update).
-#: pe/ui/launcher.cpp
+#: pe/ui/launcher.cpp, pe/ui/update.cpp
 msgid "Update available"
 msgstr "มีอัปเดตใหม่"
+
+#. Button: download and install the newer release of this app now.
+#: pe/ui/update.cpp
+msgid "Update now"
+msgstr "อัปเดตเลย"
+
+#: pe/ui/update.cpp
+msgid "Update ready"
+msgstr "อัปเดตพร้อมแล้ว"
 
 #. A game update; {0} is its version, for example 1.2.0.
 #: eden_services.cpp, host/fake_services.cpp
@@ -1324,10 +1403,20 @@ msgstr "ใช้​ไฟล์ NCA ​ของ​เฟิร์มแวร�
 msgid "Use this folder"
 msgstr "ใช้โฟลเดอร์นี้"
 
+#. {0} is the app's new version number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0}"
+msgstr "เวอร์ชัน {0}"
+
 #. {0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.
 #: pe/ui/launcher.cpp
 msgid "Version {0} is on homebrew.page"
 msgstr "เวอร์ชัน {0} อยู่ที่ homebrew.page"
+
+#. Update dialog: a newer release of this app; {0} is its number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0} is ready to install."
+msgstr "เวอร์ชัน {0} พร้อมติดตั้งแล้ว"
 
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Vibration"
@@ -1373,6 +1462,11 @@ msgstr "ใคร​กำลัง​เล่น แต่ละ​โปร�
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "เกมของคุณ"
+
+#. Update dialog: installing the new app version keeps the player's files.
+#: pe/ui/update.cpp
+msgid "Your games, saves and settings are kept."
+msgstr "เกม ข้อมูลบันทึก และการตั้งค่าของคุณจะยังคงอยู่"
 
 #. Headline when no game has been played yet.
 #: pe/ui/home.cpp
@@ -1455,7 +1549,7 @@ msgid "{0} of {1} on"
 msgstr "เปิด {0} จาก {1}"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

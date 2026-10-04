@@ -20,7 +20,12 @@ builds on the following projects, each under its own license.
   **[libpsl](https://github.com/rockdaboot/libpsl)**, MIT. From the same pacbrew
   packages; the update check uses them.
 - **[PS5 Native App Boilerplate](https://github.com/blackbearreloaded/ps5-native-app-boilerplate)**,
-  GPL-3.0-or-later. Its update check (`headless/update_check`).
+  GPL-3.0-or-later. Its update check and self-update kit (`headless/update_check`),
+  its self-update helper (`headless/self_update_helper`, built into `self-updater.elf`)
+  and `tools/validate-loader-elf.py`.
+- **[miniz](https://github.com/richgel999/miniz)** 3.0.2, MIT, unmodified in
+  `third_party/miniz` with its `LICENSE`. The self-update helper reads release
+  ZIPs with it.
 - **LLVM compiler-rt** `emutls.c`, Apache-2.0 WITH LLVM-exception.
 
 ## Graphics

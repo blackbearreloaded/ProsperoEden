@@ -43,6 +43,16 @@ msgstr "정보"
 msgid "About ProsperoEden"
 msgstr "ProsperoEden 정보"
 
+#. Time left while downloading; {0} is a number of minutes. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} min left"
+msgstr "약 {0}분 남음"
+
+#. Time left while downloading; {0} is a number of seconds. Keep it short.
+#: pe/ui/update.cpp
+msgid "About {0} s left"
+msgstr "약 {0}초 남음"
+
 #. Label: which folders the app can read.
 #: pe/ui/browse.cpp
 msgid "ACCESS"
@@ -154,6 +164,14 @@ msgstr "버튼 배치"
 msgid "BUTTON MAPPING"
 msgstr "버튼 배치"
 
+#: pe/ui/update.cpp
+msgid "Cancel"
+msgstr "취소"
+
+#: pe/ui/update.cpp
+msgid "Cancelling"
+msgstr "취소하는 중"
+
 #: eden_services.cpp
 msgid "Cannot read firmware/ in {0}. Install extracted firmware NCAs."
 msgstr "{0}의 firmware/를 읽을 수 없습니다. 추출한 펌웨어 NCA를 설치하세요."
@@ -210,6 +228,10 @@ msgstr "게임에서 사용할 언어를 선택하세요"
 #: pe/ui/game_options.cpp
 msgid "Circle"
 msgstr "동그라미"
+
+#: pe/ui/update.cpp
+msgid "Close"
+msgstr "닫기"
 
 #. A switch: the program code a game used in earlier sessions is prepared (compiled) while the game starts. Keep it short.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -338,6 +360,15 @@ msgstr "진단"
 #: pe/ui/library.cpp
 msgid "Docked"
 msgstr "TV 모드"
+
+#. {0} is a size such as 36.4 MB.
+#: pe/ui/update.cpp
+msgid "Download size: {0}"
+msgstr "다운로드 크기: {0}"
+
+#: pe/ui/update.cpp
+msgid "Downloading"
+msgstr "다운로드 중"
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -743,7 +774,7 @@ msgid "Muted"
 msgstr "음소거됨"
 
 #. Button hint: move the highlight.
-#: pe/ui/home.cpp
+#: pe/ui/home.cpp, pe/ui/update.cpp
 msgid "Navigate"
 msgstr "이동"
 
@@ -842,6 +873,10 @@ msgstr "열기"
 msgid "Open"
 msgstr "열기"
 
+#: pe/ui/update.cpp
+msgid "Open it again to use version {0}."
+msgstr "다시 열면 버전 {0}을(를) 사용할 수 있습니다."
+
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr "라이브러리 열기"
@@ -921,6 +956,11 @@ msgstr "Powered by Eden"
 msgid "PREFERENCES"
 msgstr "환경 설정"
 
+#. Update dialog headline while the download starts.
+#: pe/ui/update.cpp
+msgid "Preparing"
+msgstr "준비 중"
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
@@ -950,6 +990,14 @@ msgstr "프로필"
 msgid "PROJECT CREDITS"
 msgstr "프로젝트 크레딧"
 
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes now."
+msgstr "ProsperoEden이 지금 종료됩니다."
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden closes to finish the update."
+msgstr "업데이트를 마치기 위해 ProsperoEden이 종료됩니다."
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden은 BlackBearReloaded가 제공하는 비공식 PS5 이식판입니다."
@@ -958,6 +1006,10 @@ msgstr "ProsperoEden은 BlackBearReloaded가 제공하는 비공식 PS5 이식�
 #: eden_services.cpp, host/fake_services.cpp
 msgid "ProsperoEden stopped because of an error. A report was saved to {0}."
 msgstr "오류로 인해 ProsperoEden이 중지되었습니다. 보고서가 {0}에 저장되었습니다."
+
+#: pe/ui/update.cpp
+msgid "ProsperoEden was not changed."
+msgstr "ProsperoEden은 변경되지 않았습니다."
 
 #. Why a game did not start.
 #: eden_services.cpp
@@ -1091,7 +1143,7 @@ msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "저장했습니다. ProsperoEden을 다시 열면 이 폴더를 사용합니다."
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "선택"
 
@@ -1149,6 +1201,11 @@ msgstr "FPS 표시 켜기/끄기"
 #: pe/ui/library.cpp
 msgid "SIZE"
 msgstr "크기"
+
+#. Button and hint: not now (the dialog shows again the next time the app opens).
+#: pe/ui/update.cpp
+msgid "Skip"
+msgstr "건너뛰기"
 
 #. A switch: fewer checks when a game changes memory the graphics processor uses. CPU stays.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1240,6 +1297,10 @@ msgstr "게임이 지원할 때 사용할 언어."
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "플레이 중인 프로필은 남습니다. 먼저 다른 프로필을 고르세요."
 
+#: pe/ui/update.cpp
+msgid "The update could not finish"
+msgstr "업데이트를 완료할 수 없습니다"
+
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
 msgstr "이 폴더"
@@ -1276,6 +1337,10 @@ msgstr "터치패드"
 msgid "Triangle"
 msgstr "세모"
 
+#: pe/ui/update.cpp
+msgid "Try again"
+msgstr "다시 시도"
+
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
 msgid "Turn on or off"
@@ -1285,15 +1350,29 @@ msgstr "켜기/끄기"
 msgid "Unavailable"
 msgstr "사용할 수 없음"
 
+#. Update dialog headline while the downloaded release is extracted.
+#: pe/ui/update.cpp
+msgid "Unpacking"
+msgstr "압축 푸는 중"
+
 #. Short tag on the 'Parent folder' row.
 #: pe/ui/browse.cpp
 msgid "UP"
 msgstr "위로"
 
 #. Notification title: a newer release of this app is listed (not a game update).
-#: pe/ui/launcher.cpp
+#: pe/ui/launcher.cpp, pe/ui/update.cpp
 msgid "Update available"
 msgstr "업데이트가 있습니다"
+
+#. Button: download and install the newer release of this app now.
+#: pe/ui/update.cpp
+msgid "Update now"
+msgstr "지금 업데이트"
+
+#: pe/ui/update.cpp
+msgid "Update ready"
+msgstr "업데이트 준비 완료"
 
 #. A game update; {0} is its version, for example 1.2.0.
 #: eden_services.cpp, host/fake_services.cpp
@@ -1324,10 +1403,20 @@ msgstr "추출한 펌웨어 NCA 파일을 사용하세요. 폴더는 설정의 �
 msgid "Use this folder"
 msgstr "이 폴더 사용"
 
+#. {0} is the app's new version number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0}"
+msgstr "버전 {0}"
+
 #. {0}: the newer release's number, for example 1.000.050; homebrew.page is a site's name and stays as it is.
 #: pe/ui/launcher.cpp
 msgid "Version {0} is on homebrew.page"
 msgstr "버전 {0}이(가) homebrew.page에 있습니다"
+
+#. Update dialog: a newer release of this app; {0} is its number, for example 1.000.060.
+#: pe/ui/update.cpp
+msgid "Version {0} is ready to install."
+msgstr "버전 {0}을(를) 설치할 수 있습니다."
 
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Vibration"
@@ -1373,6 +1462,11 @@ msgstr "누가 플레이하는지. 프로필마다 저장 데이터와 설정이
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "내 게임"
+
+#. Update dialog: installing the new app version keeps the player's files.
+#: pe/ui/update.cpp
+msgid "Your games, saves and settings are kept."
+msgstr "게임, 저장 데이터, 설정은 그대로 유지됩니다."
 
 #. Headline when no game has been played yet.
 #: pe/ui/home.cpp
@@ -1455,7 +1549,7 @@ msgid "{0} of {1} on"
 msgstr "{1}개 중 {0}개 켜짐"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

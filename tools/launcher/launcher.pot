@@ -43,10 +43,12 @@ msgstr ""
 msgid "About ProsperoEden"
 msgstr ""
 
+#. Time left while downloading; {0} is a number of minutes. Keep it short.
 #: pe/ui/update.cpp
 msgid "About {0} min left"
 msgstr ""
 
+#. Time left while downloading; {0} is a number of seconds. Keep it short.
 #: pe/ui/update.cpp
 msgid "About {0} s left"
 msgstr ""
@@ -359,6 +361,7 @@ msgstr ""
 msgid "Docked"
 msgstr ""
 
+#. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr ""
@@ -870,6 +873,10 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
+#: pe/ui/update.cpp
+msgid "Open it again to use version {0}."
+msgstr ""
+
 #: pe/ui/home.cpp
 msgid "Open library"
 msgstr ""
@@ -949,6 +956,7 @@ msgstr ""
 msgid "PREFERENCES"
 msgstr ""
 
+#. Update dialog headline while the download starts.
 #: pe/ui/update.cpp
 msgid "Preparing"
 msgstr ""
@@ -983,7 +991,7 @@ msgid "PROJECT CREDITS"
 msgstr ""
 
 #: pe/ui/update.cpp
-msgid "ProsperoEden closes now. Open it again to use version {0}."
+msgid "ProsperoEden closes now."
 msgstr ""
 
 #: pe/ui/update.cpp
@@ -1194,6 +1202,7 @@ msgstr ""
 msgid "SIZE"
 msgstr ""
 
+#. Button and hint: not now (the dialog shows again the next time the app opens).
 #: pe/ui/update.cpp
 msgid "Skip"
 msgstr ""
@@ -1341,6 +1350,7 @@ msgstr ""
 msgid "Unavailable"
 msgstr ""
 
+#. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
 msgid "Unpacking"
 msgstr ""
@@ -1355,6 +1365,7 @@ msgstr ""
 msgid "Update available"
 msgstr ""
 
+#. Button: download and install the newer release of this app now.
 #: pe/ui/update.cpp
 msgid "Update now"
 msgstr ""
@@ -1392,6 +1403,7 @@ msgstr ""
 msgid "Use this folder"
 msgstr ""
 
+#. {0} is the app's new version number, for example 1.000.060.
 #: pe/ui/update.cpp
 msgid "Version {0}"
 msgstr ""
@@ -1401,6 +1413,7 @@ msgstr ""
 msgid "Version {0} is on homebrew.page"
 msgstr ""
 
+#. Update dialog: a newer release of this app; {0} is its number, for example 1.000.060.
 #: pe/ui/update.cpp
 msgid "Version {0} is ready to install."
 msgstr ""
@@ -1450,6 +1463,7 @@ msgstr ""
 msgid "Your games"
 msgstr ""
 
+#. Update dialog: installing the new app version keeps the player's files.
 #: pe/ui/update.cpp
 msgid "Your games, saves and settings are kept."
 msgstr ""
