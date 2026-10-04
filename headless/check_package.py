@@ -17,12 +17,13 @@ if 'EDEN_PACKAGE_DIR' in os.environ:
 OUT = ROOT / 'build/headless-native'
 BASE_REQUIRED = {'eboot.bin', 'core-homebrew.nro', 'sce_module/libc.prx',
             'sce_sys/param.json', 'sce_sys/icon0.png', 'sce_sys/pic0.dds', 'sce_sys/pic1.dds',
-            'sce_sys/snd0.at9'}
+            'sce_sys/snd0.at9', 'lapy.elf', 'lapy-manifest.json', 'licenses/Lapy-MIT.txt'}
 REQUIRED = set(BASE_REQUIRED)
 REQUIRED.update(p.relative_to(APP).as_posix() for p in (APP / 'ui').rglob('*') if p.is_file())
 RECEIPT = ROOT / 'HEADLESS_CANDIDATE.json'
 # The pinned OpenGL SDK release (tools/deps.json): digest of its manifest.sha256.
 GL_SDK_MANIFEST_SHA256 = 'f4b91f672be037fbac3f82494f1225deaf4c227a03f37ac3ffa56abb213b943f'
+LAPY_PROTOCOL_SHA256 = 'bb02c4aa814eaba7a7a423a31b29ff41f786212c2953678cf29434e85fa0f869'
 
 
 def digest(path):
@@ -48,6 +49,14 @@ def check():
     assert param['titleId'] == 'PPSA99008' and param['contentId'].endswith('PROSPEROEDEN0001')
     assert param['localizedParameters']['en-US']['titleName'] == 'ProsperoEden'
     assert param['pubtools']['loudnessSnd0'] == '-28.00'
+    lapy = json.loads((APP / 'lapy-manifest.json').read_text())
+    assert lapy['schema'] == 'lapy-owned-build/1'
+    assert lapy['target_title'] == 'PPSA99008' and lapy['mode'] == 'elf-helper'
+    assert lapy['max_requests'] == 1 and not lapy['service']
+    assert lapy['features'] == ['root_layout_probe_retry']
+    assert lapy['protocol_sha256'] == LAPY_PROTOCOL_SHA256
+    assert lapy['elf_sha256'] == digest(APP / 'lapy.elf')
+    assert (APP / 'lapy.elf').read_bytes()[:6] == b'\x7fELF\x02\x01'
     sound = (APP / 'sce_sys/snd0.at9').read_bytes()
     assert len(sound) <= 2 * 1024 * 1024 and sound[:4] == b'RIFF' and sound[8:12] == b'WAVE'
     fixture((APP / 'core-homebrew.nro').read_bytes())

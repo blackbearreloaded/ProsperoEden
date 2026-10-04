@@ -150,9 +150,10 @@ int main(int argc, char** argv) {
         std::setvbuf(report, nullptr, _IONBF, 0);
 #ifdef PS5_NATIVE
         // Filesystem access beyond the sandbox, first: every path below depends on it
-        // (assets_dir.h). The separately loaded upstream Lapy service handles this cooperative
-        // request. ProsperoEden contains no elevation payload. Without Lapy the app keeps its
-        // sandbox paths.
+        // (assets_dir.h). A resident upstream Lapy service gets the first opportunity; otherwise
+        // the packaged exact-title upstream helper is sent to the local elfldr. ProsperoEden
+        // contains no locally implemented kernel mutation code. If neither path works, the app
+        // keeps its sandbox paths.
         Eden::FilesystemAccessStatus() = static_cast<int>(elevation::request(elevation::Capability::filesystem));
         // Elevation leaves the effective group (1) apart from the real one (0), and Mesa turns
         // RADV's disk cache off for a process whose real and effective ids differ, so no
@@ -216,6 +217,7 @@ int main(int argc, char** argv) {
         {
             // The ids too: Mesa's disk cache turns itself off when the effective and real ids differ.
             const std::string access = "status=" + std::to_string(Eden::FilesystemAccessStatus()) +
+                " elevation=" + elevation::path() +
                 " app=" + Eden::AppDir() + " data=" + Eden::UserDir() + " game_files=" + Eden::AssetsDir() +
                 " uid=" + std::to_string(getuid()) + "/" + std::to_string(geteuid()) +
                 " gid=" + std::to_string(getgid()) + "/" + std::to_string(getegid());

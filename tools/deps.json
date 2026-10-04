@@ -86,6 +86,38 @@
       "setup_creates": ".deps/native/ps5-payload-sdk/bin/prospero-clang"
     },
     {
+      "name": "lapy-owned-helper",
+      "about": "Upstream Lapy one-shot elfldr owned-root helper source",
+      "kind": "git",
+      "url": "https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon.git",
+      "commit": "5b8397b9f2b5f12a7bc2f9c8745a00d1c2dd01ad",
+      "path": ".deps/PS5-Lapy-JB-Daemon-5b8397b"
+    },
+    {
+      "name": "lapy-payload-sdk",
+      "about": "Official PS5 Payload SDK v0.40 used by the pinned upstream Lapy helper (v0.41 changed the ucred attribute API)",
+      "kind": "archive",
+      "url": "https://github.com/ps5-payload-dev/sdk/releases/download/v0.40/ps5-payload-sdk.zip",
+      "sha256": "617fb702df3551f709b2db0a014e618cf39334c9348395a9b005e6504d076a42",
+      "extract": ".deps/lapy-ps5-payload-sdk-v0.40",
+      "strip": 1,
+      "creates": ".deps/lapy-ps5-payload-sdk-v0.40/bin/prospero-clang"
+    },
+    {
+      "name": "lapy-ps5log",
+      "about": "Pinned ps5log/1 single-header client used by the upstream Lapy helper build",
+      "kind": "files",
+      "dest": ".deps/lapy-ps5log-1ae1f918",
+      "creates": ".deps/lapy-ps5log-1ae1f918/ps5log.h",
+      "files": [
+        {
+          "name": "ps5log.h",
+          "url": "https://raw.githubusercontent.com/mpereiraesaa/ps5-agc-gears/1ae1f9182abd2770c131b97419034fb85173c2dc/native/ps5log/ps5log.h",
+          "sha256": "394af67d0f8b60b3335deb53396e52855ea2daa50ca914a456ea7663f48900c6"
+        }
+      ]
+    },
+    {
       "name": "ps5-vulkan-tools",
       "about": "Mihawk's PS5_Vulkan: the RADV build and link recipes",
       "kind": "git",

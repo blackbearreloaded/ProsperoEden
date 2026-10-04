@@ -58,6 +58,7 @@ toolchain: ## Check the host tools the build needs
 	@bash tools/check-toolchain.sh
 
 test: deps ## Host (Linux) build of the emulator and its test suites
+	bash tools/check-elevation-client.sh
 	bash tools/build-headless-host.sh
 
 install: ## Copy build/release/PPSA99008 to a console over FTP (PS5_HOST=<address>)

@@ -23,6 +23,7 @@ import tarfile
 import tempfile
 import time
 import urllib.request
+import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MANIFEST = json.loads((ROOT / 'tools/deps.json').read_text())
@@ -103,20 +104,43 @@ def extract(archive, destination, strip, only=()):
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = pathlib.Path(tempfile.mkdtemp(prefix='.deps-', dir=destination.parent))
     try:
-        with tarfile.open(archive) as tar:
-            members = []
-            for member in tar.getmembers():
-                parts = pathlib.PurePosixPath(member.name).parts[strip:]
-                if not parts:
-                    continue
-                member.name = str(pathlib.PurePosixPath(*parts))
-                if only and not any(member.name == keep or member.name.startswith(keep.rstrip('/') + '/')
-                                    for keep in only):
-                    continue
-                members.append(member)
-            # Python 3.11.0-3.11.3 has no extraction filters; the archive's hash was checked.
-            safe = {'filter': 'data'} if hasattr(tarfile, 'data_filter') else {}
-            tar.extractall(staging, members=members, **safe)
+        if zipfile.is_zipfile(archive):
+            with zipfile.ZipFile(archive) as zipped:
+                for member in zipped.infolist():
+                    parts = pathlib.PurePosixPath(member.filename).parts[strip:]
+                    if not parts:
+                        continue
+                    relative = pathlib.PurePosixPath(*parts)
+                    if only and not any(str(relative) == keep or
+                                        str(relative).startswith(keep.rstrip('/') + '/')
+                                        for keep in only):
+                        continue
+                    target = staging.joinpath(*relative.parts)
+                    if member.is_dir():
+                        target.mkdir(parents=True, exist_ok=True)
+                        continue
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with zipped.open(member) as source, open(target, 'wb') as output:
+                        shutil.copyfileobj(source, output)
+                    mode = member.external_attr >> 16
+                    if mode:
+                        target.chmod(mode)
+        else:
+            with tarfile.open(archive) as tar:
+                members = []
+                for member in tar.getmembers():
+                    parts = pathlib.PurePosixPath(member.name).parts[strip:]
+                    if not parts:
+                        continue
+                    member.name = str(pathlib.PurePosixPath(*parts))
+                    if only and not any(member.name == keep or
+                                        member.name.startswith(keep.rstrip('/') + '/')
+                                        for keep in only):
+                        continue
+                    members.append(member)
+                # Python 3.11.0-3.11.3 has no extraction filters; the archive's hash was checked.
+                safe = {'filter': 'data'} if hasattr(tarfile, 'data_filter') else {}
+                tar.extractall(staging, members=members, **safe)
         destination.mkdir(parents=True, exist_ok=True)
         for entry in staging.iterdir():
             target = destination / entry.name

@@ -13,11 +13,13 @@
 This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.050**.
 
 > [!WARNING]
-> **ProsperoEden does not embed or bundle Lapy.** For normal use, load a compatible upstream
-> [PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon) owned-root service before
-> starting ProsperoEden. The app launches without Lapy, but remains sandboxed and cannot use its
-> normal `/data/prosperoeden` storage or game files outside the sandbox. The release ZIP contains
-> only ProsperoEden; Lapy must be obtained and loaded separately.
+> **ProsperoEden includes an exact-title one-shot helper built from upstream
+> [PS5-Lapy-JB-Daemon](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon).** The PS5 jailbreak
+> environment must provide a local ELF loader on TCP port 9021. If a resident Lapy service is
+> already running, ProsperoEden gives it the first bounded opportunity; otherwise it sends the
+> packaged helper over that local connection. No separate Lapy payload is required for normal use.
+> Upstream has validated this helper lifecycle on firmware 12.02; other supported firmware remains
+> experimental and should be tested cautiously.
 
 ## Source code
 
@@ -71,7 +73,7 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 
 1. Download and extract the release ZIP.
 2. Copy the included `PPSA99008` folder to `/data/homebrew/PPSA99008` on the PS5.
-3. Load a compatible upstream Lapy owned-root service. Lapy is not included in the ZIP and must be running before ProsperoEden starts; both its one-shot and resident-service modes use the same request.
+3. Make sure your jailbreak environment's local ELF loader is listening on TCP port 9021. ProsperoEden includes and sends its title-specific upstream Lapy helper automatically; a separately loaded resident Lapy service is optional.
 4. Put your own legally dumped keys, firmware, and games in a **game files folder** (layout below). It can be anywhere the PS5 can read: internal storage, an M.2 or external drive, or a USB device.
 5. Launch **ProsperoEden**, open **Settings > Game files**, browse to that folder and select it. The default is `/data/prosperoeden`.
 6. Close and reopen ProsperoEden, then open **Library**. Setup is checked when the app opens, so reopen it after changing the folder or adding keys or firmware.
@@ -320,8 +322,9 @@ Please do not use pull requests or other channels to post that kind of content e
 
 Filesystem elevation uses [PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon),
 created by ArkSama. ProsperoEden follows the cooperative owned-root design and implementation
-from [mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). Lapy runs
-separately on the console and is not embedded in ProsperoEden or its release files.
+from [mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). The build
+pins that upstream source, builds its exact-title one-shot helper without local payload changes,
+verifies the upstream-generated manifest, and includes the resulting ELF in the release.
 
 ## Thanks
 
