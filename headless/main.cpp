@@ -12,6 +12,7 @@
 #include "jit_list.h"
 #ifdef PS5_NATIVE
 #include "elevation/elevation.hpp"
+#include "boot_trace.h"
 #include <sys/stat.h>
 #endif
 #ifdef EDEN_DEV_VULKAN
@@ -146,12 +147,17 @@ int main(int argc, char** argv) {
         SCOPE_EXIT { if (report != stdout) std::fclose(report); };
         std::setvbuf(report, nullptr, _IONBF, 0);
 #ifdef PS5_NATIVE
+        Eden::BootTrace::Begin(Eden::kAppVersion, __DATE__ " " __TIME__);
+        Eden::BootTrace::Line("requesting filesystem access");
         // Filesystem access beyond the sandbox, first: every path below depends on it
         // (assets_dir.h). A resident upstream Lapy service gets the first opportunity; otherwise
         // the packaged exact-title upstream helper is sent to the local elfldr. ProsperoEden
         // contains no locally implemented kernel mutation code. If neither path works, the app
         // keeps its sandbox paths.
         Eden::FilesystemAccessStatus() = static_cast<int>(elevation::request(elevation::Capability::filesystem));
+        Eden::BootTrace::Line("filesystem access returned status=%d, uid %d/%d gid %d/%d", Eden::FilesystemAccessStatus(),
+                              static_cast<int>(getuid()), static_cast<int>(geteuid()), static_cast<int>(getgid()),
+                              static_cast<int>(getegid()));
 #if defined(EDEN_DEV_PROFILE)
         // Upstream Lapy deliberately accepts only a single-threaded target. Keep every
         // development worker behind the completed elevation exchange.
@@ -195,6 +201,8 @@ int main(int argc, char** argv) {
         if (!stderr_pipe.Attach(stderr) || !stdout_pipe.Attach(stdout))
             Eden::Report("logs", "Asynchronous log writing unavailable; writing directly");
         Eden::Crash::Install(Eden::LogsDir(), Eden::kAppVersion, last_crash.restarted);
+        Eden::BootTrace::Ready(Eden::LogsDir(), Eden::FilesystemAccess());
+        Eden::BootTrace::Line("logs and crash handler ready (%s)", Eden::LogsDir().c_str());
         std::set_new_handler([] {
             ps5_opengl_heap_snapshot("allocation_failure", 0);
             std::fflush(stdout);
@@ -397,11 +405,14 @@ int main(int argc, char** argv) {
         if (selected_game.empty())
             throw std::runtime_error("Development ROM not found");
         } else {
+            Eden::BootTrace::Line("opening the launcher");
             selected_game = SelectProsperoEdenGame(launch_error);
         }
 #else
+        Eden::BootTrace::Line("opening the launcher");
         selected_game = SelectProsperoEdenGame(launch_error);
 #endif
+        Eden::BootTrace::Line("launcher closed: %s", selected_game.empty() ? "no game (quit)" : "a game was chosen");
         }
         if (selected_game.empty()) {
             Eden::Report("exit", "Launcher closed");
@@ -920,8 +931,10 @@ int main(int argc, char** argv) {
         std::unique_ptr<Eden::Pad> pad;
         bool return_to_menu = false;
         if (devices || game) {
+            Eden::BootTrace::Line("opening the controllers");
             pad = std::make_unique<Eden::Pad>();
             if (!pad->Open()) throw std::runtime_error("PS5 controller initialization failed");
+            Eden::BootTrace::Line("controllers open");
             Settings::values.audio_output_device_id = "ps5";
             // Settings > Controls, or the game's own (Library > Game settings > Controls).
             const auto controls = Eden::PreferencesFor(game_title);
@@ -944,7 +957,9 @@ int main(int argc, char** argv) {
         }
         {
 #ifdef EDEN_PS5_OPENGL
+            Eden::BootTrace::Line("opening the graphics window (%s)", backend == Eden::GraphicsBackend::Vulkan ? "Vulkan" : "OpenGL");
             Eden::GraphicsWindow window(backend == Eden::GraphicsBackend::Vulkan);
+            Eden::BootTrace::Line("graphics window open");
 #ifdef EDEN_GPU_PROBE
             window.RunGpuProbe();
             passed("GPU_PROBE_COMPLETE");
@@ -1055,6 +1070,7 @@ int main(int argc, char** argv) {
                     }
                 });
 #endif
+                Eden::BootTrace::Line("loading the game");
                 Core::SystemResultStatus loaded;
                 try {
                     loaded = system.Load(window, guest, params);
@@ -1089,6 +1105,7 @@ int main(int argc, char** argv) {
                     for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
                 }
 #endif
+                Eden::BootTrace::Line("game loaded (status %u)", static_cast<unsigned>(loaded));
                 Eden::Report("loader", "Game loaded; initializing renderer");
 #ifdef EDEN_PS5_OPENGL
                 // Retain the failure, then release CPU readiness and complete normal
