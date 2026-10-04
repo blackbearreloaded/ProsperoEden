@@ -18,8 +18,9 @@ This is an early alpha. Video, audio, controller input, and saves have been conf
 > environment must provide a local ELF loader on TCP port 9021. If a resident Lapy service is
 > already running, ProsperoEden gives it the first bounded opportunity; otherwise it sends the
 > packaged helper over that local connection. No separate Lapy payload is required for normal use.
-> Upstream has validated this helper lifecycle on firmware 12.02; other supported firmware remains
-> experimental and should be tested cautiously.
+> The packaged helper's corrected donor lifecycle passed five automated launch/elevate/close cycles
+> on both firmware 6.02 and 12.70. Other supported firmware remains experimental and should be
+> tested cautiously; the helper also refuses unknown runtime layouts instead of guessing.
 
 ## Source code
 
@@ -330,6 +331,11 @@ created by ArkSama. ProsperoEden follows the cooperative owned-root design and i
 from [mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). The build
 pins that upstream source, builds its exact-title one-shot helper without local payload changes,
 verifies the upstream-generated manifest, and includes the resulting ELF in the release.
+The donor-release fix pinned here is proposed upstream in
+[PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48).
+The same packaged helper passed five automated launch/elevate/close cycles on firmware 6.02 and
+five on 12.70 with root access, balanced donor references, clean helper exits, and no fatal signal,
+app crash, coredump, nonsleeping-lock warning, or kernel panic in the captured kernel-log windows.
 
 ## Thanks
 

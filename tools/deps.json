@@ -90,8 +90,8 @@
       "about": "Upstream Lapy one-shot elfldr owned-root helper source",
       "kind": "git",
       "url": "https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon.git",
-      "commit": "5b8397b9f2b5f12a7bc2f9c8745a00d1c2dd01ad",
-      "path": ".deps/PS5-Lapy-JB-Daemon-5b8397b"
+      "commit": "54a095c0f19161825e845daa760a03b446e654fa",
+      "path": ".deps/PS5-Lapy-JB-Daemon-54a095c"
     },
     {
       "name": "lapy-payload-sdk",
