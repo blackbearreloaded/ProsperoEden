@@ -2301,6 +2301,7 @@ endif()
                 "${launcher_dir}/pe/ui/browse.cpp"
                 "${launcher_dir}/pe/ui/game_options.cpp"
                 "${launcher_dir}/pe/ui/profiles.cpp"
+                "${launcher_dir}/pe/ui/update.cpp"
                 "${launcher_dir}/pe/ui/home.cpp"
                 "${launcher_dir}/pe/ui/launcher.cpp"
                 "${launcher_dir}/pe/ui/library.cpp"
@@ -2325,9 +2326,19 @@ endif()
             find_program(UPDATE_CHECK_OBJCOPY NAMES llvm-objcopy-18 llvm-objcopy REQUIRED)
             add_library(update-check OBJECT
                 "${EDEN_PORT_DIR}/update_check/update_check.c"
-                "${EDEN_PORT_DIR}/update_check/console_curl.c")
+                "${EDEN_PORT_DIR}/update_check/console_curl.c"
+                "${EDEN_PORT_DIR}/update_check/self_update.c"
+                "${EDEN_PORT_DIR}/update_check/self_update_ps5.c"
+                "${EDEN_PORT_DIR}/update_check/self_update_sha256.c")
             target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}")
-            target_compile_definitions(update-check PRIVATE CURL_STATICLIB=1)
+            # The kit's paths are the app's own: after elevation /app0 and /download0 are gone
+            # (update_notice.cpp gives them).
+            target_compile_definitions(update-check PRIVATE CURL_STATICLIB=1
+                "SELF_UPDATE_HELPER_PATH=eden_self_update_path(0)"
+                "SELF_UPDATE_PARAM_PATH=eden_self_update_path(1)"
+                "SELF_UPDATE_SEQUENCE_PATH=eden_self_update_path(2)")
+            set_source_files_properties("${EDEN_PORT_DIR}/update_check/self_update_ps5.c"
+                PROPERTIES COMPILE_OPTIONS "-include;${EDEN_PORT_DIR}/update_check/eden_paths.h")
             # Every function console_curl.c defines under a libc name.
             set(update_own
                 getaddrinfo freeaddrinfo gai_strerror gethostbyname getnameinfo fnmatch getpwuid_r

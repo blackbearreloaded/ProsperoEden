@@ -484,7 +484,32 @@ std::vector<pe::ui::Game> EdenServices::games() {
 
 std::string EdenServices::game_path(const std::string& file) { return Eden::AssetsPath("roms/" + file); }
 
-bool EdenServices::take_update(std::string* version) { return Eden::UpdateNotice::Take(version); }
+bool EdenServices::take_update(pe::ui::UpdateOffer* offer) {
+    Eden::UpdateNotice::Offer found;
+    if (!Eden::UpdateNotice::Take(&found)) return false;
+    offer->version = found.version;
+    offer->size = found.size;
+    offer->installable = found.installable;
+    return true;
+}
+
+bool EdenServices::start_update() { return Eden::UpdateNotice::Begin(); }
+
+pe::ui::UpdateStatus EdenServices::update_status() {
+    const Eden::UpdateNotice::Progress progress = Eden::UpdateNotice::Poll();
+    pe::ui::UpdateStatus status;
+    status.phase = static_cast<pe::ui::UpdatePhase>(progress.phase);  // the same order
+    status.done = progress.done;
+    status.total = progress.total;
+    status.error = progress.error;
+    return status;
+}
+
+void EdenServices::cancel_update() { Eden::UpdateNotice::Cancel(); }
+
+bool EdenServices::apply_update() { return Eden::UpdateNotice::Apply(); }
+
+void EdenServices::finish_update() { Eden::UpdateNotice::Finish(); }
 
 std::vector<pe::ui::Profile> EdenServices::profiles() {
     const auto who = Eden::Profiles::Resolve(user_);

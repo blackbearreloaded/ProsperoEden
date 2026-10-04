@@ -253,14 +253,58 @@ void pictures(Stage &s)
     s.wait(0.32f);
     s.shoot("12-launching-late");
 
-    // A newer release is listed: the notification at the top right, for ten seconds.
+    // A newer release the app cannot install itself: the notification at the top right, for ten
+    // seconds.
     s.restart();
     s.wait(1.0f);
-    s.services.update_version = "v1.000.050";
+    s.services.update_version = "v1.000.060";
+    s.services.update_installable = false;
     s.wait(1.2f);
     s.shoot("58-update-notice");
     s.wait(9.5f);
     s.shoot("59-update-notice-gone");
+    s.services.update_installable = true;
+
+    // One it can: the offer when the app opens, then the install (a step per frame in the
+    // preview: 40 preparing, 360 downloading, 120 unpacking).
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(2.6f);
+    s.shoot("70-update-offer");
+    s.press({Key::right});
+    s.wait(0.4f);
+    s.shoot("71-update-offer-skip");
+    s.press({Key::left, Key::cross});
+    s.wait(0.3f);
+    s.shoot("72-update-preparing");
+    s.wait(3.2f);
+    s.shoot("73-update-downloading");
+    s.wait(3.5f);
+    s.shoot("74-update-unpacking");
+    s.wait(2.2f);
+    s.shoot("75-update-ready");
+    s.wait(0.9f);
+    s.shoot("76-update-ready-late");
+    // Cancelled while it downloads: the dialog closes, nothing changed.
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(2.6f);
+    s.press({Key::cross});
+    s.wait(1.5f);
+    s.press({Key::circle});
+    s.wait(0.1f);
+    s.shoot("77-update-cancelling");
+    s.wait(1.0f);
+    s.shoot("78-update-cancelled");
+    // A failure: what went wrong, and Try again or Close.
+    s.services.update_version = "v1.000.060";
+    s.services.update_fails = true;
+    s.restart(true);
+    s.wait(2.6f);
+    s.press({Key::cross});
+    s.wait(7.4f);
+    s.shoot("79-update-failed");
+    s.services.update_fails = false;
 
     // A game's file taken away while the menu shows it: within a moment it leaves the home screen
     // (another recent game takes its place) and the Library.

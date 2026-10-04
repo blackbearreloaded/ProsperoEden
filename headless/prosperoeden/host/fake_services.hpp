@@ -86,15 +86,69 @@ class FakeServices final : public ui::Services
         people.erase(people.begin() + index);
         return true;
     }
-    // A newer release for the preview to announce: handed over once.
+    // A newer release for the preview to offer: handed over once. Installing it goes through its
+    // phases a step per look (the launcher looks once a frame); update_fails ends it in a failure.
     std::string update_version;
-    bool take_update(std::string *version) override
+    bool update_installable = true;
+    bool update_fails = false;
+    int update_steps = -1; // looks since start_update; -1: not begun
+    bool update_cancelled = false;
+    bool take_update(ui::UpdateOffer *offer) override
     {
         if (update_version.empty())
             return false;
-        *version = update_version;
+        offer->version = update_version;
+        offer->size = 38215192;
+        offer->installable = update_installable;
         update_version.clear();
         return true;
+    }
+    bool start_update() override
+    {
+        update_steps = 0;
+        update_cancelled = false;
+        return true;
+    }
+    ui::UpdateStatus update_status() override
+    {
+        ui::UpdateStatus status;
+        if (update_steps < 0)
+            return status;
+        const int step = update_steps++;
+        constexpr std::uint64_t kSize = 38215192;
+        if (update_cancelled)
+            status.phase = step < 20 ? ui::UpdatePhase::starting : ui::UpdatePhase::cancelled;
+        else if (step < 40)
+            status.phase = ui::UpdatePhase::starting;
+        else if (step < 400)
+        {
+            status.phase = ui::UpdatePhase::downloading;
+            status.total = kSize;
+            status.done = kSize * static_cast<std::uint64_t>(step - 40) / 360;
+        }
+        else if (update_fails)
+        {
+            status.phase = ui::UpdatePhase::failed;
+            status.error = "Download failed: the connection was lost";
+        }
+        else if (step < 520)
+            status.phase = ui::UpdatePhase::unpacking;
+        else
+            status.phase = ui::UpdatePhase::ready;
+        return status;
+    }
+    void cancel_update() override
+    {
+        update_cancelled = true;
+        update_steps = 0;
+    }
+    bool apply_update() override
+    {
+        return update_steps >= 0;
+    }
+    void finish_update() override
+    {
+        update_steps = -1;
     }
     // Game files the preview takes away from the folder, as a player would by deleting them.
     std::vector<std::string> removed;

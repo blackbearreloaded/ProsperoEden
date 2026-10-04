@@ -2,17 +2,28 @@
 #include "update_notice.h"
 
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <mutex>
 #include <pthread.h>
 #include <string>
 
 #include "diagnostics.h"
 #include "storage_paths.h"
+#include "update_check/self_update.h"
 #include "update_check/update_check.h"
 #ifdef EDEN_DEV_PROFILE
 #include <fstream>
-#include <iterator>
 #endif
+
+// The kit's paths, the app's own (update_check/eden_paths.h): after elevation /app0 and /download0
+// are gone, so they follow storage_paths.h.
+extern "C" const char* eden_self_update_path(int which) {
+    static const std::string helper = Eden::AppFile("self-updater.elf");
+    static const std::string param = Eden::AppFile("sce_sys/param.json");
+    static const std::string sequence = Eden::ConfigFile("self-update-sequence");
+    return which == 0 ? helper.c_str() : which == 1 ? param.c_str() : sequence.c_str();
+}
 
 namespace Eden::UpdateNotice {
 namespace {
@@ -21,57 +32,76 @@ constexpr std::size_t kStackSize = 1024 * 1024;
 
 std::mutex lock;
 bool started = false;
-bool found = false;  // a newer release nobody has been told about yet
-std::string newer;
+bool found = false;  // an offer nobody has been told about yet
+self_update_check_result answer = SELF_UPDATE_UNKNOWN;
+self_update_offer offer{};
+self_update_job job{};  // zero until the first Begin, as the kit asks
+bool begun = false;
+
+const char* ResultName(self_update_check_result result) {
+    static const char* const names[] = {"available", "up-to-date", "unknown", "untrusted", "not-installable"};
+    return static_cast<unsigned>(result) < 5 ? names[result] : "?";
+}
+
+#ifdef EDEN_DEV_PROFILE
+// Development: update-offer.txt in the app folder replaces the catalog's answer (it skips the
+// catalog's signature), so the update can be tried before the catalog lists a newer release. Five
+// lines, as the boilerplate's example takes them: the new content version, the release's name,
+// its ZIP on GitHub, its SHA-256, its size in bytes.
+bool DevelopmentOffer(self_update_offer& out) {
+    std::ifstream file(AppFile("update-offer.txt"));
+    std::string available, version, artifact, sha256, size;
+    if (!file || !std::getline(file, available) || !std::getline(file, version) || !std::getline(file, artifact) ||
+        !std::getline(file, sha256) || !std::getline(file, size))
+        return false;
+    self_update_offer filled{};
+    if (!update_check_read_param(AppFile("sce_sys/param.json").c_str(), filled.title, filled.installed)) return false;
+    std::snprintf(filled.name, sizeof(filled.name), "ProsperoEden");
+    std::snprintf(filled.available, sizeof(filled.available), "%s", available.c_str());
+    std::snprintf(filled.version, sizeof(filled.version), "%s", version.c_str());
+    std::snprintf(filled.artifact, sizeof(filled.artifact), "%s", artifact.c_str());
+    std::snprintf(filled.sha256, sizeof(filled.sha256), "%s", sha256.c_str());
+    filled.size = std::strtoull(size.c_str(), nullptr, 10);
+    out = filled;
+    return true;
+}
+#endif
 
 void* Check(void*) {
-    char title[10]{};
-    char installed[12]{};
-    update_check_result result{};
-    // The app's own title ID and content version: its param.json, which the package carries
-    // (/app0 in the sandbox, the install folder with filesystem access).
-    if (!update_check_read_param(AppFile("sce_sys/param.json").c_str(), title, installed)) {
-        Report("update check", "The app's param.json could not be read");
-        return nullptr;
-    }
+    self_update_offer result{};
+    self_update_check_result state = self_update_check_self(&result);
 #ifdef EDEN_DEV_PROFILE
-    // A development run can pretend to be another version: update-installed.txt in the app folder.
-    if (std::ifstream pretend(AppFile("update-installed.txt")); pretend) {
-        std::string text;
-        pretend >> text;
-        unsigned parts[3];
-        if (update_check_version_parse(text.c_str(), parts) == 1)
-            std::snprintf(installed, sizeof(installed), "%s", text.c_str());
-    }
-    // And it can be given the catalog's answer, to see the notification before the catalog lists
-    // a newer release: update-answer.json in the app folder, read after the real request.
-    std::string answer;
-    if (std::ifstream pretend(AppFile("update-answer.json")); pretend)
-        answer.assign(std::istreambuf_iterator<char>(pretend), std::istreambuf_iterator<char>());
-#endif
-    update_check_run(title, installed, &result);
-#ifdef EDEN_DEV_PROFILE
-    if (!answer.empty()) {
-        char line[200];
-        std::snprintf(line, sizeof(line), "real answer: state=%d (%s) http=%d error=%d; update-answer.json is used",
-                      static_cast<int>(result.state), update_check_reason_text(result.reason), result.http_status,
-                      result.platform_error);
-        Report("update check", line);
-        update_check_evaluate(answer.data(), answer.size(), installed, &result);
+    if (DevelopmentOffer(result)) {
+        Report("update check", "Development: update-offer.txt replaces the catalog's answer");
+        state = SELF_UPDATE_AVAILABLE;
     }
 #endif
-    char line[256];
-    std::snprintf(line, sizeof(line), "state=%d (%s) installed=%s catalog=%s version=%s http=%d error=%d",
-                  static_cast<int>(result.state), update_check_reason_text(result.reason), result.installed,
+    char line[300];
+    std::snprintf(line, sizeof(line), "result=%s installed=%s available=%s version=%s size=%llu",
+                  ResultName(state), result.installed[0] ? result.installed : "-",
                   result.available[0] ? result.available : "-", result.version[0] ? result.version : "-",
-                  result.http_status, result.platform_error);
+                  static_cast<unsigned long long>(result.size));
     Report("update check", line);
-    if (result.state == UPDATE_CHECK_AVAILABLE) {
+    if (state == SELF_UPDATE_AVAILABLE || state == SELF_UPDATE_NOT_INSTALLABLE) {
         const std::lock_guard guard(lock);
-        newer = result.version[0] != '\0' ? result.version : result.available;
+        answer = state;
+        offer = result;
         found = true;
     }
     return nullptr;
+}
+
+Phase FromKit(self_update_phase phase) {
+    switch (phase) {
+    case SELF_UPDATE_STARTING: return Phase::starting;
+    case SELF_UPDATE_DOWNLOADING: return Phase::downloading;
+    case SELF_UPDATE_UNPACKING: return Phase::unpacking;
+    case SELF_UPDATE_READY: return Phase::ready;
+    case SELF_UPDATE_APPLYING: return Phase::applying;
+    case SELF_UPDATE_CANCELLED: return Phase::cancelled;
+    case SELF_UPDATE_FAILED: return Phase::failed;
+    default: return Phase::idle;
+    }
 }
 } // namespace
 
@@ -91,11 +121,60 @@ void Start() {
     pthread_attr_destroy(&attributes);
 }
 
-bool Take(std::string* version) {
+bool Take(Offer* out) {
     const std::lock_guard guard(lock);
     if (!found) return false;
     found = false;
-    if (version) *version = newer;
+    if (out) {
+        out->installable = answer == SELF_UPDATE_AVAILABLE;
+        out->version = offer.version[0] != '\0' ? offer.version : offer.available;
+        out->available = offer.available;
+        out->size = offer.size;
+    }
     return true;
+}
+
+bool Begin() {
+    const std::lock_guard guard(lock);
+    if (answer != SELF_UPDATE_AVAILABLE) return false;
+    if (begun) self_update_finish(&job);
+    begun = self_update_start(&job, self_update_console(), &offer) == 1;
+    Report("update", begun ? ("Updating to " + std::string(offer.available)).c_str() : "The update could not begin");
+    return begun;
+}
+
+Progress Poll() {
+    Progress progress;
+    const std::lock_guard guard(lock);
+    if (!begun) return progress;
+    self_update_status status{};
+    self_update_poll(&job, &status);
+    progress.phase = FromKit(status.phase);
+    progress.done = status.done;
+    progress.total = status.total;
+    progress.time_left = status.time_left;
+    progress.error = status.error;
+    return progress;
+}
+
+void Cancel() {
+    const std::lock_guard guard(lock);
+    if (begun) self_update_cancel(&job);
+}
+
+bool Apply() {
+    const std::lock_guard guard(lock);
+    if (!begun) return false;
+    const bool going = self_update_apply(&job) == 1;
+    Report("update", going ? "Staged: the helper replaces the files once ProsperoEden has closed"
+                           : "The helper did not take the go-ahead");
+    return going;
+}
+
+void Finish() {
+    const std::lock_guard guard(lock);
+    if (!begun) return;
+    self_update_finish(&job);
+    begun = false;
 }
 } // namespace Eden::UpdateNotice

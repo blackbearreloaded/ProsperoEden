@@ -50,6 +50,13 @@ rm -rf "$app/ui"
 cp -a "$root/headless/prosperoeden/ui" "$app/ui"
 # Elevation is provided by the separately loaded upstream PS5-Lapy-JB-Daemon.
 # The app package deliberately contains no privileged helper or kernel payload.
+# The self-update helper (headless/self_update_helper, the boilerplate's) is an ordinary payload:
+# the app sends it to the console's payload loader to replace the app's files once it has closed.
+# It does file work with the rights every payload has and never touches the kernel.
+make -s -C "$root/headless/self_update_helper" PS5_PAYLOAD_SDK="$template/.deps/native/ps5-payload-sdk" \
+    OUTPUT="$root/build/self-update/self-updater.elf"
+python3 "$root/tools/validate-loader-elf.py" "$root/build/self-update/self-updater.elf"
+cp "$root/build/self-update/self-updater.elf" "$app/self-updater.elf"
 python3 - "$root" "$scratch" "$app" "${1:-}" <<'PY'
 import json, pathlib, re, runpy, shutil, sys
 root, scratch, app = map(pathlib.Path, sys.argv[1:4])

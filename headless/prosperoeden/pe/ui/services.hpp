@@ -30,6 +30,33 @@ enum class Key : std::uint8_t
     right,
 };
 
+// A newer release of the app, listed on homebrew.page.
+struct UpdateOffer
+{
+    std::string version;      // its name: "v1.000.060"
+    std::uint64_t size = 0;   // its download in bytes; 0 when not known
+    bool installable = false; // the app can install it itself (otherwise it is only announced)
+};
+// Where installing it is.
+enum class UpdatePhase : std::uint8_t
+{
+    idle,
+    starting,
+    downloading,
+    unpacking,
+    ready,
+    applying,
+    cancelled,
+    failed,
+};
+struct UpdateStatus
+{
+    UpdatePhase phase = UpdatePhase::idle;
+    std::uint64_t done = 0;
+    std::uint64_t total = 0; // 0 while not known
+    std::string error;       // why it failed (English, technical)
+};
+
 // A game file in the games folder.
 struct Game
 {
@@ -201,11 +228,33 @@ class Services
         return 1u;
     }
     virtual std::string version() = 0; // "v1.000.040"
-    // A newer release than this one is listed (asked once per launch): its name, handed over
-    // once, when the answer has come.
-    virtual bool take_update(std::string *)
+    // A newer release than this one is listed (asked once per launch): handed over once, when the
+    // answer has come.
+    virtual bool take_update(UpdateOffer *)
     {
         return false;
+    }
+    // Installing it (the offer must be installable): begin downloading and unpacking it beside the
+    // app (false: it could not begin), where that is, stop it (nothing is changed before
+    // apply_update), and once it is ready the go-ahead (true: the app must close now; its files
+    // are replaced once it has). finish_update after a cancel or a failure.
+    virtual bool start_update()
+    {
+        return false;
+    }
+    virtual UpdateStatus update_status()
+    {
+        return {};
+    }
+    virtual void cancel_update()
+    {
+    }
+    virtual bool apply_update()
+    {
+        return false;
+    }
+    virtual void finish_update()
+    {
     }
 
     // ---- library ----

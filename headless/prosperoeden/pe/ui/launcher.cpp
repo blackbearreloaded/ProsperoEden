@@ -15,6 +15,8 @@ namespace
 {
 // How long the notification of a newer release stays.
 constexpr float kUpdateNoticeSeconds = 10.0f;
+// The update dialog's full height (update.cpp).
+constexpr float kUpdatePanelHeight = 688.0f;
 } // namespace
 
 namespace
@@ -167,6 +169,8 @@ void Launcher::press(Key key)
         return press_mapping(key);
     if (modal_ == Modal::profiles)
         return press_profiles(key);
+    if (modal_ == Modal::update)
+        return press_update(key);
     if (modal_ != Modal::none)
         return press_dialog(key);
     switch (screen_)
@@ -251,18 +255,9 @@ void Launcher::update(float dt)
         check_games_present();
     }
 
-    // A newer release: said once, at the top right, for ten seconds.
-    if (update_notice_left_ <= 0.0f && selected_game_.empty())
-    {
-        std::string newer;
-        if (services_.take_update(&newer) && !newer.empty())
-        {
-            // "v1.000.050" and "1.000.050" both read as the number.
-            update_version_ = newer.size() > 1 && (newer[0] == 'v' || newer[0] == 'V') ? newer.substr(1) : newer;
-            update_notice_left_ = kUpdateNoticeSeconds;
-            cue(Cue::notify);
-        }
-    }
+    // A newer release: the update dialog, or a notification when the app cannot install it.
+    update_offer(dt);
+    update_install(dt);
     if (update_notice_left_ > 0.0f)
         update_notice_left_ = std::max(0.0f, update_notice_left_ - dt);
     // It slides away over its last moments.
@@ -281,6 +276,46 @@ void Launcher::update(float dt)
         launch_.update(dt);
         if (!launch_.running)
             done_ = true;
+    }
+}
+
+void Launcher::update_offer(float dt)
+{
+    (void)dt;
+    if (!update_waiting_ && update_notice_left_ <= 0.0f && selected_game_.empty() && update_.version.empty())
+    {
+        UpdateOffer offer;
+        if (services_.take_update(&offer) && !offer.version.empty())
+        {
+            // "v1.000.050" and "1.000.050" both read as the number.
+            const std::string &newer = offer.version;
+            update_version_ = newer.size() > 1 && (newer[0] == 'v' || newer[0] == 'V') ? newer.substr(1) : newer;
+            if (offer.installable && first_start_)
+            {
+                // Asked each time the app opens (not on returning from a game).
+                update_ = offer;
+                update_waiting_ = true;
+            }
+            else
+            {
+                update_notice_left_ = kUpdateNoticeSeconds;
+                cue(Cue::notify);
+            }
+        }
+    }
+    // The dialog waits for the welcome and for whatever dialog is open to close.
+    if (update_waiting_ && modal_ == Modal::none && modal_shown_ == Modal::none && !transition_.running &&
+        selected_game_.empty() && intro_ > 1.2f)
+    {
+        update_waiting_ = false;
+        update_stage_ = UpdateStage::offer;
+        update_stage_time_ = 0.0f;
+        update_choice_ = 0;
+        update_choice_x_.snap(0.0f);
+        update_height_.snap(kUpdatePanelHeight);
+        modal_ = modal_shown_ = Modal::update;
+        message_.clear();
+        cue(Cue::notify);
     }
 }
 
@@ -415,6 +450,8 @@ void Launcher::draw(gfx::DrawList &list)
             draw_mapping(c, opened);
         else if (modal_shown_ == Modal::profiles)
             draw_profiles(c, opened);
+        else if (modal_shown_ == Modal::update)
+            draw_update(c, opened);
         else
             draw_dialog(c, modal_shown_, opened);
     }
@@ -422,6 +459,13 @@ void Launcher::draw(gfx::DrawList &list)
     draw_update_notice(c);
     if (launching)
         draw_launch(c);
+    // Closing for the update: the screen goes dark over the last moments.
+    if (modal_shown_ == Modal::update && update_stage_ == UpdateStage::closing)
+    {
+        const float dark = tween::cubic_in_out((update_stage_time_ - 2.2f) / 0.8f);
+        if (dark > 0.0f)
+            list.rounded_rect(kScreen, 0.0f, Color{0.0f, 0.0f, 0.0f, dark});
+    }
 
     // The launcher arrives out of the dark.
     const float arrival = 1.0f - tween::cubic_out(intro_ / (first_start_ ? 0.7f : 0.45f));
