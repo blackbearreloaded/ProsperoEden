@@ -33,12 +33,18 @@ inline bool DirectoryExists(const std::string& path) {
     return stat(path.c_str(), &info) == 0 && S_ISDIR(info.st_mode);
 }
 
-// The app's own files (eboot, ui/, development markers).
+// Where the PS5 mounts the app it runs, whatever the source: a folder anywhere ShadowMountPlus
+// scans (/data, ext or USB drives, its manual list) or an image.
+inline constexpr const char* kMountedAppDir = "/system_ex/app/PPSA99008";
+
+// The app's own files (eboot, ui/, development markers): /app0 while it is still mounted (some
+// kinds of filesystem access keep it), else the PS5's mount of the running app, else the usual
+// install folder. The mount follows ShadowMountPlus: an app on a USB drive is found there although
+// /data/homebrew may hold nothing or an older copy.
 inline const std::string& AppDir() {
     static const std::string directory = [] {
         if (!FilesystemAccess()) return std::string{"/app0"};
-        // A console root has no /app0: the sandbox mounts it from the install folder.
-        for (const char* candidate : {kInstallDir, "/mnt/sandbox/PPSA99008_000/app0"})
+        for (const char* candidate : {"/app0", kMountedAppDir, kInstallDir, "/mnt/sandbox/PPSA99008_000/app0"})
             if (FileExists(std::string{candidate} + "/eboot.bin")) return std::string{candidate};
         return std::string{kInstallDir};
     }();

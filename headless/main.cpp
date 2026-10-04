@@ -203,6 +203,11 @@ int main(int argc, char** argv) {
         Eden::Crash::Install(Eden::LogsDir(), Eden::kAppVersion, last_crash.restarted);
         Eden::BootTrace::Ready(Eden::LogsDir(), Eden::FilesystemAccess());
         Eden::BootTrace::Line("logs and crash handler ready (%s)", Eden::LogsDir().c_str());
+        for (const char* folder : {"/app0", Eden::kMountedAppDir, Eden::kInstallDir, "/mnt/sandbox/PPSA99008_000/app0"})
+            Eden::BootTrace::Line("app folder candidate %s: eboot %s, font %s", folder,
+                                  Eden::FileExists(std::string{folder} + "/eboot.bin") ? "yes" : "no",
+                                  Eden::FileExists(std::string{folder} + "/ui/fonts/montserrat-medium.pefont") ? "yes" : "no");
+        Eden::BootTrace::Line("app folder: %s", Eden::AppDir().c_str());
         std::set_new_handler([] {
             ps5_opengl_heap_snapshot("allocation_failure", 0);
             std::fflush(stdout);

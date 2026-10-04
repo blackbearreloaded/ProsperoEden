@@ -152,6 +152,27 @@ bool find_copies(const Environment &environment, const std::string &title, std::
     return true;
 }
 
+// ProsperoEden: ShadowMountPlus records where it mounted an app from in
+// <registered>/app/<TITLEID>/mount.lnk (a folder) or mount_img.lnk (an image). 1: path is
+// that folder; 0: no record; -1: the app is an image (its files can't be replaced one by one).
+int mounted_source(const Environment &environment, const std::string &title, std::string &path)
+{
+    if (environment.registered.empty())
+        return 0;
+    const std::string app = environment.registered + "/app/" + title;
+    std::FILE *file = std::fopen((app + "/mount.lnk").c_str(), "rb");
+    if (!file)
+        return kind(app + "/mount_img.lnk") == Kind::file ? -1 : 0;
+    char text[512] = {};
+    const std::size_t length = std::fread(text, 1, sizeof(text) - 1, file);
+    std::fclose(file);
+    path.assign(text, length);
+    while (!path.empty() && (path.back() == '\n' || path.back() == '\r' || path.back() == ' ' ||
+                             path.back() == '\0' || path.back() == '/'))
+        path.pop_back();
+    return path.size() > 1 && path[0] == '/' ? 1 : 0;
+}
+
 bool same_filesystem(const std::string &first, const std::string &second)
 {
     struct stat a
@@ -498,9 +519,26 @@ int run(const Environment &environment, const Io &io)
     name = shown(name, 64, title);
     label = shown(label, 40, available);
 
-    // The one installed folder of the title, at the version that asked.
+    // The one installed folder of the title, at the version that asked: the folder
+    // ShadowMountPlus mounted it from, when it recorded one; otherwise the one copy under the roots.
     std::vector<Copy> copies;
-    if (!find_copies(environment, title, copies) || copies.empty())
+    std::string source;
+    const int mounted = mounted_source(environment, title, source);
+    if (mounted < 0)
+    {
+        session.say("fail The app is installed as an image; update it by replacing the image\n");
+        return 1;
+    }
+    if (mounted > 0)
+    {
+        std::string id, version;
+        if (kind(source) == Kind::directory && read_param(source, id, version) && id == title)
+        {
+            copies.push_back({source, version});
+            session.log("installed folder (ShadowMountPlus): " + source);
+        }
+    }
+    if (copies.empty() && (!find_copies(environment, title, copies) || copies.empty()))
     {
         session.say("fail The app's folder wasn't found. Apps installed as an image can't "
                     "update themselves\n");
