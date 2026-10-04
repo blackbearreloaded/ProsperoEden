@@ -142,9 +142,6 @@ static void MigrateSandboxData() {
 
 int main(int argc, char** argv) {
     try {
-#if defined(EDEN_DEV_PROFILE) && defined(PS5_NATIVE)
-        Eden::Stall::Start();
-#endif
         std::FILE* report = stdout;
         SCOPE_EXIT { if (report != stdout) std::fclose(report); };
         std::setvbuf(report, nullptr, _IONBF, 0);
@@ -155,6 +152,11 @@ int main(int argc, char** argv) {
         // contains no locally implemented kernel mutation code. If neither path works, the app
         // keeps its sandbox paths.
         Eden::FilesystemAccessStatus() = static_cast<int>(elevation::request(elevation::Capability::filesystem));
+#if defined(EDEN_DEV_PROFILE)
+        // Upstream Lapy deliberately accepts only a single-threaded target. Keep every
+        // development worker behind the completed elevation exchange.
+        Eden::Stall::Start();
+#endif
         // Elevation leaves the effective group (1) apart from the real one (0), and Mesa turns
         // RADV's disk cache off for a process whose real and effective ids differ, so no
         // compiled shader was ever kept between sessions. Match them; the effective user is

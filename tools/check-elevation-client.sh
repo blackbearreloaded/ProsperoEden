@@ -6,4 +6,5 @@ mkdir -p "$root/build/host"
 clang++-18 -std=c++20 -Wall -Wextra -Werror -g -fsanitize=address,undefined \
     "$root/headless/elevation/test_elevation.cpp" -o "$root/build/host/test-elevation"
 "$root/build/host/test-elevation"
+python3 -B "$root/tools/check-elevation-startup.py"
 echo 'Resident/one-shot Lapy client PASS'
