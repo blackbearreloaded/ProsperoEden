@@ -32,6 +32,8 @@ dev)
     ;;
 esac
 echo "== Eden for the PS5 ($mode, $(git rev-parse --short HEAD 2>/dev/null || echo source)$(git diff --quiet -- headless tools src 2>/dev/null || echo +dirty))"
+bash tools/check-elevation-client.sh
+python3 -B tools/build-lapy-helper.py
 bash tools/build-headless-native.sh --graphics
 python3 -B tools/check-radv-native.py
 echo "== Package $EDEN_PACKAGE_DIR"
