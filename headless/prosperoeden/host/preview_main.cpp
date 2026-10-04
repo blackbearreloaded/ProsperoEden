@@ -546,6 +546,20 @@ void tour(Stage &s)
     s.wait(1.2f);
 }
 
+// PE_TOUR=update: the app opens with a newer release listed; the offer, Update now, the download
+// and unpacking, and ProsperoEden closing for the update.
+void update_tour(Stage &s)
+{
+    s.services.connected_controllers = 0b0001;
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(4.2f);
+    s.press({Key::right}, 0.7f);
+    s.press({Key::left}, 0.9f);
+    s.press({Key::cross});
+    s.wait(10.5f);
+}
+
 } // namespace
 
 namespace
@@ -779,7 +793,10 @@ int main(int argc, char **argv)
                 output, nullptr, {}, {}, make_tour, true, {}};
     stage.pixels.resize(static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4);
     stbi_flip_vertically_on_write(1);
-    if (make_tour)
+    const char *which_tour = std::getenv("PE_TOUR");
+    if (make_tour && which_tour && std::strcmp(which_tour, "update") == 0)
+        update_tour(stage);
+    else if (make_tour)
         tour(stage);
     else
         pictures(stage);
