@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <exception>
 #include "assets_dir.h"
+#include "forwarded_launch.h"
 #include "gpu_failure.h"
 #include "guest_fault.h"
 #include "jit_list.h"
@@ -313,11 +314,18 @@ int main(int argc, char** argv) {
         if (!cache_error && setenv("PS5_SHADER_CACHE_DIR", native_shader_cache.c_str(), 1) != 0)
             throw std::runtime_error("Cannot configure native shader cache");
 #endif
-        (void)argc;
-        (void)argv;
         std::string launch_error;
         // The previous run crashed: the launcher says where its report is.
         if (!last_crash.report.empty()) launch_error = std::string{Eden::Crash::kNotice} + last_crash.report;
+        const Eden::ForwardedArgs forwarded = Eden::ParseForwardedArgs(argc, argv);
+        std::string forwarded_game;
+        bool forwarded_session = false;
+        if (!forwarded.rom.empty() && last_crash.report.empty()) {
+            const std::string path = Eden::ResolveForwardedRom(forwarded.rom, Eden::AssetsPath("roms"));
+            if (!path.empty() && Eden::FileExists(path)) forwarded_game = path;
+            else launch_error = "Forwarded game not found: " + (path.empty() ? forwarded.rom : path);
+            Eden::BootTrace::Line("forwarded game: %s", forwarded_game.empty() ? "not found" : "found");
+        }
         // A game that faulted early in its boot is restarted (at most four times per launch).
         std::string relaunch_game;
         unsigned guest_fault_retries = 0;
@@ -385,8 +393,17 @@ int main(int argc, char** argv) {
 #endif
         if (!relaunch_game.empty()) {
             selected_game = std::exchange(relaunch_game, {});
+        } else if (!forwarded_game.empty()) {
+            guest_fault_retries = 0;
+            forwarded_session = true;
+            selected_game = std::exchange(forwarded_game, {});
+            Eden::BootTrace::Line("starting the forwarded game");
+        } else if (forwarded_session && forwarded.exit_after_game && launch_error.empty()) {
+            Eden::Report("exit", "Forwarded game ended");
+            return 0;
         } else {
         guest_fault_retries = 0;
+        forwarded_session = false;
 #if defined(EDEN_DEV_PROFILE) || defined(EDEN_DEV_ROM_ID)
         if (std::exchange(autoboot_pending, false)) {
         // Match the title ID in the file name, else in the ROM's own metadata; the game files
