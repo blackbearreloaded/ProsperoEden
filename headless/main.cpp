@@ -10,9 +10,9 @@
 #include "gpu_failure.h"
 #include "guest_fault.h"
 #include "jit_list.h"
+#include "boot_trace.h"
 #ifdef PS5_NATIVE
 #include "elevation/elevation.hpp"
-#include "boot_trace.h"
 #include <sys/stat.h>
 #endif
 #ifdef EDEN_DEV_VULKAN
