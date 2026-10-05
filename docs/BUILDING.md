@@ -130,6 +130,12 @@ workflow installs from:
 sudo apt install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
 ```
 
+The Payload SDK's `prospero-*` wrappers (the RADV build and the final link) use `$LLVM_CONFIG`,
+else the newest of LLVM 21 to 18 that is installed. Its LLD must be 18, 19, 21 or 22: the link
+keeps Mesa's undefined weak entry points out of the dynamic symbol table with
+`--no-dynamic-linker` (LLD 18, 19) and `-z nodynamic-undefined-weak` (LLD 21 and later), and
+LLD 20 understands neither, so `tools/link-headless-native.sh` stops with a message there.
+
 ## Crash reports
 
 When the app crashes it writes `crash-YYYYMMDD-HHMMSS.txt` to its logs folder
