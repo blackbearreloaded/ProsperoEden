@@ -47,7 +47,7 @@ const char* ResultName(self_update_check_result result) {
 // Development: update-offer.txt in the app folder replaces the catalog's answer (it skips the
 // catalog's signature), so the update can be tried before the catalog lists a newer release. Five
 // lines, as the boilerplate's example takes them: the new content version, the release's name,
-// its ZIP on GitHub, its SHA-256, its size in bytes.
+// its ZIP on GitHub, its SHA-256, its size in bytes; any further lines are the release notes.
 bool DevelopmentOffer(self_update_offer& out) {
     std::ifstream file(AppFile("update-offer.txt"));
     std::string available, version, artifact, sha256, size;
@@ -62,6 +62,9 @@ bool DevelopmentOffer(self_update_offer& out) {
     std::snprintf(filled.artifact, sizeof(filled.artifact), "%s", artifact.c_str());
     std::snprintf(filled.sha256, sizeof(filled.sha256), "%s", sha256.c_str());
     filled.size = std::strtoull(size.c_str(), nullptr, 10);
+    std::string notes, line;
+    while (std::getline(file, line)) notes += (notes.empty() ? "" : "\n") + line;
+    std::snprintf(filled.notes, sizeof(filled.notes), "%s", notes.c_str());
     // Like the catalog, only a newer version is offered (content versions compare as text).
     if (std::strcmp(filled.available, filled.installed) <= 0) return false;
     out = filled;
@@ -132,6 +135,8 @@ bool Take(Offer* out) {
         out->version = offer.version[0] != '\0' ? offer.version : offer.available;
         out->available = offer.available;
         out->size = offer.size;
+        out->notes = offer.notes;
+        out->notes_truncated = offer.notes_truncated != 0;
     }
     return true;
 }

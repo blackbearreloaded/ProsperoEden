@@ -128,7 +128,7 @@ msgid "Australia"
 msgstr "Australie"
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Retour"
 
@@ -897,7 +897,7 @@ msgid "Output resolution"
 msgstr "Résolution de sortie"
 
 #. Button hint: jump a page of the list (L1 / R1).
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/update.cpp
 msgid "Page"
 msgstr "Page"
 
@@ -1142,6 +1142,11 @@ msgstr "Enregistré. S'applique au lancement d'un jeu."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Enregistré. Rouvrez ProsperoEden pour utiliser ce dossier."
 
+#. Button hint: move through a long text (Up/Down).
+#: pe/ui/update.cpp
+msgid "Scroll"
+msgstr "Défiler"
+
 #. Button hint: choose the highlighted item (not the Select button).
 #: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
@@ -1296,6 +1301,11 @@ msgstr "La langue utilisée par les jeux qui la proposent."
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Le profil qui joue reste. Choisissez-en un autre d'abord."
+
+#. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
+#: pe/ui/update.cpp
+msgid "The rest is on the app's page on homebrew.page."
+msgstr "La suite se trouve sur la page de l'application sur homebrew.page."
 
 #: pe/ui/update.cpp
 msgid "The update could not finish"
@@ -1454,6 +1464,16 @@ msgstr "VOIR TOUS LES JEUX"
 #: pe/ui/settings.cpp
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (recommandé)"
+
+#. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
+#: pe/ui/update.cpp
+msgid "What's new"
+msgstr "Nouveautés"
+
+#. Title of the release notes view; {0} is the new version, for example 1.000.080.
+#: pe/ui/update.cpp
+msgid "What's new in version {0}"
+msgstr "Nouveautés de la version {0}"
 
 #: pe/ui/settings.cpp
 msgid "Who is playing. Each profile keeps its own save data and settings."

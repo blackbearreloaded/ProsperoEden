@@ -19,3 +19,7 @@ ProsperoEden's folder can hold the player's own files, `language.txt` or the
 update must keep); and `mounted_source`, which takes the installed folder from
 ShadowMountPlus's `/user/app/<TITLEID>/mount.lnk` (and refuses an image
 install, `mount_img.lnk`) before scanning the usual folders.
+
+In the kit itself, `self_update_check` also copies the catalog entry's
+`release_notes` and `release_notes_truncated` into the offer (`notes`,
+`notes_truncated`), for the update dialog's What's new view.

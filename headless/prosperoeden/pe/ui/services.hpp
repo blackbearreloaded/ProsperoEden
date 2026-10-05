@@ -36,6 +36,8 @@ struct UpdateOffer
     std::string version;      // its name: "v1.000.060"
     std::uint64_t size = 0;   // its download in bytes; 0 when not known
     bool installable = false; // the app can install it itself (otherwise it is only announced)
+    std::string notes;        // what the developer wrote on the release (plain text); may be empty
+    bool notes_truncated = false; // the catalog cut the notes; the rest is on the app's page
 };
 // Where installing it is.
 enum class UpdatePhase : std::uint8_t

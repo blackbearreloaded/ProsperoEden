@@ -107,6 +107,12 @@ extern "C"
         char sha256[65];    /* its SHA-256, from the signed catalog */
         uint64_t size;      /* its size in bytes; 0 when the catalog doesn't know */
         char page[160];     /* the app's page on homebrew.page */
+        /* ProsperoEden: what the developer wrote on the release, as the catalog gives it
+           (release_notes: plain text, lines split by \n, list items starting "- ", at most
+           4,000 characters); empty when the release has none. notes_truncated: the catalog cut
+           them, the rest is on the release's page. */
+        char notes[16384];
+        int notes_truncated;
     } self_update_offer;
 
     /* Blocking; call it from a worker thread, once per launch. */

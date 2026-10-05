@@ -271,10 +271,10 @@ void pictures(Stage &s)
     s.restart(true);
     s.wait(2.6f);
     s.shoot("70-update-offer");
-    s.press({Key::right});
+    s.press({Key::right, Key::right});
     s.wait(0.4f);
     s.shoot("71-update-offer-skip");
-    s.press({Key::left, Key::cross});
+    s.press({Key::left, Key::left, Key::cross});
     s.wait(0.3f);
     s.shoot("72-update-preparing");
     s.wait(3.2f);
@@ -305,6 +305,56 @@ void pictures(Stage &s)
     s.wait(7.4f);
     s.shoot("79-update-failed");
     s.services.update_fails = false;
+
+    // The release notes: What's new on the offer opens them; they scroll a few lines at a time
+    // (Up/Down) or a page (L1/R1), give a little at the end, and Circle goes back to the offer.
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(2.6f);
+    s.press({Key::right});
+    s.wait(0.4f);
+    s.shoot("80-update-offer-whats-new");
+    s.press({Key::cross});
+    s.wait(0.12f);
+    s.shoot("81-update-notes-opening");
+    s.wait(1.0f);
+    s.shoot("82-update-notes");
+    s.press({Key::down, Key::down}, 0.15f);
+    s.wait(0.6f);
+    s.shoot("83-update-notes-scrolled");
+    s.press({Key::r1, Key::r1, Key::r1}, 0.15f);
+    s.wait(0.7f);
+    s.shoot("84-update-notes-end");
+    s.press({Key::down});
+    s.wait(0.05f);
+    s.shoot("85-update-notes-end-give");
+    s.press({Key::right});
+    s.wait(0.4f);
+    s.shoot("86-update-notes-back-button");
+    s.press({Key::circle});
+    s.wait(0.5f);
+    s.shoot("87-update-offer-after-notes");
+    // A release without notes: two buttons, as before.
+    const std::string notes = s.services.update_notes;
+    s.services.update_notes.clear();
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(2.6f);
+    s.shoot("88-update-offer-no-notes");
+    // Notes the catalog cut short end with where the rest is.
+    s.services.update_notes = notes;
+    s.services.update_notes_truncated = true;
+    s.services.update_version = "v1.000.060";
+    s.restart(true);
+    s.wait(2.6f);
+    s.press({Key::triangle});
+    s.wait(1.2f);
+    // (The preview draws only when it takes a picture; the notes are laid out when first drawn.)
+    s.shoot("89-update-notes-truncated");
+    s.press({Key::r1, Key::r1, Key::r1, Key::r1}, 0.15f);
+    s.wait(0.8f);
+    s.shoot("89-update-notes-truncated-end");
+    s.services.update_notes_truncated = false;
 
     // A game's file taken away while the menu shows it: within a moment it leaves the home screen
     // (another recent game takes its place) and the Library.
@@ -553,9 +603,17 @@ void update_tour(Stage &s)
     s.services.connected_controllers = 0b0001;
     s.services.update_version = "v1.000.060";
     s.restart(true);
-    s.wait(4.2f);
-    s.press({Key::right}, 0.7f);
-    s.press({Key::left}, 0.9f);
+    s.wait(3.4f);
+    // What's new: the notes open, scroll down a little at a time, a page, then back.
+    s.press({Key::right}, 0.6f);
+    s.press({Key::cross}, 1.6f);
+    s.press({Key::down}, 0.7f);
+    s.press({Key::down}, 0.7f);
+    s.press({Key::down}, 0.9f);
+    s.press({Key::r1}, 1.2f);
+    s.press({Key::r1}, 1.4f);
+    s.press({Key::circle}, 0.9f);
+    s.press({Key::left}, 0.6f);
     s.press({Key::cross});
     s.wait(10.5f);
 }

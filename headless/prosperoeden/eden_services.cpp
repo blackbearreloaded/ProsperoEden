@@ -490,6 +490,8 @@ bool EdenServices::take_update(pe::ui::UpdateOffer* offer) {
     offer->version = found.version;
     offer->size = found.size;
     offer->installable = found.installable;
+    offer->notes = found.notes;
+    offer->notes_truncated = found.notes_truncated;
     return true;
 }
 

@@ -294,6 +294,7 @@ void Launcher::update_offer(float dt)
             {
                 // Asked each time the app opens (not on returning from a game).
                 update_ = offer;
+                notes_laid_out_ = false;
                 update_waiting_ = true;
             }
             else

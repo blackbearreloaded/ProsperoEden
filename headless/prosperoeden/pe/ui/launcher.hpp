@@ -89,6 +89,7 @@ class Launcher
     enum class UpdateStage : std::uint8_t
     {
         offer,
+        notes, // the release notes, opened from the offer
         working,
         cancelling,
         closing,
@@ -191,6 +192,14 @@ class Launcher
     void begin_update();
     void press_update(Key key);
     void draw_update(Canvas &c, float open);
+    // The release notes view: opened from the offer, laid out once per text size, scrolled.
+    void open_notes();
+    void close_notes();
+    void layout_notes(Canvas &c);
+    void scroll_notes(float by);
+    float notes_window() const;
+    float notes_max_scroll() const;
+    void draw_notes(Canvas &c, float height);
 
     // ---- game files, language, about (browse.cpp) ----
     void enter_files();
@@ -227,6 +236,31 @@ class Launcher
     float update_rate_ = 0.0f;         // bytes per second, smoothed
     std::uint64_t update_rate_done_ = 0;
     float update_rate_wait_ = 0.0f;
+    // The release notes, laid out: one entry per drawn line, and the boxes behind callouts.
+    struct NoteLine
+    {
+        std::string text;
+        float y = 0.0f;      // from the top of the text
+        float height = 0.0f; // the line's pitch
+        float size = 0.0f;
+        Color color{};
+        float indent = 0.0f;
+        bool bullet = false; // the first line of a list item
+    };
+    struct NoteBox
+    {
+        float top = 0.0f;
+        float bottom = 0.0f;
+        bool warning = false;
+    };
+    std::vector<NoteLine> notes_lines_;
+    std::vector<NoteBox> notes_boxes_;
+    float notes_height_ = 0.0f;   // the whole text's height
+    bool notes_laid_out_ = false;
+    bool notes_large_ = false;    // laid out for Larger text
+    float notes_target_ = 0.0f;   // where the scroll is going
+    tween::Spring notes_scroll_;  // where it is
+    tween::Spring notes_bounce_;  // the give at either end
     std::string clock_;
     std::string version_;
 

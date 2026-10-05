@@ -90,6 +90,22 @@ class FakeServices final : public ui::Services
     // phases a step per look (the launcher looks once a frame); update_fails ends it in a failure.
     std::string update_version;
     bool update_installable = true;
+    // The sample release's notes, as the catalog gives them; empty: a release without notes.
+    std::string update_notes =
+        "Warning: This is a pre-release. Your jailbreak environment must provide a local ELF loader on TCP port "
+        "9021.\n\nThis version makes the menu faster to open and adds a few things players asked for.\n\n"
+        "New features\n- Release notes in the update dialog, so you can see what changes before you update.\n"
+        "- A clock in the game menu.\n- Faster scrolling in long game lists, with a letter jump on L2 and R2.\n\n"
+        "Bug fixes and improvements\n- The menu opens about a second sooner on a cold start.\n"
+        "- Covers no longer flicker when a list scrolls quickly.\n- A crash when a controller was disconnected "
+        "during the loading screen is fixed.\n- Saves are written to a temporary file first, so a power loss "
+        "while saving no longer damages them.\n- Better text fitting in Greek, Hungarian and Finnish.\n\n"
+        "Note: Your settings, saves and profiles stay where they are; nothing needs to be moved.\n\n"
+        "Upgrading\nCopy the PPSA99008 folder from the ZIP over the one you have, or install it from the "
+        "update dialog. See the README for every step: "
+        "https://github.com/blackbearreloaded/ProsperoEden/blob/main/README.md#updating\n\n"
+        "Thanks\nThank you to everyone who tested this release and reported what they found.";
+    bool update_notes_truncated = false;
     bool update_fails = false;
     int update_steps = -1; // looks since start_update; -1: not begun
     bool update_cancelled = false;
@@ -100,6 +116,8 @@ class FakeServices final : public ui::Services
         offer->version = update_version;
         offer->size = 38215192;
         offer->installable = update_installable;
+        offer->notes = update_notes;
+        offer->notes_truncated = update_notes_truncated;
         update_version.clear();
         return true;
     }

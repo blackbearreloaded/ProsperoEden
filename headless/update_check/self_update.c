@@ -182,6 +182,31 @@ static int same_digest(const char *left, const char *right)
     return difference == 0;
 }
 
+/* ProsperoEden: whether a top-level member is the literal true (the catalog's own JSON, whose
+   bytes the signed manifest vouches for). */
+static int member_true(const char *json, size_t length, const char *key)
+{
+    char pattern[80];
+    const char *at;
+    const char *end = json + length;
+    (void)snprintf(pattern, sizeof(pattern), "\"%s\"", key);
+    for (at = json; at + strlen(pattern) <= end; ++at)
+    {
+        if (memcmp(at, pattern, strlen(pattern)) != 0)
+            continue;
+        at += strlen(pattern);
+        while (at < end && (*at == ' ' || *at == '\t' || *at == '\r' || *at == '\n'))
+            ++at;
+        if (at >= end || *at != ':')
+            return 0;
+        ++at;
+        while (at < end && (*at == ' ' || *at == '\t' || *at == '\r' || *at == '\n'))
+            ++at;
+        return end - at >= 4 && memcmp(at, "true", 4) == 0;
+    }
+    return 0;
+}
+
 self_update_check_result self_update_check(const self_update_platform *platform,
                                            const char *title_id, const char *installed,
                                            self_update_offer *offer)
@@ -275,6 +300,10 @@ self_update_check_result self_update_check(const self_update_platform *platform,
         return SELF_UPDATE_NOT_INSTALLABLE;
     if (!member_number(body, body_length, "size", &offer->size))
         offer->size = 0; /* null: the catalog doesn't know it */
+    /* ProsperoEden: the release notes, covered by the same signature (null or missing: none). */
+    if (update_check_json_string(body, body_length, "release_notes", offer->notes, sizeof(offer->notes)) != 1)
+        offer->notes[0] = '\0';
+    offer->notes_truncated = member_true(body, body_length, "release_notes_truncated");
     if (offer->size > SELF_UPDATE_MAX_ARCHIVE)
         return SELF_UPDATE_NOT_INSTALLABLE;
     return SELF_UPDATE_AVAILABLE;

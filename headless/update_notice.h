@@ -23,6 +23,8 @@ struct Offer {
     std::string version;       // the release's name ("v1.000.060")
     std::string available;     // its content version ("01.000.060")
     std::uint64_t size = 0;    // the ZIP's size in bytes; 0 when the catalog doesn't know
+    std::string notes;         // the release notes, plain text; empty when there are none
+    bool notes_truncated = false;
 };
 // A newer release than this one, once, when the check's answer has come: false when there is
 // nothing (yet) to tell.
