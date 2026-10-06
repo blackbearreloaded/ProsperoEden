@@ -2315,7 +2315,8 @@ endif()
             # below, with its libcurl.
             target_sources(eden-headless PRIVATE
                 "${EDEN_PORT_DIR}/remote/remote.cpp"
-                "${EDEN_PORT_DIR}/remote/backends.cpp")
+                "${EDEN_PORT_DIR}/remote/backends.cpp"
+                "${EDEN_PORT_DIR}/remote/romm/romm_source.cpp")
             # The update check (update_notice.h). Its network side is the boilerplate's
             # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew
             # prefix that already supplies OpenSSL and zlib (zstd is Eden's own). They are linked

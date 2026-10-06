@@ -51,7 +51,7 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 - **Accessibility** - larger text, high contrast and reduced motion, in **Settings > Accessibility**.
 - **Save data in and out** - import a game's save from a folder or from a Ryujinx data folder, and export a copy (Triangle in the Library, then **Save data**).
 - **Game updates and DLC** - put update and DLC files (NSP or XCI) in the `updates` folder next to `roms`. They apply when the game starts, and each game's details show the update version and DLC count.
-- **Download sources** - the Switch games on servers in your network appear in the Library next to the ones on the console. A game is downloaded when you play it, or ahead of time through a download queue, and then runs from the console like any other: nothing is streamed; see [Download sources](#download-sources).
+- **Download sources** - the Switch games on servers in your network, such as a [RomM](https://github.com/rommapp/romm) server, appear in the Library next to the ones on the console. A game is downloaded when you play it, or ahead of time through a download queue, and then runs from the console like any other: nothing is streamed; see [Download sources](#download-sources).
 - **Mods** - patches, replacement game files and cheats for a game, from a `mods` folder next to `roms`, each switched on or off in the game's settings (Triangle in the Library, then **Mods**).
 - **Performance switches** - seven switches that trade accuracy for speed (compiling a game's code ahead, asynchronous shaders, faster GPU, CPU and DMA emulation, and more) in **Settings > Performance**; see [Performance settings](#performance-settings).
 - **Shader cache** - shaders compiled in earlier sessions are loaded when a game starts, so an effect stutters only the first time it appears.
@@ -167,14 +167,14 @@ ProsperoEden does not include or download mods.
 
 ### Download sources
 
-A download source is a server in your network that has Switch games. Its games show up in the Library without taking any space on the console. A game is downloaded to the game files folder when you want it; from then on it is a game on the console like one you copied there. Nothing is streamed.
+A download source is a server in your network that has Switch games, such as a [RomM](https://github.com/rommapp/romm) server. Its games show up in the Library without taking any space on the console. A game is downloaded to the game files folder when you want it; from then on it is a game on the console like one you copied there. Nothing is streamed.
 
-- **Set them up.** Save `/data/prosperoeden/config/remote/sources.json` on the console (over FTP, like the keys) and open **Settings > Downloads**, or reopen ProsperoEden. It lists the sources, each with its `"type"`, a `"name"` for the menu and what that type needs:
+- **Set them up.** Save `/data/prosperoeden/config/remote/sources.json` on the console (over FTP, like the keys) and open **Settings > Downloads**, or reopen ProsperoEden. It lists the sources, each with its `"type"`, a `"name"` for the menu and what that type needs (see [RomM](#romm) for a RomM server):
 
   ```json
   { "sources": [
-      { "type": "<type>", "name": "Home", ... },
-      { "type": "<type>", "name": "Office", ... }
+      { "type": "romm", "name": "Home", "url": "http://192.168.1.20:3000", "token": "rmm_..." },
+      { "type": "romm", "name": "Office", "url": "https://games.example.org", "token": "rmm_..." }
   ] }
   ```
 
@@ -183,11 +183,15 @@ A download source is a server in your network that has Switch games. Its games s
 - **Which game is which.** Each source says what it knows of a game: its title ID, its ids at metadata providers (IGDB, ScreenScraper and the like) and whether its name comes from such metadata. Two sources' games are the same game when the first of these that both know agrees: the title ID, then an id at a provider both have one of, then the name (when both names come from metadata; case, accents and punctuation do not count), else the file name. A game on the console is matched by its title ID when the source knows that one, else by its name or its file name.
 - **Play.** Cross on a game that is not on the console downloads it first. A ring shows how far it is and the time left, and the game starts once all of it is there. Circle lets it download in the background without starting it; Square cancels it. When several sources have the game, ProsperoEden asks which one first.
 - **Download ahead.** Square on such a game puts it in the download queue, and Square again takes it out. The queue downloads one game at a time while the menu is open, also after ProsperoEden was closed and opened again. **Settings > Downloads** lists it: Square cancels a download, Cross tries a failed one again, and Cross on a source reads the sources' game lists again (also done by itself when the menu opens after more than 15 minutes).
-- **Where the files go.** The game's file goes to `roms/`, under its name on the source; its updates and DLC go to `updates/`. What a source counts as the game, an update or DLC is up to it. A game downloaded from a source keeps the file name it has there. Only `.nsp` and `.xci` files are downloaded, and an entry without a game file (an update or DLC on its own) is not listed.
+- **Where the files go.** The game's file goes to `roms/`, under its name on the source; its updates and DLC go to `updates/`. What a source counts as the game, an update or DLC is up to it (a RomM server: its file categories). A game downloaded from a source keeps the file name it has there. Only `.nsp` and `.xci` files are downloaded, and an entry without a game file (an update or DLC on its own) is not listed.
 - **Interrupted downloads.** A download is written to `.remote-downloads/` in the game files folder, and once all of the game's files are complete they are moved to `roms/` and `updates/`, so those folders only ever hold whole files of whole games. It stops while a game runs and when ProsperoEden closes, and goes on from where it was the next time the menu is open; the last 4 MB are downloaded again then, in case the console lost power while they were written. A cancel deletes what was downloaded (and never touches `roms/` or `updates/`), and what `.remote-downloads/` holds for a game that is not in the queue is deleted when the menu opens, so nothing is left behind. Before a download starts, ProsperoEden checks that the drive has room for it.
 - **Making room.** A game that a source has can be deleted from the console again: Triangle in the Library, then **Delete from console** (Cross twice). Its file and all of its updates and DLC in `updates/` are deleted, also ones put there by hand; its save data, its settings and its mods stay. The Library then lists it as on its sources again, and it can be downloaded any time.
 
 Sign-ins are kept in `sources.json` only, and each is sent to its own source only. Download sources need filesystem access (the payload loader on port 9021), as the game files folder does. Save data is not synchronised with the sources yet.
+
+#### RomM
+
+`"type": "romm"` is a [RomM](https://github.com/rommapp/romm) server (a current version). Its entry in `sources.json` has the server's `"url"` and a `"token"`: in RomM, create a client API token (your profile, **Client API tokens**). `"username"` and `"password"` work instead of `"token"`, and `"platform"` names the platform's slug when the server does not call it `switch`. RomM's file categories decide what is the game and what are its updates and DLC; manuals, mods, soundtracks and the like stay on the server. In RomM a game is a folder, with its updates in `update/` and its DLC in `dlc/`. What RomM matched a game to tells it apart: its ids at the metadata providers RomM uses, its name when RomM identified it, and its title ID when the RomM server has the keys to read it.
 
 ### Performance settings
 
