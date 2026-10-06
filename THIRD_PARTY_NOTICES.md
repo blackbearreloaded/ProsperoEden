@@ -50,7 +50,8 @@ builds on the following projects, each under its own license.
   [SharpProspero](https://github.com/SvenGDK/SharpProspero).
 - **[PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon)** by
   ArkSama, with the cooperative owned-root design from
-  **[mpereiraesaa's fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon)**.
+  **[mpereiraesaa's fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon)** and the pinned
+  **[ProsperoEden compatibility fork](https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon)**.
   Lapy is MIT licensed; its shared protocol header is LGPL-2.1-or-later.
   ProsperoEden pins the fork, invokes its unmodified exact-title helper build,
   verifies its generated manifest and bundles the helper ELF with its license.

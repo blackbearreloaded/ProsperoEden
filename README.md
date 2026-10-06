@@ -63,7 +63,7 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 ## Install
 
 > [!TIP]
-> **Use [ShadowMountPlus 1.7beta4](https://github.com/drakmor/ShadowMountPlus/releases/tag/1.7beta4) or newer.** It mounts ProsperoEden from the folder (or drive) you copy it to, and it also mounts `/data` and USB and extended storage drives into the app's sandbox, so ProsperoEden reaches its data and your game files with nothing else to load. With an older ShadowMountPlus, ProsperoEden falls back to its bundled [Lapy](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon) helper (see [Elevation credits](#elevation-credits)).
+> **Use [ShadowMountPlus 1.7beta4](https://github.com/drakmor/ShadowMountPlus/releases/tag/1.7beta4) or newer.** It mounts ProsperoEden from the folder (or drive) you copy it to, and it also mounts `/data` and USB and extended storage drives into the app's sandbox, so ProsperoEden reaches its data and your game files with nothing else to load. With an older ShadowMountPlus, ProsperoEden falls back to its bundled [Lapy](https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon) helper (see [Elevation credits](#elevation-credits)).
 
 1. Download and extract the release ZIP.
 2. Copy the included `PPSA99008` folder to `/data/homebrew/PPSA99008` on the PS5 (or to another folder ShadowMountPlus scans, such as `/mnt/usb0/homebrew/PPSA99008`).
@@ -348,14 +348,17 @@ Please do not use pull requests or other channels to post that kind of content e
 
 Filesystem elevation uses [PS5-Lapy-JB-Daemon](https://github.com/ArkSama/PS5-Lapy-JB-Daemon),
 created by ArkSama. ProsperoEden follows the cooperative owned-root design and implementation
-from [mpereiraesaa's Lapy fork](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). The build
-pins that upstream source, builds its exact-title one-shot helper without local payload changes,
+from [ProsperoEden's Lapy fork](https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon), based on
+[mpereiraesaa's cooperative helper](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon). The build
+pins that source, builds its exact-title one-shot helper without local payload changes,
 verifies the upstream-generated manifest, and includes the resulting ELF in the release.
-The donor-release fix pinned here is proposed upstream in
-[PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48).
-The same packaged helper passed five automated launch/elevate/close cycles on firmware 6.02 and
-five on 12.70 with root access, balanced donor references, clean helper exits, and no fatal signal,
-app crash, coredump, nonsleeping-lock warning, or kernel panic in the captured kernel-log windows.
+The donor-release and firmware 13.60 fixes pinned here were merged upstream in
+[PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48) and
+[PR #49](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/49).
+The previous `54a095c` helper passed five automated launch/elevate/close cycles on firmware 6.02
+and five on 12.70 with root access, balanced donor references, clean helper exits, and no fatal
+signal, app crash, coredump, nonsleeping-lock warning, or kernel panic in the captured kernel-log
+windows. The new `c3bdfe3` helper still requires attended qualification runs.
 
 ## Thanks
 

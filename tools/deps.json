@@ -87,21 +87,21 @@
     },
     {
       "name": "lapy-owned-helper",
-      "about": "Upstream Lapy one-shot elfldr owned-root helper source",
+      "about": "Lapy one-shot elfldr owned-root helper with the donor-release and 32-byte credential-attribute fixes",
       "kind": "git",
-      "url": "https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon.git",
-      "commit": "54a095c0f19161825e845daa760a03b446e654fa",
-      "path": ".deps/PS5-Lapy-JB-Daemon-54a095c"
+      "url": "https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon.git",
+      "commit": "c3bdfe3a399366d8eacfc580f20b19fd03b16ca3",
+      "path": ".deps/PS5-Lapy-JB-Daemon-c3bdfe3"
     },
     {
       "name": "lapy-payload-sdk",
-      "about": "Official PS5 Payload SDK v0.40 used by the pinned upstream Lapy helper (v0.41 changed the ucred attribute API)",
+      "about": "Official PS5 Payload SDK v0.42 used by the pinned Lapy helper",
       "kind": "archive",
-      "url": "https://github.com/ps5-payload-dev/sdk/releases/download/v0.40/ps5-payload-sdk.zip",
-      "sha256": "617fb702df3551f709b2db0a014e618cf39334c9348395a9b005e6504d076a42",
-      "extract": ".deps/lapy-ps5-payload-sdk-v0.40",
+      "url": "https://github.com/ps5-payload-dev/sdk/releases/download/v0.42/ps5-payload-sdk.zip",
+      "sha256": "8cfbc7cd5811e719eb4f0c47eea668d3dc7b40bc8ab11c4a5031d40c23ec02da",
+      "extract": ".deps/lapy-ps5-payload-sdk-v0.42",
       "strip": 1,
-      "creates": ".deps/lapy-ps5-payload-sdk-v0.40/bin/prospero-clang"
+      "creates": ".deps/lapy-ps5-payload-sdk-v0.42/bin/prospero-clang"
     },
     {
       "name": "lapy-ps5log",
