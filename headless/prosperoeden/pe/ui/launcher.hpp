@@ -83,6 +83,9 @@ class Launcher
         mapping,      // the button mapping: Settings > Controls', or a game's own
         profiles,     // who is playing: Settings > Profiles
         update,       // a newer release of the app: install it or not (update.cpp)
+        download,     // a game from a download source, started once it is downloaded (remote.cpp)
+        source,       // which source a game is downloaded from, when several have it (remote.cpp)
+        sources,      // Settings > Downloads: the download sources and the queue (remote.cpp)
     };
     // The update dialog's steps: the offer, installing, stopping it, closing for the helper to
     // finish, and a failure.
@@ -154,6 +157,9 @@ class Launcher
     void refresh_selected_game();
     void press_game(Key key);
     void draw_game(Canvas &c, float open);
+    // What a row of the game settings dialog is (GameRow in library.cpp): Save data is there in
+    // builds that move saves, and the deleting of a game a download source has (it comes back from there).
+    int game_row(int row) const;
     void press_mods(Key key);
     void draw_mods(Canvas &c, float open);
 
@@ -200,6 +206,32 @@ class Launcher
     float notes_window() const;
     float notes_max_scroll() const;
     void draw_notes(Canvas &c, float height);
+
+    // ---- games on download sources (remote.cpp) ----
+    // Looks at the queue and the sources a few times a second: the Library reads its list again
+    // when their games changed, and the game being played starts once it is there.
+    void poll_sources(float dt);
+    // The queue's entry of a game (Game::key); nullptr when it has none.
+    const Download *download_of(const std::string &key) const;
+    // What a game on its sources shows in the Library: its source (or how many), queued, its
+    // share, failed.
+    std::string remote_state(const Game &game, Color *color) const;
+    // The cover of a game on its sources: darker, with a cloud at its bottom right.
+    static void remote_cover(Canvas &c, const std::string &path, const Rect &r, float radius, float shadow = 0.0f);
+    // Cross on one: downloaded first and started (the download dialog). Square: into the queue,
+    // or out of it. With several sources, which one is asked first (the source dialog).
+    void play_remote(const Game &game);
+    void queue_remote(const Game &game);
+    void choose_source(const Game &game, bool play);
+    void download_from(const Game &game, int source, bool play);
+    void press_choice(Key key);
+    void draw_choice(Canvas &c, float open);
+    void press_download(Key key);
+    void draw_download(Canvas &c, float open);
+    int source_row_count() const;
+    void open_sources();
+    void press_sources(Key key);
+    void draw_sources(Canvas &c, float open);
 
     // ---- game files, language, about (browse.cpp) ----
     void enter_files();
@@ -320,6 +352,7 @@ class Launcher
     bool game_docked_ = true;
     SaveSource import_source_ = SaveSource::none; // what Save data could import for the game
     bool import_armed_ = false;                   // Cross was pressed once: the next one imports
+    bool delete_armed_ = false;                   // the same before a game is deleted
     ListView game_rows_;                          // the game dialog's rows (more than it shows)
     std::vector<Mod> mods_;                       // the game's mods, read when its dialog opens
     // The Mods list's rows: each mod, then its cheats when it lists several.
@@ -347,6 +380,25 @@ class Launcher
 
     // language
     ListView language_;
+
+    // the download sources
+    Sources sources_;
+    std::vector<Download> downloads_;
+    std::uint64_t sources_generation_ = 0; // the sources' games as the Library's list has them
+    float sources_wait_ = 0.0f;
+    bool rescan_ = false;                  // the list is read again once the current reading is in
+    Game download_game_;                   // the game the download dialog shows (and then starts)
+    std::string download_file_;            // its file once there (as its source names it)
+    bool download_open_ = false;
+    Game choice_game_;                     // the game the source dialog asks about
+    bool choice_play_ = false;             // it is then played (else queued)
+    ListView choice_rows_;
+    tween::Spring download_fraction_;
+    float download_rate_ = 0.0f;          // bytes per second, smoothed
+    std::uint64_t download_rate_done_ = 0;
+    float download_rate_wait_ = 0.0f;
+    float download_time_ = 0.0f;
+    ListView source_rows_; // Settings > Downloads: the sources, then the downloads
 };
 
 } // namespace pe::ui

@@ -2301,6 +2301,7 @@ endif()
                 "${launcher_dir}/pe/ui/browse.cpp"
                 "${launcher_dir}/pe/ui/game_options.cpp"
                 "${launcher_dir}/pe/ui/profiles.cpp"
+                "${launcher_dir}/pe/ui/remote.cpp"
                 "${launcher_dir}/pe/ui/update.cpp"
                 "${launcher_dir}/pe/ui/home.cpp"
                 "${launcher_dir}/pe/ui/launcher.cpp"
@@ -2309,6 +2310,12 @@ endif()
                 "${launcher_dir}/pe/ui/textures.cpp"
                 "${launcher_dir}/pe/ui/widgets.cpp")
             target_sources(eden-headless PRIVATE ${launcher_sources})
+            # Download sources and their queue (remote/remote.h), with their backends (remote/source.h,
+            # backends.cpp); their HTTP (remote/http.c) is linked into the update check's object
+            # below, with its libcurl.
+            target_sources(eden-headless PRIVATE
+                "${EDEN_PORT_DIR}/remote/remote.cpp"
+                "${EDEN_PORT_DIR}/remote/backends.cpp")
             # The update check (update_notice.h). Its network side is the boilerplate's
             # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew
             # prefix that already supplies OpenSSL and zlib (zstd is Eden's own). They are linked
@@ -2329,8 +2336,9 @@ endif()
                 "${EDEN_PORT_DIR}/update_check/console_curl.c"
                 "${EDEN_PORT_DIR}/update_check/self_update.c"
                 "${EDEN_PORT_DIR}/update_check/self_update_ps5.c"
-                "${EDEN_PORT_DIR}/update_check/self_update_sha256.c")
-            target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}")
+                "${EDEN_PORT_DIR}/update_check/self_update_sha256.c"
+                "${EDEN_PORT_DIR}/remote/http.c")
+            target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}" "${EDEN_PORT_DIR}/update_check")
             # The kit's paths are the app's own: after elevation /app0 and /download0 are gone
             # (update_notice.cpp gives them).
             target_compile_definitions(update-check PRIVATE CURL_STATICLIB=1

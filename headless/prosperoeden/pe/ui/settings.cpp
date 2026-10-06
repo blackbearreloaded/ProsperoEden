@@ -20,7 +20,7 @@ constexpr Rect kListPanel{108.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDetailPanel{980.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDialog{550.0f, 180.0f, 820.0f, 720.0f};
 constexpr float kRowsTop = 264.0f;
-constexpr float kRowHeight = 64.0f;
+constexpr float kRowHeight = 58.0f;
 enum Category
 {
     kProfiles,
@@ -31,16 +31,17 @@ enum Category
     kAccessibility,
     kDiagnostics,
     kFiles,
+    kDownloads,
     kLanguage,
     kCategoryCount,
 };
 constexpr const char *kCategories[kCategoryCount] = {
     TR("Profiles"), TR("Video"), TR("Performance"), TR("Audio"), TR("Controls"), TR("Accessibility"),
-    TR("Diagnostics"), TR("Game files"), TR("Language")};
+    TR("Diagnostics"), TR("Game files"), TR("Downloads"), TR("Language")};
 // The same as headings: capitals differ by language, so each is its own text.
 constexpr const char *kHeadings[kCategoryCount] = {
     TR("PROFILES"), TR("VIDEO"), TR("PERFORMANCE"), TR("AUDIO"), TR("CONTROLS"), TR("ACCESSIBILITY"),
-    TR("DIAGNOSTICS"), TR("GAME FILES"), TR("LANGUAGE")};
+    TR("DIAGNOSTICS"), TR("GAME FILES"), TR("DOWNLOADS"), TR("LANGUAGE")};
 
 // The Video dialog's rows, and the window that shows five of them (placed as a game's settings
 // are).
@@ -139,6 +140,9 @@ void Launcher::press_settings(Key key)
         case kProfiles:
             open_profiles();
             break;
+        case kDownloads:
+            open_sources();
+            break;
         case kVideo:
             open_modal(Modal::video);
             video_rows_.visible = kVideoRowsShown;
@@ -194,6 +198,9 @@ void Launcher::draw_settings(Canvas &c)
         prefs_.large_text || prefs_.high_contrast || prefs_.reduce_motion ? tr("On") : "",
         prefs_.detailed_logging ? tr("Detailed logs on") : "",
         "",
+        !sources_.configured ? std::string{tr("Not set up")} :
+        sources_.list.size() == 1 ? sources_.list.front().name :
+                                    fill(tr("{0} sources"), {std::to_string(sources_.list.size())}),
         pick(services_.language_labels(), prefs_.language),
     };
     for (int row = 0; row < kCategoryCount; ++row)
@@ -288,6 +295,25 @@ void Launcher::draw_settings(Canvas &c)
         if (!saved_folder.empty() && saved_folder != folder)
             lines.push_back({tr("NEXT START"), short_path(saved_folder, 34)});
         break;
+    case kDownloads:
+    {
+        about = tr("Games on your network, downloaded when you play them.");
+        int queued = 0;
+        for (const Download &download : downloads_)
+            queued += download.state != DownloadState::failed ? 1 : 0;
+        if (!sources_.configured)
+            lines.push_back({tr("SOURCES"), tr("Not set up")});
+        // Each source with its state; four at most, the queue under them.
+        for (std::size_t i = 0; i < sources_.list.size() && i < 4; ++i)
+        {
+            const SourceInfo &source = sources_.list[i];
+            lines.push_back({source.name.c_str(), source.refreshing ? std::string{tr("Reading...")} :
+                                                  source.online     ? fill(tr("{0} games"), {std::to_string(source.games)}) :
+                                                                      std::string{tr("Offline")}});
+        }
+        lines.push_back({tr("DOWNLOADS"), std::to_string(queued)});
+        break;
+    }
     default:
         about = tr("The language games use when they offer it.");
         lines = {{tr("LANGUAGE"), pick(services_.language_labels(), prefs_.language)},
@@ -337,7 +363,11 @@ int Launcher::dialog_rows(Modal modal) const
     case Modal::game:
         // Console mode, video, performance, audio, controls, language, mods; save data in builds
         // that move saves.
-        return services_.save_transfer_available() ? 8 : 7;
+        // A game a download source has can be deleted from the console (and downloaded again).
+        return (services_.save_transfer_available() ? 8 : 7) +
+               (library_.selected < static_cast<int>(games_.size()) &&
+                        !games_[static_cast<std::size_t>(library_.selected)].sources.empty() &&
+                        !games_[static_cast<std::size_t>(library_.selected)].remote ? 1 : 0);
     case Modal::controls:
         // Vibration, the button mapping.
         return 2;

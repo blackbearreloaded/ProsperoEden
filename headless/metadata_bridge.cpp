@@ -98,17 +98,22 @@ FileSys::VirtualFile FindIcon(const FileSys::VirtualDir& romfs) {
     return {};
 }
 
-bool WriteTga(const FileSys::VirtualFile& icon, const char* output) {
-    const auto encoded = icon->ReadAllBytes();
+// A picture's bytes as a 32-bit TGA, made smaller by whole steps (box filter) until it is at most
+// `largest` pixels a side. A picture of more than 4096 pixels a side is not read at all (a cover
+// from a server could take a lot of memory).
+bool WriteTgaBytes(const unsigned char* encoded, std::size_t size, const char* output, int largest) {
     int width = 0;
     int height = 0;
     int channels = 0;
-    unsigned char* rgba = stbi_load_from_memory(encoded.data(), static_cast<int>(encoded.size()),
-                                                 &width, &height, &channels, 4);
+    unsigned char* rgba = stbi_load_from_memory(encoded, static_cast<int>(size), &width, &height, &channels, 4);
     if (!rgba || width <= 0 || height <= 0 || width > 4096 || height > 4096) {
         stbi_image_free(rgba);
         return false;
     }
+    int step = 1;
+    while (std::max(width, height) / step > largest) ++step;
+    const int out_width = std::max(1, width / step);
+    const int out_height = std::max(1, height / step);
     std::FILE* file = std::fopen(output, "wb");
     if (!file) {
         stbi_image_free(rgba);
@@ -116,21 +121,29 @@ bool WriteTga(const FileSys::VirtualFile& icon, const char* output) {
     }
     unsigned char header[18]{};
     header[2] = 2;
-    header[12] = static_cast<unsigned char>(width);
-    header[13] = static_cast<unsigned char>(width >> 8);
-    header[14] = static_cast<unsigned char>(height);
-    header[15] = static_cast<unsigned char>(height >> 8);
+    header[12] = static_cast<unsigned char>(out_width);
+    header[13] = static_cast<unsigned char>(out_width >> 8);
+    header[14] = static_cast<unsigned char>(out_height);
+    header[15] = static_cast<unsigned char>(out_height >> 8);
     header[16] = 32;
     header[17] = 0x28;
     bool ok = std::fwrite(header, 1, sizeof(header), file) == sizeof(header);
-    std::vector<unsigned char> row(static_cast<std::size_t>(width) * 4);
-    for (int y = 0; ok && y < height; ++y) {
-        const unsigned char* source = rgba + static_cast<std::size_t>(y) * row.size();
-        for (int x = 0; x < width; ++x) {
-            row[4 * x + 0] = source[4 * x + 2];
-            row[4 * x + 1] = source[4 * x + 1];
-            row[4 * x + 2] = source[4 * x + 0];
-            row[4 * x + 3] = source[4 * x + 3];
+    std::vector<unsigned char> row(static_cast<std::size_t>(out_width) * 4);
+    for (int y = 0; ok && y < out_height; ++y) {
+        for (int x = 0; x < out_width; ++x) {
+            unsigned sum[4]{};
+            for (int dy = 0; dy < step; ++dy)
+                for (int dx = 0; dx < step; ++dx) {
+                    const unsigned char* source =
+                        rgba + (static_cast<std::size_t>(y * step + dy) * static_cast<std::size_t>(width) +
+                                static_cast<std::size_t>(x * step + dx)) * 4;
+                    for (int k = 0; k < 4; ++k) sum[k] += source[k];
+                }
+            const unsigned count = static_cast<unsigned>(step * step);
+            row[4 * x + 0] = static_cast<unsigned char>(sum[2] / count);
+            row[4 * x + 1] = static_cast<unsigned char>(sum[1] / count);
+            row[4 * x + 2] = static_cast<unsigned char>(sum[0] / count);
+            row[4 * x + 3] = static_cast<unsigned char>(sum[3] / count);
         }
         ok = std::fwrite(row.data(), 1, row.size(), file) == row.size();
     }
@@ -138,6 +151,22 @@ bool WriteTga(const FileSys::VirtualFile& icon, const char* output) {
     stbi_image_free(rgba);
     return ok;
 }
+
+bool WriteTga(const FileSys::VirtualFile& icon, const char* output) {
+    const auto encoded = icon->ReadAllBytes();
+    return WriteTgaBytes(encoded.data(), encoded.size(), output, 4096);
+}
+}
+
+int eden_write_cover_tga(const unsigned char* encoded, size_t size, const char* cover_tga_path) {
+    if (!encoded || !size || size > (64u << 20) || !cover_tga_path) return 0;
+    // Written beside, then moved into place: the menu may be drawing the old one.
+    const std::string staged = std::string{cover_tga_path} + ".new";
+    if (!WriteTgaBytes(encoded, size, staged.c_str(), 512) || std::rename(staged.c_str(), cover_tga_path) != 0) {
+        (void)std::remove(staged.c_str());
+        return 0;
+    }
+    return 1;
 }
 
 uint64_t eden_game_title_id(const char* rom_path) {
@@ -252,6 +281,53 @@ void eden_scan_addons(const char* updates_dir, const char* keys_dir) {
     } catch (const std::exception& error) {
         std::fprintf(stderr, "[ProsperoEden] updates: %s\n", error.what());
         scanned.clear();
+    }
+}
+
+namespace {
+// Whether an NSP or XCI holds content of the game: its update (base | 0x800) or one of its DLC
+// (base + 0x1000 + n) have the game's base title ID.
+bool HoldsContentOf(const FileSys::VirtualFile& file, uint64_t base) {
+    std::string name = file->GetName();
+    std::transform(name.begin(), name.end(), name.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    std::shared_ptr<FileSys::NSP> package;
+    if (name.ends_with(".nsp")) {
+        package = std::make_shared<FileSys::NSP>(file);
+    } else if (name.ends_with(".xci")) {
+        FileSys::XCI image(file);
+        if (image.GetStatus() == Loader::ResultStatus::Success) package = image.GetSecurePartitionNSP();
+    }
+    if (!package || package->GetStatus() != Loader::ResultStatus::Success) return false;
+    for (const auto& [title_id, contents] : package->GetNCAs())
+        if (FileSys::GetBaseTitleID(title_id) == base) return true;
+    return false;
+}
+
+int FindAddOnFiles(const FileSys::VirtualDir& directory, uint64_t base, eden_found_file found, void* user, int depth) {
+    if (!directory || depth > 8) return 0;
+    int count = 0;
+    for (const auto& file : directory->GetFiles())
+        if (HoldsContentOf(file, base)) {
+            found(user, file->GetFullPath().c_str());
+            ++count;
+        }
+    for (const auto& folder : directory->GetSubdirectories()) count += FindAddOnFiles(folder, base, found, user, depth + 1);
+    return count;
+}
+} // namespace
+
+int eden_game_addon_files(uint64_t title_id, const char* updates_dir, const char* keys_dir, eden_found_file found,
+                          void* user) {
+    if (!title_id || !updates_dir || !keys_dir || !found) return 0;
+    try {
+        Common::FS::SetEdenPath(Common::FS::EdenPath::KeysDir, keys_dir);
+        FileSys::RealVfsFilesystem vfs;
+        return FindAddOnFiles(vfs.OpenDirectory(updates_dir, FileSys::OpenMode::Read),
+                              FileSys::GetBaseTitleID(title_id), found, user, 0);
+    } catch (const std::exception& error) {
+        std::fprintf(stderr, "[ProsperoEden] updates: %s\n", error.what());
+        return 0;
     }
 }
 

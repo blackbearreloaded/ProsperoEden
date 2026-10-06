@@ -44,12 +44,12 @@ msgid "About ProsperoEden"
 msgstr ""
 
 #. Time left while downloading; {0} is a number of minutes. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} min left"
 msgstr ""
 
 #. Time left while downloading; {0} is a number of seconds. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} s left"
 msgstr ""
 
@@ -79,6 +79,10 @@ msgstr ""
 #. {0}: updates, DLC and mods of the game; {1}: the language it will use.
 #: pe/ui/home.cpp
 msgid "Add-ons: {0}  /  Language: {1}"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
 msgstr ""
 
 #: pe/ui/profiles.cpp
@@ -128,7 +132,7 @@ msgid "Australia"
 msgstr ""
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr ""
 
@@ -166,6 +170,10 @@ msgstr ""
 
 #: pe/ui/update.cpp
 msgid "Cancel"
+msgstr ""
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
 msgstr ""
 
 #: pe/ui/update.cpp
@@ -229,7 +237,7 @@ msgstr ""
 msgid "Circle"
 msgstr ""
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Close"
 msgstr ""
 
@@ -270,8 +278,20 @@ msgstr ""
 msgid "CONTROLS"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr ""
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr ""
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
 msgstr ""
 
 #: pe/ui/library.cpp
@@ -327,6 +347,22 @@ msgstr ""
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr ""
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr ""
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr ""
+
+#: eden_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr ""
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr ""
@@ -361,13 +397,53 @@ msgstr ""
 msgid "Docked"
 msgstr ""
 
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr ""
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr ""
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr ""
+
 #: pe/ui/update.cpp
 msgid "Downloading"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr ""
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -519,6 +595,10 @@ msgstr ""
 msgid "French (Canada)"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr ""
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -567,6 +647,10 @@ msgstr ""
 
 #: pe/ui/browse.cpp
 msgid "GAMES"
+msgstr ""
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
 msgstr ""
 
 #: pe/ui/browse.cpp
@@ -805,6 +889,14 @@ msgstr ""
 msgid "No cover art"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources (the README shows how), then open this menu again."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr ""
+
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
 msgstr ""
@@ -844,6 +936,26 @@ msgstr ""
 msgid "None"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr ""
+
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
 msgid "Nothing to import"
@@ -852,6 +964,10 @@ msgstr ""
 #. A setting that is switched off.
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "Offline"
 msgstr ""
 
 #. A setting that is switched on.
@@ -923,6 +1039,10 @@ msgstr ""
 msgid "Play as"
 msgstr ""
 
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr ""
+
 #: pe/ui/profiles.cpp
 msgid "Playing"
 msgstr ""
@@ -957,8 +1077,12 @@ msgid "PREFERENCES"
 msgstr ""
 
 #. Update dialog headline while the download starts.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Preparing"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
 msgstr ""
 
 #. Asked before a save is imported over the one in use.
@@ -1025,6 +1149,14 @@ msgstr ""
 msgid "PS5 EDITION  /  {0}"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr ""
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1032,6 +1164,18 @@ msgstr ""
 
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr ""
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -1148,7 +1292,7 @@ msgid "Scroll"
 msgstr ""
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr ""
 
@@ -1199,6 +1343,10 @@ msgstr ""
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr ""
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr ""
@@ -1229,6 +1377,14 @@ msgstr ""
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr ""
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr ""
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr ""
+
 #: settings_store.h
 msgid "Spanish"
 msgstr ""
@@ -1254,6 +1410,10 @@ msgstr ""
 #. Shown over a game's cover while it starts.
 #: pe/ui/launcher.cpp
 msgid "STARTING"
+msgstr ""
+
+#: pe/ui/library.cpp
+msgid "STATE"
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -1285,6 +1445,10 @@ msgstr ""
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr ""
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr ""
@@ -1292,6 +1456,10 @@ msgstr ""
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -1305,6 +1473,10 @@ msgstr ""
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
 msgstr ""
 
 #: pe/ui/update.cpp
@@ -1347,8 +1519,12 @@ msgstr ""
 msgid "Triangle"
 msgstr ""
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Try again"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
 msgstr ""
 
 #. Button hint: switch the highlighted mod on or off.
@@ -1465,6 +1641,14 @@ msgstr ""
 msgid "Vulkan (recommended)"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr ""
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1504,7 +1688,7 @@ msgid "{0} DLC"
 msgstr ""
 
 #. Exactly one game. In a language with more than two plural forms, word it so that it reads well with any number (Games: {0}).
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp
 msgid "{0} game"
 msgstr ""
 
@@ -1514,7 +1698,7 @@ msgid "{0} game installed"
 msgstr ""
 
 #. Any number of games other than one (also 0). See '{0} game'.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
 msgid "{0} games"
 msgstr ""
 
@@ -1568,8 +1752,12 @@ msgstr ""
 msgid "{0} of {1} on"
 msgstr ""
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr ""
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr ""
 

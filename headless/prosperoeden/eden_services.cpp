@@ -11,6 +11,7 @@
 #include "native_directory.h"
 #include "pe/core/strings.hpp"
 #include "radio_input.h"
+#include "remote/remote.h"
 #include "version.h"
 
 #include <algorithm>
@@ -24,6 +25,7 @@
 #include <fcntl.h>
 #include <filesystem>
 #include <initializer_list>
+#include <map>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -227,6 +229,34 @@ std::string EnsureCover(const std::string& filename, std::string* title = nullpt
     return Eden::FileExists(cover) ? cover : std::string{};
 }
 
+// The names of the download sources, by their keys.
+std::map<std::string, std::string> SourceNames() {
+    std::map<std::string, std::string> names;
+    if (Eden::FilesystemAccess())
+        for (const Eden::Remote::SourceStatus& source : Eden::Remote::Current().sources) names[source.key] = source.name;
+    return names;
+}
+
+// "6.4 GB", "512.0 MB".
+std::string SizeLabel(double bytes) {
+    char size[32];
+    if (bytes >= 1073741824.0) std::snprintf(size, sizeof(size), "%.1f GB", bytes / 1073741824.0);
+    else std::snprintf(size, sizeof(size), "%.1f MB", bytes / 1048576.0);
+    return size;
+}
+
+// The folders and files in a folder, read the console's way (ListEntries).
+std::vector<std::string> ListFolder(const std::string& folder) {
+    bool ok = false;
+    std::vector<std::string> names = ListEntries(folder, true, ok);
+    for (std::string& name : ListEntries(folder, false, ok)) names.push_back(std::move(name));
+    return names;
+}
+
+bool WriteCover(const std::string& encoded, const std::string& path) {
+    return eden_write_cover_tga(reinterpret_cast<const unsigned char*>(encoded.data()), encoded.size(), path.c_str()) != 0;
+}
+
 int CountInstalledGames() {
     std::error_code error;
     const auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), error);
@@ -320,6 +350,16 @@ EdenServices::EdenServices(std::string launch_error) : launch_error_(std::move(l
                                  ")").c_str());
     setup_ = eden_startup_error();
     Eden::Report("setup", setup_.empty() ? "Keys and firmware startup checks passed" : setup_.c_str());
+    // The download sources' games and the download queue (remote/remote.h): only with filesystem access,
+    // where the game files folder can be written.
+    if (Eden::FilesystemAccess())
+        Eden::Remote::Start({Eden::ConfigFile("remote"), Eden::CoversDir(), Eden::AssetsPath("roms"),
+                             Eden::AssetsPath("updates"), Eden::AssetsPath(".remote-downloads")},
+                            WriteCover, ListFolder);
+}
+
+EdenServices::~EdenServices() {
+    if (Eden::FilesystemAccess()) Eden::Remote::Stop();
 }
 
 pe::ui::Home EdenServices::home() {
@@ -426,9 +466,21 @@ std::vector<pe::ui::Game> EdenServices::games() {
     (void)mkdir(Eden::ConfigDir().c_str(), 0777);
     (void)mkdir(Eden::CoversDir().c_str(), 0777);
     std::error_code directory_error;
-    const auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), directory_error);
-    if (directory_error) return games;
+    auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), directory_error);
+    // Without a roms folder there are still the download sources' games.
+    if (directory_error) entries.clear();
     eden_scan_addons(Eden::AssetsPath("updates").c_str(), Eden::AssetsPath("keys").c_str());
+    // The download sources' games, each title once: one that is on the console can be downloaded
+    // again, and is deleted from the console in its settings.
+    const std::vector<Eden::Remote::Title> titles = Titles();
+    const std::map<std::string, std::string> names = SourceNames();
+    std::vector<bool> local(titles.size(), false);
+    const auto sources_of = [&](const Eden::Remote::Title& title) {
+        std::vector<std::string> sources;
+        for (const Eden::Remote::Game& game : title.games)
+            sources.push_back(names.contains(game.source) ? names.at(game.source) : game.source);
+        return sources;
+    };
     for (const auto& entry : entries) {
         const std::string file = entry.path().filename().string();
         const std::size_t dot = file.find_last_of('.');
@@ -440,14 +492,10 @@ std::vector<pe::ui::Game> EdenServices::games() {
         const std::string path = Eden::AssetsPath("roms/" + file);
         struct stat info {};
         if (stat(path.c_str(), &info) != 0 || !S_ISREG(info.st_mode)) continue;
-        char size[32];
-        const double bytes = static_cast<double>(info.st_size);
-        if (bytes >= 1073741824.0) std::snprintf(size, sizeof(size), "%.1f GB", bytes / 1073741824.0);
-        else std::snprintf(size, sizeof(size), "%.1f MB", bytes / 1048576.0);
         pe::ui::Game game;
         game.name = CleanTitle(file);
         game.format = format;
-        game.size = size;
+        game.size = SizeLabel(static_cast<double>(info.st_size));
         game.file = file;
         // A game whose data cannot be read is still listed, by its file name.
         try {
@@ -475,6 +523,38 @@ std::vector<pe::ui::Game> EdenServices::games() {
         } catch (const std::exception& error) {
             Eden::Report("library", (file + ": " + error.what()).c_str());
         }
+        games.push_back(std::move(game));
+    }
+    // Which games of the console a title is: by title ID, by name or by file (Remote::SameAsLocal).
+    for (pe::ui::Game& game : games) {
+        const std::string normal_name = Eden::Remote::NormalName(game.name);
+        for (std::size_t i = 0; i < titles.size(); ++i)
+            if (std::any_of(titles[i].games.begin(), titles[i].games.end(), [&](const Eden::Remote::Game& entry) {
+                    return Eden::Remote::SameAsLocal(entry, game.title_id, normal_name, game.file);
+                })) {
+                game.sources = sources_of(titles[i]);
+                game.key = titles[i].key;
+                local[i] = true;
+                break;
+            }
+    }
+    // The titles that are not on the console (yet); one that is shows as above.
+    for (std::size_t i = 0; i < titles.size(); ++i) {
+        if (local[i]) continue;
+        const Eden::Remote::Game& entry = titles[i].games.front();
+        pe::ui::Game game;
+        game.name = entry.name.empty() ? CleanTitle(entry.file) : entry.name;
+        game.format = entry.file.size() > 4 ? entry.file.substr(entry.file.size() - 3) : std::string{};
+        std::transform(game.format.begin(), game.format.end(), game.format.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+        game.size = entry.size > 0 ? SizeLabel(static_cast<double>(entry.size)) : std::string{"-"};
+        game.file = entry.file;
+        // The first source's cover, or another one's when it has none.
+        for (const Eden::Remote::Game& other : titles[i].games)
+            if (game.cover.empty()) game.cover = other.cover;
+        game.sources = sources_of(titles[i]);
+        game.key = titles[i].key;
+        game.remote = true;
         games.push_back(std::move(game));
     }
     std::sort(games.begin(), games.end(),
@@ -872,6 +952,144 @@ bool EdenServices::make_mods_folder(std::uint64_t title_id) {
     if (!Eden::Mods::TitleFolder(root, title_id).empty()) return true;
     (void)mkdir(root.c_str(), 0777);
     return mkdir(Eden::Mods::TitleFolderToCreate(root, title_id).c_str(), 0777) == 0;
+}
+
+pe::ui::Sources EdenServices::sources() {
+    pe::ui::Sources sources;
+    sources.setup_file = Eden::ConfigFile("remote/sources.json");
+    if (!Eden::FilesystemAccess()) {
+        sources.error = "Download sources need filesystem access";
+        return sources;
+    }
+    const Eden::Remote::Status status = Eden::Remote::Current();
+    sources.configured = status.configured;
+    sources.error = status.error;
+    sources.generation = status.generation;
+    for (const Eden::Remote::SourceStatus& source : status.sources)
+        sources.list.push_back({source.name, source.address, source.refreshing, source.online, source.error,
+                                static_cast<int>(source.games)});
+    return sources;
+}
+
+void EdenServices::refresh_sources() {
+    if (Eden::FilesystemAccess()) Eden::Remote::Refresh();
+}
+
+std::vector<Eden::Remote::Title> EdenServices::Titles() {
+    if (!Eden::FilesystemAccess()) return {};
+    const std::lock_guard lock(titles_lock_);
+    RefreshTitles();
+    return titles_;
+}
+
+void EdenServices::RefreshTitles() {
+    const std::uint64_t generation = Eden::Remote::Current().generation;
+    if (generation != titles_generation_) {
+        titles_ = Eden::Remote::Titles();
+        titles_generation_ = generation;
+    }
+}
+
+std::string EdenServices::TitleKeyOf(const std::string& source, const std::string& id) {
+    const std::lock_guard lock(titles_lock_);
+    RefreshTitles();
+    for (const Eden::Remote::Title& title : titles_)
+        for (const Eden::Remote::Game& game : title.games)
+            if (game.source == source && game.id == id) return title.key;
+    return {};
+}
+
+bool EdenServices::download(const pe::ui::Game& game, int source, bool first) {
+    // The title on its sources, in the order of Game::sources.
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == game.key && source >= 0 && source < static_cast<int>(title.games.size()))
+            return Eden::Remote::Enqueue(title.games[static_cast<std::size_t>(source)].source,
+                                         title.games[static_cast<std::size_t>(source)].id, first);
+    return false;
+}
+
+bool EdenServices::cancel_download(const std::string& key) {
+    if (!Eden::FilesystemAccess()) return false;
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == key)
+            for (const Eden::Remote::Game& game : title.games)
+                if (Eden::Remote::Cancel(game.source, game.id)) return true;
+    return false;
+}
+
+std::vector<pe::ui::Download> EdenServices::downloads() {
+    std::vector<pe::ui::Download> list;
+    if (!Eden::FilesystemAccess()) return list;
+    // Asked four times a second: nothing more is read while the queue is empty.
+    const std::vector<Eden::Remote::Download> queue = Eden::Remote::Downloads();
+    if (queue.empty()) return list;
+    const std::map<std::string, std::string> names = SourceNames();
+    for (const Eden::Remote::Download& entry : queue) {
+        pe::ui::Download download;
+        download.state = static_cast<pe::ui::DownloadState>(entry.state); // the same order
+        download.done = entry.done;
+        download.total = entry.total;
+        download.error = entry.error;
+        download.source = names.contains(entry.source) ? names.at(entry.source) : entry.source;
+        Eden::Remote::Game game;
+        if (Eden::Remote::Find(entry.source, entry.id, &game)) {
+            download.name = game.name.empty() ? CleanTitle(game.file) : game.name;
+            download.file = game.file;
+            download.cover = game.cover;
+        } else {
+            download.name = entry.id;
+        }
+        // Its title: the game as the Library lists it.
+        download.key = TitleKeyOf(entry.source, entry.id);
+        list.push_back(std::move(download));
+    }
+    return list;
+}
+
+bool EdenServices::delete_game(const pe::ui::Game& game, std::string* message) {
+    if (!Eden::FilesystemAccess() || game.sources.empty() || game.remote || !Eden::ValidRomFilename(game.file))
+        return false;
+    const std::lock_guard lock(bridge_);
+    const std::string rom = Eden::AssetsPath("roms/" + game.file);
+    // The game, what came with it from its sources, and every update and DLC of it in updates/
+    // (also one put there by hand), found by the title IDs the files hold.
+    std::vector<std::string> files{rom};
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == game.key)
+            for (const Eden::Remote::Game& entry : title.games)
+                for (std::string& path : Eden::Remote::Files(entry.source, entry.id)) files.push_back(std::move(path));
+    const std::uint64_t title_id = game.title_id ? game.title_id : eden_game_title_id(rom.c_str());
+    (void)eden_game_addon_files(title_id, Eden::AssetsPath("updates").c_str(), Eden::AssetsPath("keys").c_str(),
+                                [](void* user, const char* path) {
+                                    static_cast<std::vector<std::string>*>(user)->emplace_back(path);
+                                },
+                                &files);
+    std::sort(files.begin(), files.end());
+    files.erase(std::unique(files.begin(), files.end()), files.end());
+    int deleted = 0;
+    std::uint64_t bytes = 0;
+    std::string kept;
+    for (const std::string& path : files) {
+        struct stat info {};
+        if (stat(path.c_str(), &info) != 0) continue;
+        if (std::remove(path.c_str()) == 0) {
+            ++deleted;
+            bytes += static_cast<std::uint64_t>(info.st_size);
+            Eden::Report("library", ("deleted " + path).c_str());
+        } else if (kept.empty()) {
+            kept = path;
+        }
+    }
+    // The Library reads its list again: the game is on its sources only now.
+    Eden::Remote::Changed();
+    if (!kept.empty()) {
+        *message = fill(tr("Could not delete {0}."), {kept});
+        return false;
+    }
+    *message = fill(deleted == 1 ? tr("Deleted 1 file ({0}). Save data and settings are kept.") :
+                                   tr("Deleted {1} files ({0}). Save data and settings are kept."),
+                    {SizeLabel(static_cast<double>(bytes)), std::to_string(deleted)});
+    return true;
 }
 
 bool EdenServices::load_image(const std::string& path, pe::gfx::Image* image) {

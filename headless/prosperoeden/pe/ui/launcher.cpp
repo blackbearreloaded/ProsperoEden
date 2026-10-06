@@ -32,15 +32,18 @@ Launcher::Launcher(Services &services, Textures &textures, const Fonts &fonts, b
     version_ = services_.version();
     clock_ = services_.clock();
     prefs_ = services_.preferences();
+    sources_ = services_.sources();
+    sources_generation_ = sources_.generation; // the list read below has the sources' games
+    downloads_ = services_.downloads();
     apply_look();
     read_profiles();
     read_home();
     const bool continue_ready = home_.setup_ready && home_.last_exists;
     home_focus_ = continue_ready ? 0 : home_.setup_ready ? 1 : 2;
     home_springs_[static_cast<std::size_t>(home_focus_)].snap(1.0f);
-    settings_.visible = 9;
-    settings_.pitch = 70.0f;
-    settings_.reset(9, 0);
+    settings_.visible = 10;
+    settings_.pitch = 63.0f;
+    settings_.reset(10, 0);
     section_.snap(1.0f);
     detail_.snap(1.0f);
     cue(home_.launch_failed ? Cue::notify : first_start ? Cue::welcome : Cue::resume);
@@ -171,6 +174,12 @@ void Launcher::press(Key key)
         return press_profiles(key);
     if (modal_ == Modal::update)
         return press_update(key);
+    if (modal_ == Modal::download)
+        return press_download(key);
+    if (modal_ == Modal::source)
+        return press_choice(key);
+    if (modal_ == Modal::sources)
+        return press_sources(key);
     if (modal_ != Modal::none)
         return press_dialog(key);
     switch (screen_)
@@ -200,6 +209,7 @@ void Launcher::update(float dt)
     backdrop_.update(dt);
     textures_.pump(dt);
     finish_scan(false);
+    poll_sources(dt);
     update_controllers(dt);
     transition_.update(dt);
     press_ = std::max(0.0f, press_ - dt / 0.18f);
@@ -227,6 +237,8 @@ void Launcher::update(float dt)
     option_rows_.update(dt);
     mapping_rows_.update(dt);
     profile_rows_.update(dt);
+    source_rows_.update(dt);
+    choice_rows_.update(dt);
     mode_.target = selected_docked_ ? 0.0f : 1.0f;
     mode_.update(dt, 22.0f);
     const bool mods_on = library_.selected >= 0 && library_.selected < static_cast<int>(games_.size()) &&
@@ -453,6 +465,12 @@ void Launcher::draw(gfx::DrawList &list)
             draw_profiles(c, opened);
         else if (modal_shown_ == Modal::update)
             draw_update(c, opened);
+        else if (modal_shown_ == Modal::download)
+            draw_download(c, opened);
+        else if (modal_shown_ == Modal::source)
+            draw_choice(c, opened);
+        else if (modal_shown_ == Modal::sources)
+            draw_sources(c, opened);
         else
             draw_dialog(c, modal_shown_, opened);
     }

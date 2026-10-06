@@ -4,6 +4,7 @@
 #pragma once
 
 #include "pe/ui/services.hpp"
+#include "remote/remote.h"
 
 #include <mutex>
 #include <string>
@@ -13,6 +14,8 @@ class EdenServices final : public pe::ui::Services {
 public:
     // launch_error: why the game chosen last time did not start (empty: nothing to report).
     explicit EdenServices(std::string launch_error);
+    // Downloads from the download sources stop while a game runs (the menu is gone then).
+    ~EdenServices() override;
 
     pe::ui::Home home() override;
     std::string clock() override;
@@ -70,6 +73,13 @@ public:
     std::string mods_folder(std::uint64_t title_id) override;
     bool make_mods_folder(std::uint64_t title_id) override;
 
+    pe::ui::Sources sources() override;
+    void refresh_sources() override;
+    bool download(const pe::ui::Game& game, int source, bool first) override;
+    bool cancel_download(const std::string& file) override;
+    std::vector<pe::ui::Download> downloads() override;
+    bool delete_game(const pe::ui::Game& game, std::string* message) override;
+
     bool load_image(const std::string& path, pe::gfx::Image* image) override;
 
 private:
@@ -77,4 +87,13 @@ private:
     std::string launch_error_;
     std::string setup_; // what is missing from keys and firmware; empty when ready
     std::mutex bridge_; // Eden's metadata reader keeps state between calls: one caller at a time
+    // The download sources' games as titles (Remote::Titles), read again when their lists changed:
+    // the menu asks for its downloads four times a second.
+    std::vector<Eden::Remote::Title> Titles();
+    // The key of the title a source's game is in, without copying the titles.
+    std::string TitleKeyOf(const std::string& source, const std::string& id);
+    void RefreshTitles(); // with titles_lock_ held
+    std::mutex titles_lock_;
+    std::vector<Eden::Remote::Title> titles_;
+    std::uint64_t titles_generation_ = 0;
 };

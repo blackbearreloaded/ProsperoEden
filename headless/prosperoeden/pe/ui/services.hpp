@@ -78,6 +78,54 @@ struct Game
     int mods = 0;
     int mods_on = 0;
     bool mods_enabled = true;
+    // The download sources that have the game (their names, in the order they are set up in): it
+    // can be downloaded from any of them, again once deleted. Empty for a game only on the console.
+    std::vector<std::string> sources;
+    // Which game it is on the sources (the same on all of them; Download::key); empty without.
+    std::string key;
+    // Not on the console yet: on its sources only. Its file is the name it gets in roms/.
+    bool remote = false;
+};
+
+// A download source: a place on the network with Switch games (headless/remote/remote.h).
+struct SourceInfo
+{
+    std::string name;
+    std::string address;
+    bool refreshing = false; // its game list is being read
+    bool online = false;     // the last look at it worked
+    std::string error;       // why the last look failed, or what is wrong with its entry (English)
+    int games = 0;
+};
+struct Sources
+{
+    bool configured = false; // sources.json names at least one source
+    std::string setup_file;  // where sources.json goes
+    std::string error;       // what is wrong with sources.json itself (English)
+    std::vector<SourceInfo> list;
+    // Changes when a source's games, their covers or the downloaded files changed: the Library
+    // reads its list again.
+    std::uint64_t generation = 0;
+};
+
+// A game in the download queue.
+enum class DownloadState : std::uint8_t
+{
+    queued,
+    downloading,
+    failed,
+};
+struct Download
+{
+    std::string key;     // which game it is (Game::key)
+    std::string file;    // its file in roms/ once downloaded (from this source)
+    std::string name;
+    std::string source;  // the name of the source it comes from
+    std::string cover;
+    DownloadState state = DownloadState::queued;
+    std::uint64_t done = 0;
+    std::uint64_t total = 0; // 0 when not known
+    std::string error;       // why it failed (English, technical)
 };
 
 struct Recent
@@ -374,6 +422,39 @@ class Services
     }
     // Makes that folder; false when it cannot be made.
     virtual bool make_mods_folder(std::uint64_t)
+    {
+        return false;
+    }
+
+    // ---- download sources: games on the network, downloaded to the games folder when wanted ----
+    virtual Sources sources()
+    {
+        return {};
+    }
+    // Reads every source's game list again.
+    virtual void refresh_sources()
+    {
+    }
+    // Puts a game in the download queue, from one of its sources (an index into Game::sources):
+    // first (to play it as soon as it is there) or last; a failed one is tried again. False when
+    // the source no longer has it.
+    virtual bool download(const Game &, int, bool)
+    {
+        return false;
+    }
+    // Takes a game (Game::key) out of the queue and deletes what it had downloaded.
+    virtual bool cancel_download(const std::string &)
+    {
+        return false;
+    }
+    // The queue, in order.
+    virtual std::vector<Download> downloads()
+    {
+        return {};
+    }
+    // Deletes a game that a source has from the console (Game::sources): its file and all of its
+    // updates and DLC in updates/. Its save data and settings stay. Says what was done in message.
+    virtual bool delete_game(const Game &, std::string *)
     {
         return false;
     }

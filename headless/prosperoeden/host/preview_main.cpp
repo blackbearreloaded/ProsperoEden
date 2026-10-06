@@ -501,7 +501,7 @@ void pictures(Stage &s)
     s.shoot("20-game-files-saved");
     s.press({Key::circle});
     s.wait(0.5f);
-    s.press({Key::down, Key::cross});
+    s.press({Key::down, Key::down, Key::cross});
     s.wait(1.0f);
     s.shoot("21-language");
     s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down,

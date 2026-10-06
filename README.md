@@ -51,6 +51,7 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 - **Accessibility** - larger text, high contrast and reduced motion, in **Settings > Accessibility**.
 - **Save data in and out** - import a game's save from a folder or from a Ryujinx data folder, and export a copy (Triangle in the Library, then **Save data**).
 - **Game updates and DLC** - put update and DLC files (NSP or XCI) in the `updates` folder next to `roms`. They apply when the game starts, and each game's details show the update version and DLC count.
+- **Download sources** - the Switch games on servers in your network appear in the Library next to the ones on the console. A game is downloaded when you play it, or ahead of time through a download queue, and then runs from the console like any other: nothing is streamed; see [Download sources](#download-sources).
 - **Mods** - patches, replacement game files and cheats for a game, from a `mods` folder next to `roms`, each switched on or off in the game's settings (Triangle in the Library, then **Mods**).
 - **Performance switches** - seven switches that trade accuracy for speed (compiling a game's code ahead, asynchronous shaders, faster GPU, CPU and DMA emulation, and more) in **Settings > Performance**; see [Performance settings](#performance-settings).
 - **Shader cache** - shaders compiled in earlier sessions are loaded when a game starts, so an effect stutters only the first time it appears.
@@ -98,7 +99,8 @@ Only these subfolders matter; the folder itself can have any name and location.
 │       └── cheat_<name>.txt            # optional: cheats without a mod folder
 ├── save-import/                        # optional: saves to import, one folder per title ID
 ├── ryujinx/                            # optional: a Ryujinx data folder to import saves from
-└── save-export/                        # written by "Export a copy"
+├── save-export/                        # written by "Export a copy"
+└── .remote-downloads/                  # downloads that are not finished yet (see Download sources)
 ```
 
 The folder browser shows how many keys, firmware files, and games each folder holds, so you can check a folder before selecting it. Moving your files later only needs a new selection in Settings; saved settings, covers, and recently played games carry over.
@@ -110,6 +112,10 @@ ProsperoEden keeps its own data in `/data/prosperoeden`, separately from the gam
 ```text
 /data/prosperoeden/
 ├── config/prosperoeden.json            # every profile's settings, and the game files folder
+├── config/remote/                      # download sources, when you use them:
+│   ├── sources.json                    #   the sources and how to reach them (written by you)
+│   ├── queue.json                      #   the download queue
+│   └── <source>/catalog.json           #   each source's game list, kept for the next start
 ├── covers/                             # cached game covers
 ├── logs/                               # current and previous session logs, crash reports
 └── user/                               # every profile's saves, and emulator user data
@@ -158,6 +164,30 @@ A mod changes a game: a patch to its code (`.pchtxt` or `.ips` files in an `exef
 - **Frame rate.** A patch that makes a 30 FPS game run at 60 FPS works on the 60 Hz output ProsperoEden uses. A patch for more than 60 FPS needs the 120 Hz output: set **Refresh rate** to 120 Hz in the game's settings (Triangle in the Library) or in **Settings > Video**. That takes a display that shows 120 Hz and the PS5's own 120 Hz output setting; without them the game runs at 60 Hz. A 60 FPS patch can gain from it too: a game that misses some frames at 60 Hz has twice as many chances to show them. A patch for more frames than the output shows (240 FPS on the 120 Hz output, 120 FPS on the 60 Hz one) still runs at its own pace: the frames the display has no refresh for are left out.
 
 ProsperoEden does not include or download mods.
+
+### Download sources
+
+A download source is a server in your network that has Switch games. Its games show up in the Library without taking any space on the console. A game is downloaded to the game files folder when you want it; from then on it is a game on the console like one you copied there. Nothing is streamed.
+
+- **Set them up.** Save `/data/prosperoeden/config/remote/sources.json` on the console (over FTP, like the keys) and open **Settings > Downloads**, or reopen ProsperoEden. It lists the sources, each with its `"type"`, a `"name"` for the menu and what that type needs:
+
+  ```json
+  { "sources": [
+      { "type": "<type>", "name": "Home", ... },
+      { "type": "<type>", "name": "Office", ... }
+  ] }
+  ```
+
+  **Settings > Downloads** shows each source, whether it answered, and why not when it did not.
+- **The Library.** The sources' games are listed with the console's own, by name, with their cover. A game that is not on the console has a darker cover with a cloud, and instead of NSP or XCI its row names its source (or how many have it), or says **Queued**, how far its download is, or **Download failed**. Its details name its sources. The same game on several sources is listed once, and a game that is on the console already is not listed again. Its settings, mods and console mode are there once it is downloaded.
+- **Which game is which.** Each source says what it knows of a game: its title ID, its ids at metadata providers (IGDB, ScreenScraper and the like) and whether its name comes from such metadata. Two sources' games are the same game when the first of these that both know agrees: the title ID, then an id at a provider both have one of, then the name (when both names come from metadata; case, accents and punctuation do not count), else the file name. A game on the console is matched by its title ID when the source knows that one, else by its name or its file name.
+- **Play.** Cross on a game that is not on the console downloads it first. A ring shows how far it is and the time left, and the game starts once all of it is there. Circle lets it download in the background without starting it; Square cancels it. When several sources have the game, ProsperoEden asks which one first.
+- **Download ahead.** Square on such a game puts it in the download queue, and Square again takes it out. The queue downloads one game at a time while the menu is open, also after ProsperoEden was closed and opened again. **Settings > Downloads** lists it: Square cancels a download, Cross tries a failed one again, and Cross on a source reads the sources' game lists again (also done by itself when the menu opens after more than 15 minutes).
+- **Where the files go.** The game's file goes to `roms/`, under its name on the source; its updates and DLC go to `updates/`. What a source counts as the game, an update or DLC is up to it. A game downloaded from a source keeps the file name it has there. Only `.nsp` and `.xci` files are downloaded, and an entry without a game file (an update or DLC on its own) is not listed.
+- **Interrupted downloads.** A download is written to `.remote-downloads/` in the game files folder, and once all of the game's files are complete they are moved to `roms/` and `updates/`, so those folders only ever hold whole files of whole games. It stops while a game runs and when ProsperoEden closes, and goes on from where it was the next time the menu is open; the last 4 MB are downloaded again then, in case the console lost power while they were written. A cancel deletes what was downloaded (and never touches `roms/` or `updates/`), and what `.remote-downloads/` holds for a game that is not in the queue is deleted when the menu opens, so nothing is left behind. Before a download starts, ProsperoEden checks that the drive has room for it.
+- **Making room.** A game that a source has can be deleted from the console again: Triangle in the Library, then **Delete from console** (Cross twice). Its file and all of its updates and DLC in `updates/` are deleted, also ones put there by hand; its save data, its settings and its mods stay. The Library then lists it as on its sources again, and it can be downloaded any time.
+
+Sign-ins are kept in `sources.json` only, and each is sent to its own source only. Download sources need filesystem access (the payload loader on port 9021), as the game files folder does. Save data is not synchronised with the sources yet.
 
 ### Performance settings
 
