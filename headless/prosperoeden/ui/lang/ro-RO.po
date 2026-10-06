@@ -403,7 +403,7 @@ msgstr "Închide jocul și revine la acest meniu"
 msgid "English (UK)"
 msgstr "Engleză (Regatul Unit)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Engleză (SUA)"
 

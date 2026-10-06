@@ -359,7 +359,7 @@ msgstr ""
 msgid "Deleted 1 file ({0}). Save data and settings are kept."
 msgstr ""
 
-#: eden_services.cpp
+#: eden_services.cpp, host/fake_services.cpp
 msgid "Deleted {1} files ({0}). Save data and settings are kept."
 msgstr ""
 
@@ -479,7 +479,7 @@ msgstr ""
 msgid "English (UK)"
 msgstr ""
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr ""
 

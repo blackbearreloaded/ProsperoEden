@@ -403,7 +403,7 @@ msgstr "Lopeta peli ja palaa tähän valikkoon"
 msgid "English (UK)"
 msgstr "Englanti (Iso-Britannia)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Englanti (USA)"
 

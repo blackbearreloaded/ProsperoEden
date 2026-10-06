@@ -403,7 +403,7 @@ msgstr "จบเกม​แล้ว​กลับมา​ที่​เม
 msgid "English (UK)"
 msgstr "อังกฤษ (สหราชอาณาจักร)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "อังกฤษ (สหรัฐฯ)"
 

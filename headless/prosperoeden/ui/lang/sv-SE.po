@@ -403,7 +403,7 @@ msgstr "Avsluta spelet och återgå till den här menyn"
 msgid "English (UK)"
 msgstr "Engelska (UK)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Engelska (USA)"
 

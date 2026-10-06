@@ -403,7 +403,7 @@ msgstr "게임을 종료하고 이 메뉴로 돌아가기"
 msgid "English (UK)"
 msgstr "영어(영국)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "영어(미국)"
 

@@ -403,7 +403,7 @@ msgstr "Oyunu kapatıp bu menüye döner"
 msgid "English (UK)"
 msgstr "İngilizce (İngiltere)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "İngilizce (ABD)"
 

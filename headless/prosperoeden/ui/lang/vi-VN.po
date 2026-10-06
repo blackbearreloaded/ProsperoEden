@@ -403,7 +403,7 @@ msgstr "Đóng trò chơi và quay lại menu này"
 msgid "English (UK)"
 msgstr "Tiếng Anh (Anh)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Tiếng Anh (Mỹ)"
 

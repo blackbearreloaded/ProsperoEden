@@ -359,7 +359,7 @@ msgstr "Von der Konsole löschen"
 msgid "Deleted 1 file ({0}). Save data and settings are kept."
 msgstr "1 Datei gelöscht ({0}). Speicherdaten und Einstellungen bleiben erhalten."
 
-#: eden_services.cpp
+#: eden_services.cpp, host/fake_services.cpp
 msgid "Deleted {1} files ({0}). Save data and settings are kept."
 msgstr "{1} Dateien gelöscht ({0}). Speicherdaten und Einstellungen bleiben erhalten."
 
@@ -479,7 +479,7 @@ msgstr "Spiel beenden und zurück zu diesem Menü"
 msgid "English (UK)"
 msgstr "Englisch (UK)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Englisch (USA)"
 

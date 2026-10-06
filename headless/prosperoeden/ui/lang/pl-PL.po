@@ -403,7 +403,7 @@ msgstr "Zakończ grę i wróć do tego menu"
 msgid "English (UK)"
 msgstr "Angielski (UK)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Angielski (USA)"
 

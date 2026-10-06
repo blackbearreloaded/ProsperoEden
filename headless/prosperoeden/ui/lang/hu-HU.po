@@ -403,7 +403,7 @@ msgstr "Játék bezárása és visszatérés ebbe a menübe"
 msgid "English (UK)"
 msgstr "Angol (UK)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Angol (USA)"
 

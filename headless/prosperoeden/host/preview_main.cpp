@@ -557,6 +557,128 @@ void pictures(Stage &s)
     s.wait(2.0f);
     s.shoot("29-home-four-controllers");
     s.services.connected_controllers = 0b0011;
+
+    // Games on download sources: listed beside the console's own, on their sources until downloaded.
+    s.services.has_server = true;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down}); // Lighthouse Keeper
+    s.wait(0.6f);
+    s.shoot("80-library-server-game");
+    // Square: into the download queue; it starts at once.
+    s.press({Key::square});
+    s.wait(0.5f);
+    s.shoot("81-library-queued");
+    s.wait(2.0f);
+    s.shoot("82-library-downloading");
+    // Cross on another: played once it is downloaded, after the one downloading.
+    s.press({Key::down, Key::down, Key::down}); // Orbit Postman
+    s.wait(0.4f);
+    s.press({Key::cross});
+    s.wait(0.6f);
+    s.shoot("83-download-waiting");
+    s.wait(10.0f);
+    s.shoot("84-download-running");
+    // Done: the dialog closes and the game starts.
+    for (int frame = 0; frame < 900 && s.launcher->selected_game().empty(); ++frame)
+        s.frame();
+    s.wait(0.3f);
+    s.shoot("85-download-done-starting");
+    {
+        bool joined = false;
+        for (const pe::ui::Game &game : s.services.games())
+            joined = joined || (game.name == "Orbit Postman" && !game.remote);
+        if (!joined || s.launcher->selected_game().empty())
+        {
+            std::fprintf(stderr, "error: a downloaded game did not join the library and start\n");
+            s.ok = false;
+        }
+    }
+    // A downloaded game from the server is deleted from the console in its settings, asked first.
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down}); // Orbit Postman
+    s.wait(0.6f);
+    s.shoot("94-library-downloaded");
+    s.press({Key::triangle});
+    s.wait(0.6f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down});
+    s.wait(0.6f);
+    s.shoot("95-game-delete-row");
+    s.press({Key::cross});
+    s.wait(0.4f);
+    s.shoot("96-game-delete-asked");
+    s.press({Key::cross});
+    s.wait(1.0f);
+    s.shoot("97-library-deleted");
+    {
+        bool remote = false;
+        for (const pe::ui::Game &game : s.services.games())
+            remote = remote || (game.name == "Orbit Postman" && game.remote);
+        if (!remote)
+        {
+            std::fprintf(stderr, "error: a deleted game is not on the server only again\n");
+            s.ok = false;
+        }
+    }
+    // A download that stops part way: try again, cancel or close.
+    s.services.download_fails = true;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down,
+             Key::down, Key::down, Key::down}); // Rune Gardens
+    s.wait(0.4f);
+    // Two sources have it: which one, first.
+    s.press({Key::cross});
+    s.wait(0.6f);
+    s.shoot("98-choose-source");
+    s.press({Key::cross});
+    s.wait(5.0f);
+    s.shoot("86-download-failed");
+    s.press({Key::circle});
+    s.wait(0.6f);
+    s.shoot("87-library-download-failed");
+    // Settings > Downloads: the sources and the queue.
+    s.press({Key::circle});
+    s.wait(0.8f);
+    s.press({Key::up, Key::right, Key::cross});
+    s.wait(1.0f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down});
+    s.wait(0.6f);
+    s.shoot("88-settings-downloads");
+    s.press({Key::cross});
+    s.wait(0.8f);
+    s.shoot("89-downloads");
+    s.press({Key::down});
+    s.wait(0.6f);
+    s.shoot("90-downloads-failed-row");
+    s.press({Key::square});
+    s.wait(0.6f);
+    s.shoot("91-downloads-cancelled");
+    s.services.download_fails = false;
+    // The server cannot be reached, and no server at all.
+    s.services.server_fails = true;
+    s.press({Key::circle});
+    s.wait(0.6f);
+    s.press({Key::cross});
+    s.wait(0.8f);
+    s.shoot("92-downloads-source-offline");
+    s.services.server_fails = false;
+    s.services.has_server = false;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::right, Key::cross});
+    s.wait(1.0f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down,
+             Key::cross});
+    s.wait(0.8f);
+    s.shoot("93-downloads-not-set-up");
 }
 
 // A walk through the launcher, one frame per call of frame().

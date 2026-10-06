@@ -403,7 +403,7 @@ msgstr "Τέλος παιχνιδιού και επιστροφή σε αυτό 
 msgid "English (UK)"
 msgstr "Αγγλικά (ΗΒ)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Αγγλικά (ΗΠΑ)"
 

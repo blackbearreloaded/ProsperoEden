@@ -403,7 +403,7 @@ msgstr "Закрыть игру и вернуться в это меню"
 msgid "English (UK)"
 msgstr "Английский (Британия)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "Английский (США)"
 

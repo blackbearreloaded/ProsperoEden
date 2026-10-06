@@ -180,6 +180,18 @@ class FakeServices final : public ui::Services
         for (const ui::Game &game : games_)
             if (game_exists(game.file))
                 present.push_back(game);
+        if (has_server)
+            for (ui::Game game : remote_)
+            {
+                // With Office away, only Home's games are there.
+                if (server_fails)
+                    game.sources.erase(std::remove(game.sources.begin(), game.sources.end(), "Office"),
+                                       game.sources.end());
+                if (!game.sources.empty())
+                    present.push_back(game);
+            }
+        std::sort(present.begin(), present.end(),
+                  [](const ui::Game &a, const ui::Game &b) { return a.name < b.name; });
         return present;
     }
     std::string game_path(const std::string &file) override
@@ -283,7 +295,27 @@ class FakeServices final : public ui::Services
         return gfx::load_tga(path, image);
     }
 
+    // Two download sources, "Home" with three games and "Office" with two (one of them Home's
+    // too); a download moves a step each time the queue is looked at (the launcher looks four
+    // times a second) and the game then joins the library. server_fails: Office cannot be
+    // reached; download_fails: a download stops part way.
+    bool has_server = false;
+    bool server_fails = false;
+    bool download_fails = false;
+    ui::Sources sources() override;
+    void refresh_sources() override
+    {
+        ++generation_;
+    }
+    bool download(const ui::Game &game, int source, bool first) override;
+    bool cancel_download(const std::string &key) override;
+    std::vector<ui::Download> downloads() override;
+    bool delete_game(const ui::Game &game, std::string *message) override;
+
   private:
+    std::vector<ui::Game> remote_; // the sources' games not on the console
+    std::vector<ui::Download> queue_;
+    std::uint64_t generation_ = 1;
     std::vector<ui::Game> games_;
     std::vector<std::uint64_t> handheld_;
     ui::GameSettings game_settings_;
