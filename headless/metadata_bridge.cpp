@@ -20,7 +20,18 @@
 #include <string>
 #include <vector>
 
+// Eden builds stb_image for JPEG only (src/common/stb.h), the format of a game's own icon. A cover
+// from a download source (a RomM server's) is a PNG as often: this file has a reader of its own
+// for both, private to it (STB_IMAGE_STATIC), beside Eden's.
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_JPEG 1
+#define STBI_ONLY_PNG 1
+#define STBI_NO_STDIO
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 #include <stb_image.h>
+#pragma GCC diagnostic pop
 
 #include "common/fs/path_util.h"
 #include "core/file_sys/card_image.h"

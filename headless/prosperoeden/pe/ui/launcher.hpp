@@ -385,6 +385,7 @@ class Launcher
     Sources sources_;
     std::vector<Download> downloads_;
     std::uint64_t sources_generation_ = 0; // the sources' games as the Library's list has them
+    bool lists_asked_ = false;             // the player asked for the game lists: the menu says when they are in
     float sources_wait_ = 0.0f;
     bool rescan_ = false;                  // the list is read again once the current reading is in
     Game download_game_;                   // the game the download dialog shows (and then starts)
@@ -394,9 +395,6 @@ class Launcher
     bool choice_play_ = false;             // it is then played (else queued)
     ListView choice_rows_;
     tween::Spring download_fraction_;
-    float download_rate_ = 0.0f;          // bytes per second, smoothed
-    std::uint64_t download_rate_done_ = 0;
-    float download_rate_wait_ = 0.0f;
     float download_time_ = 0.0f;
     ListView source_rows_; // Settings > Downloads: the sources, then the downloads
 };

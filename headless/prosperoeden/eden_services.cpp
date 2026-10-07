@@ -965,6 +965,7 @@ pe::ui::Sources EdenServices::sources() {
     sources.configured = status.configured;
     sources.error = status.error;
     sources.generation = status.generation;
+    sources.ftp_port = status.ftp_port;
     for (const Eden::Remote::SourceStatus& source : status.sources)
         sources.list.push_back({source.name, source.address, source.refreshing, source.online, source.error,
                                 static_cast<int>(source.games)});
@@ -1029,6 +1030,7 @@ std::vector<pe::ui::Download> EdenServices::downloads() {
         download.state = static_cast<pe::ui::DownloadState>(entry.state); // the same order
         download.done = entry.done;
         download.total = entry.total;
+        download.rate = entry.rate;
         download.error = entry.error;
         download.source = names.contains(entry.source) ? names.at(entry.source) : entry.source;
         Eden::Remote::Game game;
@@ -1075,7 +1077,6 @@ bool EdenServices::delete_game(const pe::ui::Game& game, std::string* message) {
         if (std::remove(path.c_str()) == 0) {
             ++deleted;
             bytes += static_cast<std::uint64_t>(info.st_size);
-            Eden::Report("library", ("deleted " + path).c_str());
         } else if (kept.empty()) {
             kept = path;
         }

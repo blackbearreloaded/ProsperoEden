@@ -106,6 +106,7 @@ struct Sources
     // Changes when a source's games, their covers or the downloaded files changed: the Library
     // reads its list again.
     std::uint64_t generation = 0;
+    int ftp_port = 2121; // the console's FTP server, which writes the downloads; it has to run
 };
 
 // A game in the download queue.
@@ -125,6 +126,7 @@ struct Download
     DownloadState state = DownloadState::queued;
     std::uint64_t done = 0;
     std::uint64_t total = 0; // 0 when not known
+    std::uint64_t rate = 0;  // bytes a second while it downloads; 0 when not known yet
     std::string error;       // why it failed (English, technical)
 };
 

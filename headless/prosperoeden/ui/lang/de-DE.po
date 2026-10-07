@@ -890,8 +890,20 @@ msgid "No cover art"
 msgstr "Kein Cover"
 
 #: pe/ui/remote.cpp
-msgid "No download source is set up. Save a file named {0} that lists your sources (the README shows how), then open this menu again."
-msgstr "Keine Download-Quelle eingerichtet. Speichere eine Datei {0} mit deinen Quellen (wie, steht im README) und öffne dieses Menü dann erneut."
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Keine Download-Quelle eingerichtet. Speichere eine Datei {0} mit deinen Quellen, wie diese mit einem RomM-Server, und öffne dieses Menü dann erneut. Downloads brauchen einen FTP-Server, der auf der Konsole läuft, auf Port {1}."
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "Downloads brauchen einen FTP-Server, der auf der Konsole läuft, auf Port {0}."
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "FTP-SERVER"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Port {0}"
 
 #: pe/ui/remote.cpp
 msgid "No downloads. In the Library, Square puts a game from a source in the queue."
@@ -1173,6 +1185,22 @@ msgstr "Listen neu laden"
 #: pe/ui/remote.cpp
 msgid "Reading the game lists..."
 msgstr "Spielelisten werden gelesen..."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Die Spielelisten sind gelesen: {0} Spiel."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Die Spielelisten sind gelesen: {0} Spiele."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Die Spieleliste von {0} konnte nicht gelesen werden."
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "{0} Spielelisten konnten nicht gelesen werden."
 
 #: pe/ui/remote.cpp, pe/ui/settings.cpp
 msgid "Reading..."

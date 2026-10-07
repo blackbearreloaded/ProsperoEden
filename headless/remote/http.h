@@ -34,6 +34,8 @@ extern "C"
         const char *authorization; /* the whole header value ("Bearer ...", "Basic ..."); NULL: none */
         uint64_t resume_from;      /* nonzero: ask for the body from this byte on (Range) */
         long timeout_ms;           /* 0: no overall limit (a large file): only a stalled one ends */
+        int raw;                   /* a game file: not asked for compressed (it does not shrink, and
+                                    * both ends would spend their time on it) */
         remote_http_begin begin;     /* NULL: not asked */
         remote_http_sink sink;
         remote_http_stop stop;       /* NULL: never stopped */

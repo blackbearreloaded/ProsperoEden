@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Host check of the download sources (remote/remote.h) with their RomM backend
 // (remote/romm/romm_source.h) against tools/romm-mock-server.py: the backend's reading of RomM's
-// answers, then sources.json with one and two sources, the game lists, downloads (going on after a
-// stop, with a spoilt end, from a server that cannot resume, of a game in several files), a cancel,
-// the cleaning of .remote-downloads/ and the kept queue. tools/check-remote.py runs it.
+// answers, then sources.json with one and two sources, the game lists, downloads (written through
+// tools/ftp-mock-server.py as through the console's FTP server; going on after a stop, with a spoilt
+// end, from a server that cannot resume, of a game in several files, and failing without an FTP
+// server), a cancel, the cleaning of .remote-downloads/ and the kept queue. tools/check-remote.py
+// runs it.
 //
-//   remote_check <server address> <empty folder>
+//   remote_check <server address> <empty folder> <FTP server's port>
+#include "remote/ftp.h"
 #include "remote/http.h"
 #include "remote/remote.h"
 #include "remote/romm/romm_source.h"
@@ -151,6 +154,9 @@ void Identity() {
     Expect(!local(game("Mario", "x.xci", false, "", {}), 1, "Mario", "y.xci") &&
                local(game("Mario", "x.xci", false, "", {}), 1, "Other", "X.xci"),
            "by its file name, when the source's name is a guess");
+    Expect(local(game("Galaxy 2", "Galaxy.2.nsp", true, "01B84DBAFD84A000", {}), 0x0100000000020000ull, "Galaxy 2",
+                 "galaxy.2.NSP"),
+           "the file it was downloaded as, although the title IDs disagree");
     Expect(TitleKey(odyssey) == "screenscraper:195863" && TitleKey(game("A", "F.nsp", false, "", {})) == "file:f.nsp" &&
                TitleKey(game("A", "F.nsp", false, "0100000000010000", {})) == "title:0100000000010000",
            "a title's key");
@@ -214,9 +220,13 @@ void Backend() {
            "a RomM source without an address is not usable");
     Expect(MakeSource("ftp", {{"url", "x"}}, &error) == nullptr && error.find("Unknown") != std::string::npos,
            "an unknown type is reported");
+    // A file name comes from the source: a line break in it would be a command to the FTP server.
+    FtpUpload upload;
+    Expect(!upload.Open(FtpServer{}, "/data/x.nsp\r\nDELE /data/y", 0, &error) && error.find("line break") != std::string::npos,
+           "a file name with a line break is not sent to the FTP server");
 }
 
-void Sources(const std::string& url, const fs::path& root) {
+void Sources(const std::string& url, const fs::path& root, const std::string& ftp_port) {
     const fs::path config = root / "config" / "remote";
     const fs::path roms = root / "games" / "roms";
     const fs::path updates = root / "games" / "updates";
@@ -225,7 +235,11 @@ void Sources(const std::string& url, const fs::path& root) {
     fs::create_directories(roms);
     const Paths paths{config.string(), (root / "covers").string(), roms.string(), updates.string(), downloads.string()};
     const auto Start = [](const Paths& where, CoverWriter writer) { Eden::Remote::Start(where, writer, ListFolder); };
-    const auto Setup = [&](const std::string& sources) { Write(config / "sources.json", "{\"sources\":[" + sources + "]}"); };
+    // The downloads are written by the FTP server's stand-in (tools/ftp-mock-server.py).
+    std::string ftp = ftp_port;
+    const auto Setup = [&](const std::string& sources) {
+        Write(config / "sources.json", "{\"ftp_port\":" + ftp + ",\"sources\":[" + sources + "]}");
+    };
     const auto Romm = [&](const std::string& name, const std::string& sign_in, const std::string& address) {
         return "{\"type\":\"romm\",\"name\":\"" + name + "\",\"url\":\"" + address + "\"," + sign_in + "}";
     };
@@ -266,6 +280,39 @@ void Sources(const std::string& url, const fs::path& root) {
     Start(paths, CopyCover);
     Expect(WaitFor([] { return SourceOf("home").online && !SourceOf("home").refreshing; }), "the list is read with a token");
     Expect(fs::exists(config / "home" / "catalog.json"), "the list is kept");
+    // The same list again: the Library has it, and does not read all of the console's games again.
+    const std::uint64_t generation = Current().generation;
+    Eden::Remote::Refresh();
+    Expect(WaitFor([] { return !SourceOf("home").refreshing; }), "the list is read again");
+    Expect(Current().generation == generation, "an unchanged list does not have the Library read again");
+
+    // Without an FTP server on the console a download fails, and says why.
+    ftp = "1";
+    Setup(Romm("Home", token, url));
+    Start(paths, CopyCover);
+    Expect(Enqueue("home", "13", false), "a game is queued without an FTP server");
+    Expect(WaitFor([] { return Find(Downloads(), "home", "13").state == State::failed; }), "its download fails");
+    Expect(Find(Downloads(), "home", "13").error.find("FTP server") != std::string::npos, "and says it needs an FTP server");
+    Expect(Cancel("home", "13"), "it is cancelled");
+    ftp = ftp_port;
+    Setup(Romm("Home", token, url));
+    Start(paths, CopyCover);
+
+    // A full drive: the download fails with what the FTP server said, and what it wrote stays in
+    // .remote-downloads/, to go on from once there is room.
+    fs::create_directories(downloads / "home" / "14");
+    Write(downloads / "home" / "14" / "ftp-full", "");
+    Expect(Enqueue("home", "14", false), "a game is queued for a full drive");
+    Expect(WaitFor([] { return Find(Downloads(), "home", "14").state == State::failed; }), "its download fails");
+    Expect(Find(Downloads(), "home", "14").error.find("No space left on device") != std::string::npos,
+           "and says the drive is full, as the FTP server said");
+    // Its update comes first (an update before its game), and the drive was full in it.
+    const fs::path written = downloads / "home" / "14" / "Epsilon [UPD][v131072].nsp";
+    Expect(fs::exists(written) && fs::file_size(written) == 1000 &&
+               !fs::exists(updates / "Epsilon [UPD][v131072].nsp") && !fs::exists(roms / "Epsilon.nsp"),
+           "what was written stays in .remote-downloads/");
+    fs::remove(downloads / "home" / "14" / "ftp-full");
+    Expect(Cancel("home", "14") && WaitFor([&] { return !fs::exists(downloads); }), "it is cancelled, and its file goes");
 
     // A cancel deletes what was downloaded of the game, all of it still in .remote-downloads/;
     // an update that was in updates/ already (the player's own) stays.
@@ -276,7 +323,8 @@ void Sources(const std::string& url, const fs::path& root) {
     Write(downloads / "home" / "11" / "Beta Racer.xci", std::string(1000, 'x'));
     Write(downloads / "home" / "11" / "Beta Racer [UPD][v65536].nsp", Pattern(111, 100000));
     Expect(Enqueue("home", "11", false) && Cancel("home", "11"), "a queued game is cancelled");
-    Expect(!fs::exists(downloads), "a cancel deletes what was downloaded");
+    // Deleted by the download thread, without keeping the menu waiting; also while a game runs.
+    Expect(WaitFor([&] { return !fs::exists(downloads); }), "a cancel deletes what was downloaded");
     Expect(Read(updates / "Beta Racer [UPD][v65536].nsp") == "the player's own", "and nothing in updates/");
     fs::remove(updates / "Beta Racer [UPD][v65536].nsp");
 
@@ -433,7 +481,7 @@ void Sources(const std::string& url, const fs::path& root) {
 int main(int argc, char** argv) {
     Identity();
     Backend();
-    if (argc >= 3) Sources(argv[1], argv[2]);
+    if (argc >= 4) Sources(argv[1], argv[2], argv[3]);
     if (failures == 0) std::printf("remote check: PASS\n");
     return failures == 0 ? 0 : 1;
 }

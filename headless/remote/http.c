@@ -120,8 +120,9 @@ int remote_http_get(const remote_http_request *request, remote_http_result *resu
     (void)curl_easy_setopt(t.easy, CURLOPT_MAXREDIRS, (long)remote_http_redirects);
     (void)curl_easy_setopt(t.easy, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_1);
     (void)curl_easy_setopt(t.easy, CURLOPT_CONNECTTIMEOUT_MS, (long)remote_http_connect_ms);
-    (void)curl_easy_setopt(t.easy, CURLOPT_BUFFERSIZE, 256L * 1024L);
-    (void)curl_easy_setopt(t.easy, CURLOPT_ACCEPT_ENCODING, ""); /* JSON lists compress well */
+    (void)curl_easy_setopt(t.easy, CURLOPT_BUFFERSIZE, 1024L * 1024L); /* fewer, larger pieces of a large file */
+    if (!request->raw)
+        (void)curl_easy_setopt(t.easy, CURLOPT_ACCEPT_ENCODING, ""); /* JSON lists compress well */
     if (request->timeout_ms > 0)
         (void)curl_easy_setopt(t.easy, CURLOPT_TIMEOUT_MS, request->timeout_ms);
     (void)curl_easy_setopt(t.easy, CURLOPT_LOW_SPEED_LIMIT, 1L);

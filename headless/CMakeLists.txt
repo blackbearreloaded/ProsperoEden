@@ -2311,11 +2311,12 @@ endif()
                 "${launcher_dir}/pe/ui/widgets.cpp")
             target_sources(eden-headless PRIVATE ${launcher_sources})
             # Download sources and their queue (remote/remote.h), with their backends (remote/source.h,
-            # backends.cpp); their HTTP (remote/http.c) is linked into the update check's object
-            # below, with its libcurl.
+            # backends.cpp) and the console's FTP server that writes the files (remote/ftp.h); their
+            # HTTP (remote/http.c) is linked into the update check's object below, with its libcurl.
             target_sources(eden-headless PRIVATE
                 "${EDEN_PORT_DIR}/remote/remote.cpp"
                 "${EDEN_PORT_DIR}/remote/backends.cpp"
+                "${EDEN_PORT_DIR}/remote/ftp.cpp"
                 "${EDEN_PORT_DIR}/remote/romm/romm_source.cpp")
             # The update check (update_notice.h). Its network side is the boilerplate's
             # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew

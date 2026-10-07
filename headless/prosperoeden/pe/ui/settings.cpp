@@ -303,14 +303,16 @@ void Launcher::draw_settings(Canvas &c)
             queued += download.state != DownloadState::failed ? 1 : 0;
         if (!sources_.configured)
             lines.push_back({tr("SOURCES"), tr("Not set up")});
-        // Each source with its state; four at most, the queue under them.
-        for (std::size_t i = 0; i < sources_.list.size() && i < 4; ++i)
+        // Each source with its state; three at most, the FTP server that writes the downloads and the
+        // queue under them.
+        for (std::size_t i = 0; i < sources_.list.size() && i < 3; ++i)
         {
             const SourceInfo &source = sources_.list[i];
             lines.push_back({source.name.c_str(), source.refreshing ? std::string{tr("Reading...")} :
                                                   source.online     ? fill(tr("{0} games"), {std::to_string(source.games)}) :
                                                                       std::string{tr("Offline")}});
         }
+        lines.push_back({tr("FTP SERVER"), fill(tr("Port {0}"), {std::to_string(sources_.ftp_port)})});
         lines.push_back({tr("DOWNLOADS"), std::to_string(queued)});
         break;
     }

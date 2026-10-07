@@ -3,6 +3,7 @@
 // (backends.cpp) and used through Source (source.h).
 #include "remote.h"
 
+#include "ftp.h"
 #include "source.h"
 
 #include <algorithm>
@@ -15,6 +16,7 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <set>
 #include <string_view>
 #include <memory>
 #include <mutex>
@@ -71,6 +73,13 @@ struct SourceState {
     std::vector<Game> games;
 };
 
+// A cancelled game's files in .remote-downloads/, to be deleted.
+struct Discard {
+    std::string source;
+    std::string id;
+    std::vector<std::string> names;
+};
+
 struct Shared {
     std::mutex lock;
     std::condition_variable wake;
@@ -81,6 +90,13 @@ struct Shared {
     std::string error; // about sources.json
     std::vector<std::shared_ptr<SourceState>> sources;
     std::deque<Entry> queue;
+    // Deleted by the download thread without the lock (a file of gigabytes takes a while), and
+    // before it begins another download: one of the same game finds nothing of the old one.
+    std::vector<Discard> discards;
+    FtpServer ftp; // where the downloads are written (sources.json's "ftp_port" and sign-in)
+    // The covers on the console (CoverPath), known without asking the drive: the menu asks for
+    // them often, and a drive busy with a download can keep it waiting.
+    std::set<std::string> covers;
     std::uint64_t serials = 0;
     bool threads = false;
     bool queue_read = false;
@@ -92,6 +108,7 @@ struct Shared {
     std::atomic<std::uint64_t> cancel{0};
     std::atomic<std::uint64_t> current{0};
     std::atomic<std::uint64_t> current_done{0};
+    std::atomic<std::uint64_t> current_rate{0}; // bytes a second, smoothed; 0 until a second went by
 };
 
 Shared& State_() {
@@ -144,11 +161,18 @@ void MakeFolders(const std::string& path) {
     (void)mkdir(path.c_str(), 0777);
 }
 
-bool FreeSpace(const std::string& path, std::uint64_t* bytes) {
+// Unknown on the console: statfs is only in libkernel_sys, which a title does not import, and
+// the SDK's libc.a has it as a raw system call, which ends the process. A full drive still stops
+// the download when a write fails, before anything reaches roms/ or updates/.
+bool FreeSpace([[maybe_unused]] const std::string& path, [[maybe_unused]] std::uint64_t* bytes) {
+#if defined(__PROSPERO__)
+    return false;
+#else
     struct statfs info {};
     if (statfs(path.c_str(), &info) != 0) return false;
     *bytes = static_cast<std::uint64_t>(info.f_bavail) * static_cast<std::uint64_t>(info.f_bsize);
     return true;
+#endif
 }
 
 std::string Size(std::uint64_t bytes) {
@@ -265,9 +289,10 @@ SourceGame AsSourceGame(const Game& game) {
 
 // ---- the kept lists and queue ----
 
-void SaveCatalog(const Shared& s, const SourceState& state) {
+// A source's games as its kept list has them.
+Json CatalogGames(const std::vector<Game>& list) {
     Json games = Json::array();
-    for (const Game& game : state.games) {
+    for (const Game& game : list) {
         Json parts = Json::array();
         for (const Part& part : game.parts)
             parts.push_back({{"id", part.id}, {"name", part.name}, {"size", part.size}, {"update", part.update}});
@@ -275,13 +300,18 @@ void SaveCatalog(const Shared& s, const SourceState& state) {
                          {"cover", game.cover_source}, {"parts", parts}, {"title_id", game.title_id},
                          {"ids", game.ids}, {"identified", game.identified}});
     }
+    return games;
+}
+
+void SaveCatalog(const Shared& s, const SourceState& state) {
+    const Json games = CatalogGames(state.games);
     const std::string folder = s.paths.config + "/" + state.key;
     MakeFolders(folder);
     if (!WriteFile(folder + "/catalog.json", Json{{"signature", state.signature}, {"games", games}}.dump()))
         Log("could not write the game list of " + state.name);
 }
 
-void LoadCatalog(const Shared& s, SourceState& state) {
+void LoadCatalog(Shared& s, SourceState& state) {
     state.games.clear();
     const Json catalog = Json::parse(ReadFile(s.paths.config + "/" + state.key + "/catalog.json"), nullptr, false);
     // A list from another entry (another server, other settings) is not this one's.
@@ -314,7 +344,9 @@ void LoadCatalog(const Shared& s, SourceState& state) {
         const bool usable = !game.id.empty() && GameFileName(game.file) && !game.parts.empty() &&
                             std::all_of(game.parts.begin(), game.parts.end(),
                                         [](const Part& part) { return !part.id.empty() && GameFileName(part.name); });
-        if (usable) state.games.push_back(std::move(game));
+        if (!usable) continue;
+        if (const std::string cover = CoverPath(s, state.key, game.id); FileSize(cover) > 0) s.covers.insert(cover);
+        state.games.push_back(std::move(game));
     }
 }
 
@@ -351,6 +383,13 @@ void ReadSources(Shared& s) {
         if (!json.is_object() || list == json.end() || !list->is_array()) {
             s.error = "sources.json is not valid: it needs a \"sources\" list";
         } else {
+            // The console's FTP server, which writes the downloads (ftp.h).
+            s.ftp = FtpServer{};
+            if (const auto port = json.find("ftp_port"); port != json.end() && port->is_number_integer() &&
+                                                         port->get<int>() > 0 && port->get<int>() < 65536)
+                s.ftp.port = port->get<int>();
+            if (const std::string user = Text(json, "ftp_user"); !user.empty()) s.ftp.user = user;
+            if (const std::string password = Text(json, "ftp_password"); !password.empty()) s.ftp.password = password;
             for (const Json& entry : *list) {
                 if (!entry.is_object()) continue;
                 const std::string type = Lower(Text(entry, "type"));
@@ -376,8 +415,7 @@ void ReadSources(Shared& s) {
                 state->source = MakeSource(type, entry, &error);
                 state->error = error;
                 LoadCatalog(s, *state);
-                if (state->source) Log("source " + name + ": " + state->source->address());
-                else Log("source " + name + ": " + error);
+                if (!state->source) Log("source " + name + ": " + error);
                 sources.push_back(std::move(state));
             }
             s.configured = !sources.empty();
@@ -402,58 +440,66 @@ std::string FinalPath(const Paths& paths, const Part& part) {
     return (part.update ? paths.updates : paths.roms) + "/" + part.name;
 }
 
-// The bytes of a download, into its file in .remote-downloads/.
+// The bytes of a download, to its file in .remote-downloads/ through the console's FTP server
+// (ftp.h): the app does not write it itself.
+
 class FileReceiver final : public Receiver {
   public:
-    FileReceiver(std::string path, std::FILE* file, std::uint64_t base, std::uint64_t start)
-        : path_(std::move(path)), file_(file), base_(base), start_(start) {}
-    ~FileReceiver() override { (void)close(); }
+    FileReceiver(FtpUpload& upload, const FtpServer& server, std::string path, std::uint64_t base, std::uint64_t start)
+        : upload_(upload), server_(server), path_(std::move(path)), base_(base), start_(start) {}
 
     bool begin(bool from_start) override {
-        // The whole file, although a part was asked for: it starts again.
+        // The whole file, although a part was asked for: it is written again from its start.
         if (from_start && start_ > 0) {
-            file_ = std::freopen(path_.c_str(), "wb", file_);
             start_ = 0;
-            if (!file_) {
-                failed_ = true;
-                return false;
-            }
+            if (!upload_.Open(server_, path_, 0, &error_)) return false;
         }
         return true;
     }
     bool take(const void* data, std::size_t size) override {
-        if (std::fwrite(data, 1, size, file_) != size) {
-            failed_ = true;
+        if (!upload_.Send(data, size)) {
+            // Its reason, a full drive above all, is on the control connection.
+            const std::string reason = upload_.Reason();
+            error_ = "The console's FTP server could not write the file" + (reason.empty() ? std::string{} : ": " + reason);
             return false;
         }
         written_ += size;
         State_().current_done.store(base_ + start_ + written_);
+        const Clock::time_point now = Clock::now();
+        // The speed: measured each second, smoothed so that it does not jump.
+        const double seconds = std::chrono::duration<double>(now - sampled_).count();
+        if (seconds >= 1.0) {
+            const double measured = static_cast<double>(written_ - sampled_bytes_) / seconds;
+            const double before = static_cast<double>(State_().current_rate.load());
+            State_().current_rate.store(static_cast<std::uint64_t>(before > 0.0 ? before * 0.7 + measured * 0.3 : measured));
+            sampled_ = now;
+            sampled_bytes_ = written_;
+        }
         return true;
     }
     bool stopped() override {
         const Shared& s = State_();
         return s.halt.load() || (s.cancel.load() != 0 && s.cancel.load() == s.current.load());
     }
-    // False when the file could not be written.
-    bool close() {
-        const bool closed = file_ == nullptr || std::fclose(file_) == 0;
-        file_ = nullptr;
-        return closed && !failed_;
-    }
+    // Why the server did not take the file; empty when it did.
+    const std::string& error() const { return error_; }
 
   private:
+    FtpUpload& upload_;
+    const FtpServer& server_;
     std::string path_;
-    std::FILE* file_;
     std::uint64_t base_;  // the game's bytes before this file
     std::uint64_t start_; // where in the file the transfer began
     std::uint64_t written_ = 0;
-    bool failed_ = false;
+    std::string error_;
+    Clock::time_point sampled_ = Clock::now(); // when the speed was last measured
+    std::uint64_t sampled_bytes_ = 0;          // written_ then
 };
 
 enum class Outcome { done, stopped, failed };
 
-Outcome DownloadPart(Source& source, const Paths& paths, const Game& game, const Part& part, std::uint64_t base,
-                     std::string* error) {
+Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, const Game& game, const Part& part,
+                     std::uint64_t base, std::string* error) {
     const std::string folder = part.update ? paths.updates : paths.roms;
     MakeFolders(folder);
     const std::string final_path = FinalPath(paths, part);
@@ -474,26 +520,20 @@ Outcome DownloadPart(Source& source, const Paths& paths, const Game& game, const
         return Outcome::failed;
     }
     // Going on: written over from `start` (the rewound bytes come again), else a new file.
-    std::FILE* file = std::fopen(staged.c_str(), start > 0 ? "r+b" : "wb");
-    if (file && start > 0 && std::fseek(file, static_cast<long>(start), SEEK_SET) != 0) {
-        std::fclose(file);
-        file = nullptr;
-    }
-    if (!file) {
-        *error = "Cannot write to " + paths.downloads;
-        return Outcome::failed;
-    }
+    FtpUpload upload;
+    if (!upload.Open(ftp, staged, start, error)) return Outcome::failed;
     State_().current_done.store(base + start);
-    FileReceiver receiver(staged, file, base, start);
+    FileReceiver receiver(upload, ftp, staged, base, start);
     const bool fetched = source.fetch(AsSourceGame(game), {part.id, part.name, part.size, part.update ? FileKind::update : FileKind::game},
                                       start, receiver, error);
-    const bool written = receiver.close();
+    // Stopped or failed: what the server has of the file stays, to go on from.
     if (receiver.stopped()) return Outcome::stopped;
-    if (!written) {
-        *error = "Cannot write to " + paths.downloads + " (is the drive full?)";
+    if (!receiver.error().empty()) {
+        *error = receiver.error();
         return Outcome::failed;
     }
     if (!fetched) return Outcome::failed;
+    if (!upload.Finish(error)) return Outcome::failed;
     const std::int64_t have = FileSize(staged);
     if (part.size > 0 && have != static_cast<std::int64_t>(part.size)) {
         *error = "The download is incomplete (" + Size(static_cast<std::uint64_t>(std::max<std::int64_t>(have, 0))) +
@@ -531,11 +571,13 @@ void RemoveStaged(const Paths& paths, const std::string& source, const std::stri
 }
 
 // What a cancelled download leaves: its folder in .remote-downloads/. Nothing of it is in roms/
-// or updates/ yet (PlaceParts), so nothing there is touched.
-void RemoveParts(const Paths& paths, const Game& game) {
-    std::vector<std::string> names;
-    for (const Part& part : game.parts) names.push_back(part.name);
-    RemoveStaged(paths, game.source, game.id, names);
+// or updates/ yet (PlaceParts), so nothing there is touched. The download thread deletes it.
+void DiscardParts(Shared& s, const std::string& source, const std::string& id, const Game* game) {
+    Discard discard{source, id, {}};
+    if (game != nullptr)
+        for (const Part& part : game->parts) discard.names.push_back(part.name);
+    s.discards.push_back(std::move(discard));
+    s.wake.notify_all();
 }
 
 // What of a file is on the console: all of it, or what its download has so far.
@@ -565,7 +607,6 @@ void RemoveLeftovers(const Shared& s) {
         // A folder (with the files in it) or a file.
         for (const std::string& name : names(path)) (void)std::remove((path + "/" + name).c_str());
         if (rmdir(path.c_str()) != 0) (void)std::remove(path.c_str());
-        Log("removed the unfinished download " + path);
     };
     for (const std::string& source : names(s.paths.downloads)) {
         const std::string folder = s.paths.downloads + "/" + source;
@@ -623,32 +664,40 @@ void ListThread() {
         // A cover that changed on the source is fetched again.
         for (const Game& game : games)
             for (const Game& before : state->games)
-                if (before.id == game.id && before.cover_source != game.cover_source)
+                if (before.id == game.id && before.cover_source != game.cover_source) {
                     (void)std::remove(CoverPath(s, key, game.id).c_str());
+                    s.covers.erase(CoverPath(s, key, game.id));
+                }
+        // The Library reads all of the console's games again on a new generation: only for a list
+        // that is not the one it has.
+        const bool changed = CatalogGames(games) != CatalogGames(state->games);
         state->games = std::move(games);
         state->online = true;
         state->error.clear();
         state->listed_once = true;
         state->listed_at = Clock::now();
-        ++s.generation;
-        SaveCatalog(s, *state);
+        if (changed) {
+            ++s.generation;
+            SaveCatalog(s, *state);
+        }
         s.wake.notify_all(); // queued games that waited for the list
-        Log(state->name + ": " + std::to_string(state->games.size()) + " games");
         std::vector<Game> covers;
         for (const Game& game : state->games)
-            if (!game.cover_source.empty() && FileSize(CoverPath(s, key, game.id)) < 0) covers.push_back(game);
+            if (!game.cover_source.empty() && !s.covers.contains(CoverPath(s, key, game.id))) covers.push_back(game);
         const CoverWriter writer = s.writer;
         lock.unlock();
         // The Library shows them once all are in: each new list reads every game of the console.
+        std::vector<std::string> written;
         for (const Game& game : covers) {
             if (s.halt.load() || writer == nullptr) break;
             std::string picture;
-            if (source->cover(AsSourceGame(game), &picture, [&s] { return s.halt.load(); }) &&
-                !writer(picture, CoverPath(s, key, game.id)))
-                Log("the cover of " + game.name + " cannot be read");
+            if (!source->cover(AsSourceGame(game), &picture, [&s] { return s.halt.load(); })) continue;
+            if (writer(picture, CoverPath(s, key, game.id))) written.push_back(CoverPath(s, key, game.id));
+            else Log("the cover of " + game.name + " cannot be read");
         }
         lock.lock();
-        if (!covers.empty()) ++s.generation;
+        s.covers.insert(written.begin(), written.end());
+        if (!written.empty()) ++s.generation;
         s.listing = false;
         s.wake.notify_all();
     }
@@ -667,7 +716,17 @@ void DownloadThread() {
                        FindGame(s, entry.source, entry.id) != nullptr;
             });
         };
-        s.wake.wait(lock, [&] { return !s.halt.load() && next() != s.queue.end(); });
+        // A cancelled game's files go also while a game runs (a cancel says they are gone).
+        s.wake.wait(lock, [&] { return !s.discards.empty() || (!s.halt.load() && next() != s.queue.end()); });
+        if (!s.discards.empty()) {
+            const std::vector<Discard> discards = std::move(s.discards);
+            s.discards.clear();
+            const Paths paths = s.paths;
+            lock.unlock();
+            for (const Discard& discard : discards) RemoveStaged(paths, discard.source, discard.id, discard.names);
+            lock.lock();
+            continue;
+        }
         Entry& entry = *next();
         const auto state = FindSource(s, entry.source);
         const Game* found = FindGame(s, entry.source, entry.id);
@@ -681,11 +740,13 @@ void DownloadThread() {
         const Game game = *found;
         const std::shared_ptr<Source> source = state->source;
         const Paths paths = s.paths;
+        const FtpServer ftp = s.ftp;
         entry.state = State::downloading;
         entry.error.clear();
         entry.total = game.size;
         s.current.store(serial);
         s.current_done.store(Present(paths, game));
+        s.current_rate.store(0);
         s.transferring = true;
         lock.unlock();
 
@@ -697,7 +758,7 @@ void DownloadThread() {
         for (const Part& part : parts) {
             // What the game's other files have on the console, for the progress.
             const std::uint64_t base = Present(paths, game) - PresentOf(paths, game, part);
-            outcome = DownloadPart(*source, paths, game, part, base, &error);
+            outcome = DownloadPart(*source, paths, ftp, game, part, base, &error);
             if (outcome != Outcome::done) break;
         }
         if (outcome == Outcome::done && !PlaceParts(paths, game, &error)) outcome = Outcome::failed;
@@ -709,16 +770,14 @@ void DownloadThread() {
         if (cancelled) s.cancel.store(0);
         const auto at = std::find_if(s.queue.begin(), s.queue.end(), [&](const Entry& e) { return e.serial == serial; });
         if (cancelled) {
-            RemoveParts(paths, game);
+            DiscardParts(s, game.source, game.id, &game);
             if (at != s.queue.end()) s.queue.erase(at);
             SaveQueue(s);
-            Log("cancelled " + game.name);
         } else if (outcome == Outcome::done) {
             RemoveStaged(paths, game.source, game.id, {});
             if (at != s.queue.end()) s.queue.erase(at);
             SaveQueue(s);
             ++s.generation;
-            Log("downloaded " + game.name);
         } else if (at != s.queue.end()) {
             at->done = Present(paths, game);
             if (outcome == Outcome::stopped) {
@@ -788,6 +847,9 @@ bool SameGame(const Game& a, const Game& b) {
 }
 
 bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& normal_name, const std::string& file) {
+    // The file it is downloaded as: whatever the title IDs say (a server's can be another than the
+    // one the console reads from the file), it is this game, and not offered again.
+    if (Lower(game.file) == Lower(file)) return true;
     if (!game.title_id.empty() && title_id != 0) {
         char id[17];
         std::snprintf(id, sizeof(id), "%016llX", static_cast<unsigned long long>(title_id));
@@ -797,7 +859,7 @@ bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& no
         const std::string& normal = game.normal_name;
         if (!normal.empty() && normal == normal_name) return true;
     }
-    return Lower(game.file) == Lower(file);
+    return false;
 }
 
 std::string TitleKey(const Game& game) {
@@ -874,6 +936,7 @@ Status Current() {
     status.configured = s.configured;
     status.error = s.error;
     status.generation = s.generation;
+    status.ftp_port = s.ftp.port;
     for (const auto& state : s.sources) {
         SourceStatus source;
         source.key = state->key;
@@ -894,9 +957,9 @@ std::vector<Game> Games() {
     {
         const std::lock_guard lock(s.lock);
         for (const auto& state : s.sources) games.insert(games.end(), state->games.begin(), state->games.end());
+        for (Game& game : games)
+            if (const std::string cover = CoverPath(s, game.source, game.id); s.covers.contains(cover)) game.cover = cover;
     }
-    for (Game& game : games)
-        if (const std::string cover = CoverPath(s, game.source, game.id); FileSize(cover) > 0) game.cover = cover;
     return games;
 }
 
@@ -932,8 +995,8 @@ bool Find(const std::string& source, const std::string& id, Game* game) {
         if (found == nullptr) return false;
         if (game == nullptr) return true;
         *game = *found;
+        if (const std::string cover = CoverPath(s, game->source, game->id); s.covers.contains(cover)) game->cover = cover;
     }
-    if (const std::string cover = CoverPath(s, game->source, game->id); FileSize(cover) > 0) game->cover = cover;
     return true;
 }
 
@@ -947,6 +1010,7 @@ std::vector<Download> Downloads() {
         download.id = entry.id;
         download.state = entry.state;
         download.done = entry.state == State::downloading ? s.current_done.load() : entry.done;
+        download.rate = entry.state == State::downloading ? s.current_rate.load() : 0;
         download.total = entry.total;
         if (download.total == 0)
             if (const Game* game = FindGame(s, entry.source, entry.id)) download.total = game->size;
@@ -1004,8 +1068,7 @@ bool Cancel(const std::string& source, const std::string& id) {
         s.cancel.store(at->serial); // the download thread removes it and its files
         return true;
     }
-    if (const Game* game = FindGame(s, source, id)) RemoveParts(s.paths, *game);
-    else RemoveStaged(s.paths, source, id, {});
+    DiscardParts(s, source, id, FindGame(s, source, id));
     s.queue.erase(at);
     SaveQueue(s);
     return true;

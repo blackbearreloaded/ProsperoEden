@@ -475,6 +475,7 @@ std::vector<ui::Download> FakeServices::downloads()
             continue;
         download.state = ui::DownloadState::downloading;
         download.done = std::min(download.total, download.done + download.total / 40);
+        download.rate = 48ull << 20;
         if (download_fails && download.done * 10 >= download.total * 3)
         {
             download.state = ui::DownloadState::failed;

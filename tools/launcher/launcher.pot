@@ -446,6 +446,10 @@ msgstr ""
 msgid "DOWNLOADS"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr ""
+
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
 msgstr ""
@@ -597,6 +601,10 @@ msgstr ""
 
 #: pe/ui/remote.cpp
 msgid "From {0}"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
 msgstr ""
 
 #. The app can read every folder of the console.
@@ -890,7 +898,7 @@ msgid "No cover art"
 msgstr ""
 
 #: pe/ui/remote.cpp
-msgid "No download source is set up. Save a file named {0} that lists your sources (the README shows how), then open this menu again."
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
 msgstr ""
 
 #: pe/ui/remote.cpp
@@ -1057,6 +1065,10 @@ msgstr ""
 
 #: settings_store.h
 msgid "Polish"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
 msgstr ""
 
 #: settings_store.h
@@ -1453,6 +1465,18 @@ msgstr ""
 msgid "The folder that holds your keys, firmware and games."
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr ""
+
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
@@ -1695,6 +1719,10 @@ msgstr ""
 #. Exactly one game. See '{0} game'.
 #: eden_services.cpp
 msgid "{0} game installed"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
 msgstr ""
 
 #. Any number of games other than one (also 0). See '{0} game'.

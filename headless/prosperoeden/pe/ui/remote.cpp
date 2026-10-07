@@ -37,6 +37,9 @@ constexpr Rect kWindow{592.0f, kRowsTop, 736.0f, kRowPitch * (kRowsShown - 1) + 
 constexpr float kHints = 848.0f;
 // How often the queue is looked at.
 constexpr float kPollSeconds = 0.25f;
+// How long a message stands where Settings > Downloads shows its buttons: with one source there is
+// no row to move to, which is what takes a message away in the other dialogs.
+constexpr float kMessageSeconds = 4.0f;
 
 std::string bytes_label(std::uint64_t bytes)
 {
@@ -45,6 +48,17 @@ std::string bytes_label(std::uint64_t bytes)
         std::snprintf(text, sizeof(text), "%.1f GB", static_cast<double>(bytes) / 1073741824.0);
     else
         std::snprintf(text, sizeof(text), "%.1f MB", static_cast<double>(bytes) / 1048576.0);
+    return text;
+}
+
+// A download's speed.
+std::string rate_label(std::uint64_t bytes_per_second)
+{
+    char text[32];
+    if (bytes_per_second >= (1ull << 20))
+        std::snprintf(text, sizeof(text), "%.1f MB/s", static_cast<double>(bytes_per_second) / 1048576.0);
+    else
+        std::snprintf(text, sizeof(text), "%.0f KB/s", static_cast<double>(bytes_per_second) / 1024.0);
     return text;
 }
 
@@ -165,21 +179,27 @@ void Launcher::poll_sources(float dt)
         }
         if (source_rows_.count != source_row_count())
             source_rows_.reset(source_row_count(), std::min(source_rows_.selected, source_row_count() - 1));
-        // The speed, for the time left: smoothed.
-        const Download *shown = download_open_ ? download_of(download_game_.key) : nullptr;
-        if (shown != nullptr && shown->state == DownloadState::downloading)
+        // The lists the player asked for are in: what came of them.
+        if (lists_asked_ && std::none_of(sources_.list.begin(), sources_.list.end(),
+                                         [](const SourceInfo &source) { return source.refreshing; }))
         {
-            download_rate_wait_ += kPollSeconds;
-            if (download_rate_wait_ >= 1.0f)
+            lists_asked_ = false;
+            int games = 0;
+            std::vector<const SourceInfo *> failed;
+            for (const SourceInfo &source : sources_.list)
             {
-                const float now = shown->done >= download_rate_done_ && download_rate_done_ > 0 ?
-                                      static_cast<float>(shown->done - download_rate_done_) / download_rate_wait_ :
-                                      0.0f;
-                if (download_rate_done_ > 0)
-                    download_rate_ = download_rate_ <= 0.0f ? now : download_rate_ * 0.7f + now * 0.3f;
-                download_rate_done_ = shown->done;
-                download_rate_wait_ = 0.0f;
+                if (source.online)
+                    games += source.games;
+                else
+                    failed.push_back(&source);
             }
+            if (failed.empty())
+                say(fill(games == 1 ? tr("The game lists are read: {0} game.") : tr("The game lists are read: {0} games."),
+                         {std::to_string(games)}));
+            else if (failed.size() == 1)
+                say(fill(tr("The game list of {0} could not be read."), {failed.front()->name}), true);
+            else
+                say(fill(tr("{0} game lists could not be read."), {std::to_string(failed.size())}), true);
         }
     }
     // The new list once the one being read is in.
@@ -224,9 +244,6 @@ void Launcher::download_from(const Game &game, int source, bool play)
     download_game_ = game;
     download_file_ = game.file;
     download_open_ = true;
-    download_rate_ = 0.0f;
-    download_rate_done_ = 0;
-    download_rate_wait_ = 0.0f;
     download_time_ = 0.0f;
     const Download *download = download_of(game.key);
     download_fraction_.snap(download != nullptr ? share(*download) : 0.0f);
@@ -450,10 +467,12 @@ void Launcher::draw_download(Canvas &c, float open)
     else if (download != nullptr && download->total > 0)
     {
         std::string line = bytes_label(download->done) + "  /  " + bytes_label(download->total);
-        if (running && download_rate_ > 1.0f && download->total > download->done)
+        if (running && download->rate > 0)
+            line += "  ·  " + rate_label(download->rate);
+        if (running && download->rate > 0 && download->total > download->done)
         {
-            const int whole = std::max(1, static_cast<int>(std::ceil(
-                                              static_cast<float>(download->total - download->done) / download_rate_)));
+            const int whole = std::max(1, static_cast<int>(std::ceil(static_cast<double>(download->total - download->done) /
+                                                                     static_cast<double>(download->rate))));
             line += "  ·  ";
             line += whole < 90 ? fill(tr("About {0} s left"), {std::to_string(whole)}) :
                                  fill(tr("About {0} min left"), {std::to_string((whole + 59) / 60)});
@@ -531,6 +550,7 @@ void Launcher::press_sources(Key key)
             return;
         services_.refresh_sources();
         sources_ = services_.sources();
+        lists_asked_ = true;
         say(tr("Reading the game lists..."));
         cue(Cue::select);
         return;
@@ -573,25 +593,33 @@ void Launcher::draw_sources(Canvas &c, float open)
                 736.0f);
     text_shrink(c, tr("Games on your network, downloaded when you play them."), 592.0f,
                 baseline(291.0f, 32.0f, theme::kSmall), theme::kSmall, Color::rgb(0xbecbb9), 736.0f);
+    if (sources_.configured)
+        text_shrink(c, fill(tr("Downloads need an FTP server running on the console, on port {0}."),
+                            {std::to_string(sources_.ftp_port)}),
+                    592.0f, baseline(326.0f, 30.0f, theme::kSmall), theme::kSmall, theme::kMeta, 736.0f);
 
     if (!sources_.configured)
     {
-        // How to set up a source: a file, as with the keys.
+        // How to set up a source: a file, as with the keys, here with a RomM server (README).
         text_block(c,
-                   fill(tr("No download source is set up. Save a file named {0} that lists your sources (the README "
-                           "shows how), then open this menu again."),
-                        {sources_.setup_file}),
-                   592.0f, baseline(344.0f, 36.0f, theme::kText24), theme::kText24, 36.0f, theme::kBody, 736.0f, 5,
+                   fill(tr("No download source is set up. Save a file named {0} that lists your sources, as this one "
+                           "does with a RomM server, then open this menu again. Downloads need an FTP server running "
+                           "on the console, on port {1}."),
+                        {sources_.setup_file, std::to_string(sources_.ftp_port)}),
+                   592.0f, baseline(332.0f, 34.0f, theme::kText24), theme::kText24, 34.0f, theme::kBody, 736.0f, 5,
                    kShrink);
         if (!sources_.error.empty())
-            notice_block(c, sources_.error, 592.0f, baseline(540.0f, 30.0f, theme::kSmall), theme::kSmall, 28.0f,
+            notice_block(c, sources_.error, 592.0f, baseline(508.0f, 30.0f, theme::kSmall), theme::kSmall, 28.0f,
                          theme::kWarning, 736.0f, 2, true);
-        list.bordered_rect({592.0f, 600.0f, 736.0f, 156.0f}, 14.0f, Color::rgb(0x0d1814, 0.75f), 1.0f,
+        list.bordered_rect({592.0f, 570.0f, 736.0f, 202.0f}, 14.0f, Color::rgb(0x0d1814, 0.75f), 1.0f,
                            theme::kRowEdge.with_alpha(0.6f));
-        static constexpr const char *kExample[] = {"{ \"sources\": [", "    { \"type\": \"...\", \"name\": \"Home\", ... }",
+        static constexpr const char *kExample[] = {"{ \"sources\": [",
+                                                   "    { \"type\": \"romm\", \"name\": \"Home\",",
+                                                   "      \"url\": \"http://192.168.1.20:3000\",",
+                                                   "      \"token\": \"rmm_...\" }",
                                                    "] }"};
-        for (int i = 0; i < 3; ++i)
-            text(c, kExample[i], 620.0f, baseline(626.0f + 36.0f * static_cast<float>(i), 36.0f, theme::kSmall),
+        for (int i = 0; i < 5; ++i)
+            text(c, kExample[i], 620.0f, baseline(588.0f + 34.0f * static_cast<float>(i), 34.0f, theme::kSmall),
                  theme::kSmall, theme::kLimePale);
         static constexpr Hint kBack[] = {{Pad::circle, TR("Back")}};
         draw_hints(c, kBack, 1, 592.0f, kHints, theme::kCopy, 736.0f);
@@ -645,6 +673,8 @@ void Launcher::draw_sources(Canvas &c, float open)
             break;
         case DownloadState::downloading:
             detail = bytes_label(download.done) + " / " + bytes_label(download.total);
+            if (download.rate > 0)
+                detail += "  ·  " + rate_label(download.rate);
             tone = theme::kLimePale;
             break;
         case DownloadState::failed:
@@ -673,7 +703,9 @@ void Launcher::draw_sources(Canvas &c, float open)
                    baseline(kRowsTop + kRowPitch * static_cast<float>(sources) + 10.0f, 30.0f, theme::kSmall),
                    theme::kSmall, 30.0f, theme::kMeta, 736.0f, 2, kShrink);
 
-    if (!message_.empty())
+    // "Reading the game lists..." stands while they are read; what came of them, as any other
+    // message, for a few seconds.
+    if (!message_.empty() && (lists_asked_ || message_age_ < kMessageSeconds))
     {
         notice(c, message_, 592.0f, kHints + 7.0f, theme::kSmall,
                message_warning_ ? theme::kWarning : theme::kLimePale, 736.0f, message_warning_);

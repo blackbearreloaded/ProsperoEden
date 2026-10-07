@@ -83,8 +83,9 @@ struct Title {
 // the same: their title ID; their id at a metadata provider both have one of; their names, when
 // both come from metadata (NormalName); else their file names.
 bool SameGame(const Game& a, const Game& b);
-// A source's game is a game on the console: by their title IDs when the source knows its own,
-// else by their names when it comes from metadata, else by the file name. normal_name: the console
+// A source's game is a game on the console: by the file name it is downloaded as first, then by
+// their title IDs when the source knows its own, else by their names when it comes from metadata.
+// normal_name: the console
 // game's name as NormalName makes it (once, for all the sources' games it is compared with).
 bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& normal_name, const std::string& file);
 // A name as names are compared: lower case, without accents, marks and anything but letters and
@@ -101,6 +102,7 @@ struct Download {
     State state = State::queued;
     std::uint64_t done = 0;  // bytes of the whole game on the console so far
     std::uint64_t total = 0; // the whole game; 0 when not known
+    std::uint64_t rate = 0;  // bytes a second, smoothed, while it downloads; 0 when not known yet
     std::string error;       // why it failed (English)
 };
 
@@ -121,6 +123,7 @@ struct Status {
     // Changes whenever a game list, a cover or the files in roms/ changed: the Library reads its
     // list again.
     std::uint64_t generation = 0;
+    int ftp_port = 2121; // the console's FTP server, which writes the downloads (ftp.h)
 };
 
 // Reads sources.json, the kept lists and the queue (again: an edited sources.json applies when the

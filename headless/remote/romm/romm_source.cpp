@@ -177,6 +177,7 @@ class RommSource final : public Source {
             request.url = url.c_str();
             request.authorization = authorization_.c_str();
             request.resume_from = offset;
+            request.raw = 1;
             request.begin = TransferBegin;
             request.sink = TransferTake;
             request.stop = TransferStop;
