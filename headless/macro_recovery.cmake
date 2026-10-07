@@ -8,6 +8,11 @@ macro(macro_replace old new)
     string(REPLACE "${old}" "${new}" macro_source "${macro_source}")
 endmacro()
 string(PREPEND macro_source "#include <exception>\n")
+# PS5 firmware 7.40 refuses mprotect(RX) on an app that is not jailbroken, so the first
+# macro the x64 JIT compiled ended the GPU worker with xbyak's "can't protect". Run the
+# few non-HLE macros through the interpreter instead: no executable memory on this path.
+macro_replace("    if (!is_interpreted)\n        return std::make_unique<MacroJITx64Impl>(system, code);\n"
+    "    (void)is_interpreted; // PS5: interpreter only, see above\n")
 macro_replace("        u32 carry_flag{};"
     "        u32 carry_flag{};\n        std::exception_ptr failure;\n        bool failed{};")
 macro_replace("    program(&state, parameters.data(), parameters.data() + parameters.size());"
