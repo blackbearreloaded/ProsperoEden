@@ -1,18 +1,15 @@
 name: Release build
 
-# Builds the release ZIP (make release, which fetches pinned dependencies; docs/BUILDING.md) on a
-# GitHub-hosted runner, inside an Ubuntu 26.04 container: the distribution the build is made on.
-# A manual run keeps the ZIP as a 7-day artifact; a v* tag also publishes it as a pre-release.
-# Downloads, ccache and the RADV driver are cached between runs. A run that reaches the time
-# limit still saves ccache, so running it again continues where it stopped.
-# The actions are the Node 24 versions: runners no longer run Node 20 actions (2026-09-23).
+# Builds the release ZIP (make release, which fetches pinned dependencies; docs/BUILDING.md)
+# on the self-hosted runner. A manual run keeps the ZIP as a 7-day artifact; a v* tag also
+# publishes it as a pre-release.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: release-build
@@ -20,147 +17,29 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 355
-    container:
-      image: ubuntu:26.04
-      # SDKs preinstalled on the runner image, mounted so the job can delete them: the build
-      # (Eden, Mesa, FFmpeg and their caches) needs the disk space.
-      volumes:
-        - /usr/share/dotnet:/host-free/dotnet
-        - /usr/local/lib/android:/host-free/android
-        - /opt/ghc:/host-free/ghc
-        - /usr/local/.ghcup:/host-free/ghcup
-        - /opt/hostedtoolcache:/host-free/toolcache
-        - /usr/local/share/boost:/host-free/boost
-    env:
-      DEBIAN_FRONTEND: noninteractive
-      CCACHE_MAXSIZE: 4G
+    runs-on: [self-hosted, linux, prosperoeden]
+    timeout-minutes: 240
     steps:
-      - name: Free disk space
-        run: |
-          df -h "$GITHUB_WORKSPACE"
-          find /host-free -mindepth 2 -maxdepth 2 -exec rm -rf {} + 2>/dev/null || true
-          df -h "$GITHUB_WORKSPACE"
-
-      - name: Install git (for the checkout)
-        run: |
-          apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates
-
-      - uses: actions/checkout@v7
-
-      - name: Install the build tools (tools/ci/ubuntu-packages.txt)
-        run: |
-          # shellcheck disable=SC2046 # one package name per word
-          apt-get install --yes --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
-          git config --global --add safe.directory '*'
-          make toolchain
-
-      - name: Locate the caches
-        run: |
-          # Beside the checkout, on the runner's disk; the paths stay the same between runs.
-          cache_root=$(dirname "$GITHUB_WORKSPACE")/ci-cache
-          mkdir -p "$cache_root"
-          {
-            echo "CACHE_ROOT=$cache_root"
-            echo "RADV_RELEASE=$(dirname "$GITHUB_WORKSPACE")/mihawk-vulkan-review/.deps/native/radv-release"
-            echo "PROSPEROEDEN_DEPS_CACHE=$cache_root/downloads"
-            echo "CCACHE_DIR=$cache_root/ccache"
-            echo "XDG_CACHE_HOME=$cache_root/xdg"
-            echo "JOBS=$(nproc)"
-            echo "RADV_BUILD_JOBS=$(nproc)"
-          } >> "$GITHUB_ENV"
-
-      - name: Restore downloads
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.CACHE_ROOT }}/downloads
-          key: downloads-${{ hashFiles('tools/deps.json') }}
-
-      - name: Fetch dependencies
-        run: make deps
-
-      # After `make deps`: a restored RADV folder would otherwise stand in for the git checkout
-      # it lives in, and deps.py would not fetch that checkout.
-      - name: Restore the RADV driver
-        id: radv
-        uses: actions/cache/restore@v5
-        with:
-          path: |
-            ${{ env.RADV_RELEASE }}
-            build/radv-isolated
-          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
-
-      - name: Restore ccache
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ env.CACHE_ROOT }}/ccache
-          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ccache-
+      - uses: actions/checkout@v4
 
       - name: Build and package
-        timeout-minutes: 315
-        run: |
-          ccache --zero-stats
-          bash tools/ci/build-release.sh
-
-      - name: Report disk and ccache
-        if: always()
-        run: |
-          df -h "$GITHUB_WORKSPACE"
-          ccache --show-stats || true
-
-      - name: Save ccache
-        if: always()
-        uses: actions/cache/save@v5
-        with:
-          path: ${{ env.CACHE_ROOT }}/ccache
-          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Save the RADV driver
-        if: always() && steps.radv.outputs.cache-hit != 'true' && hashFiles('build/radv-isolated/libvulkan_radeon.ps5.a') != ''
-        uses: actions/cache/save@v5
-        with:
-          path: |
-            ${{ env.RADV_RELEASE }}
-            build/radv-isolated
-          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+        run: bash tools/ci/build-release.sh
 
       - name: Match the tag to the package version
         if: startsWith(github.ref, 'refs/tags/')
         run: test -f "dist/ProsperoEden-${GITHUB_REF_NAME}.zip"
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: ProsperoEden
           path: dist/
           retention-days: 7
 
-      # The unstripped executable that reads this build's crash reports (docs/BUILDING.md). The
-      # runner is discarded after the job, so it is kept as an artifact; it is not published.
-      - uses: actions/upload-artifact@v7
-        with:
-          name: ProsperoEden-symbols
-          path: build/symbols/
-          retention-days: 90
-
-  publish:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: ProsperoEden
-          path: dist
-
       - name: Publish the pre-release
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: >
-          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --prerelease
+          gh release create "$GITHUB_REF_NAME" --verify-tag --prerelease
           --title "ProsperoEden $GITHUB_REF_NAME" --notes-file dist/release-notes.md
           "dist/ProsperoEden-$GITHUB_REF_NAME.zip" dist/SHA256SUMS

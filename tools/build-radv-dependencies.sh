@@ -13,15 +13,11 @@ for check in "ps5-vulkan-tools $vulkan" "ps5-mesa $PS5_MESA_FORK" "ps5-payload-s
     [[ $(git -C "$path" rev-parse HEAD) == "$(pin "$name")" ]] ||
         { echo "$path is not at the $name revision pinned in tools/deps.json" >&2; exit 1; }
 done
-# 24 parallel jobs unless RADV_BUILD_JOBS says otherwise: hosted CI runners have a few cores
-# and too little memory for 24 compilers (.github/workflows/release.yml sets it).
-jobs=${RADV_BUILD_JOBS:-24}
-[[ $jobs =~ ^[1-9][0-9]*$ ]] || { echo "RADV_BUILD_JOBS must be a positive number: $jobs" >&2; exit 2; }
-export BUILD_JOBS=$jobs CMAKE_BUILD_PARALLEL_LEVEL=$jobs
+export BUILD_JOBS=24 CMAKE_BUILD_PARALLEL_LEVEL=24
 mkdir -p "$root/build/radv-tools"
 # Upstream calls ninja directly; enforce the same bounded parallelism everywhere.
 ninja=$(command -v ninja) || { echo 'ninja not found' >&2; exit 1; }
-printf '#!/bin/sh\nexec %s -j%s "$@"\n' "$ninja" "$jobs" > "$root/build/radv-tools/ninja"
+printf '#!/bin/sh\nexec %s -j24 "$@"\n' "$ninja" > "$root/build/radv-tools/ninja"
 chmod +x "$root/build/radv-tools/ninja"
 export NINJA="$root/build/radv-tools/ninja"
 command -v ccache >/dev/null
