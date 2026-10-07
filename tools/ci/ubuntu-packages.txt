@@ -1,0 +1,20 @@
+# Ubuntu 26.04 packages for the release build (docs/BUILDING.md). The release workflow installs
+# exactly these: apt-get install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
+#
+# Basics, downloads and archives
+ca-certificates git curl wget unzip zip xz-utils file make build-essential pkgconf
+# rev: the Payload SDK's prospero-* wrappers use it (minimal images such as ubuntu:26.04 lack it)
+bsdextrautils
+# patch: Eden's package step (CPMUtil) applies its patches with it
+patch
+# Build tools (make toolchain)
+cmake ninja-build ccache nasm meson rsync bison flex glslang-tools spirv-tools
+# Python 3 with venv (the image step's MkPFS), mako and yaml (Mesa)
+python3 python3-venv python3-pip python3-mako python3-yaml python3-packaging python3-ply
+# LLVM 18: the PS5 toolchain (Payload SDK, Eden, the boilerplate). The SDK's prospero-* wrappers
+# take the newest of LLVM 21 to 18 installed, so with only 18 (and 22, which they do not consider)
+# they use 18. Do not add LLVM 20: its LLD cannot link the Vulkan build (link-headless-native.sh).
+clang-18 lld-18 llvm-18 libclang-rt-18-dev
+# LLVM 22 and OpenCL C: RADV's host tools (mesa_clc, vtn_bindgen2), built against the host LLVM
+llvm-22-dev clang-22 libclang-22-dev libclang-cpp22-dev libclc-22 libclc-22-dev libllvmspirvlib-22-dev
+spirv-tools-dev spirv-headers libexpat1-dev zlib1g-dev

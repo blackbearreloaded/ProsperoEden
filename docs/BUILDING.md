@@ -122,6 +122,21 @@ What the PS5's home screen shows for the app is in `sce_sys/`, as it goes into t
 The image step fetches [PSBrew/MkPFS](https://github.com/PSBrew/MkPFS) at a pinned commit into
 `~/.cache/prosperoeden-mkpfs`.
 
+RADV's host tools (`mesa_clc`, `vtn_bindgen2`) are built against the host's LLVM 22: its
+development files, Clang 22 libraries, libclc and the SPIR-V LLVM translator. On Ubuntu 26.04 every
+package the release build needs is listed in `tools/ci/ubuntu-packages.txt`, the file the release
+workflow installs from:
+
+```bash
+sudo apt install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
+```
+
+The Payload SDK's `prospero-*` wrappers (the RADV build and the final link) use `$LLVM_CONFIG`,
+else the newest of LLVM 21 to 18 that is installed. Its LLD must be 18, 19, 21 or 22: the link
+keeps Mesa's undefined weak entry points out of the dynamic symbol table with
+`--no-dynamic-linker` (LLD 18, 19) and `-z nodynamic-undefined-weak` (LLD 21 and later), and
+LLD 20 understands neither, so `tools/link-headless-native.sh` stops with a message there.
+
 ## Crash reports
 
 When the app crashes it writes `crash-YYYYMMDD-HHMMSS.txt` to its logs folder
@@ -146,13 +161,26 @@ crashes on request, to try it on a console: write `segv`, `thread`, `abort` or `
 ## Release workflow
 
 `.github/workflows/release.yml` runs `tools/ci/build-release.sh` (`make release`) on a
-self-hosted runner labelled `prosperoeden`. `EDEN_DEV_CHECKOUT` in the runner's `.env` may name a
-development checkout whose dependencies are reused instead of fetched.
+GitHub-hosted runner (`ubuntu-24.04`), inside an `ubuntu:26.04` container with the packages in
+`tools/ci/ubuntu-packages.txt`. It first deletes SDKs the runner image carries (.NET, Android,
+GHC, the tool cache) for disk space, and builds with as many jobs as the runner has cores
+(`JOBS`, and `RADV_BUILD_JOBS` for RADV, whose build otherwise runs 24).
+
+Between runs it caches the downloads (`PROSPEROEDEN_DEPS_CACHE`, keyed on `tools/deps.json`),
+ccache, and the built RADV driver (keyed on its pins and build scripts), so a later release
+compiles mostly what changed. The first run builds everything and can take most of the six
+hours a hosted job may run; the build step stops after 315 minutes so that ccache is still saved,
+and running the workflow again continues from there.
+
+`tools/ci/build-release.sh` still accepts `EDEN_DEV_CHECKOUT` (a development checkout whose
+dependencies are reused instead of fetched) for a build on your own machine.
 
 - **Manual run** (Actions > Release build > Run workflow): builds the release files and keeps
   them as a 7-day artifact.
 - **Tag `vX.Y.Z`**: builds them, checks that the tag matches the package version, and publishes
-  a pre-release. The release notes come from the README's "Changes in vX.Y.Z" section.
+  a pre-release (a second job, outside the container). The release notes come from the README's
+  "Changes in vX.Y.Z" section.
+- Every run also keeps `build/symbols/` as the `ProsperoEden-symbols` artifact for 90 days.
 
 To cut a release:
 
@@ -162,4 +190,4 @@ To cut a release:
 3. Test the build on a console.
 4. Push a `vX.Y.Z` tag.
 5. Keep `build/symbols/ProsperoEden-vX.Y.Z.elf` from the build that was published (crash reports
-   are read with it).
+   are read with it): download the run's `ProsperoEden-symbols` artifact before it expires.
