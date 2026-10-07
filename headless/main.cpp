@@ -76,6 +76,16 @@ extern "C" std::int64_t sceKernelGetDirectMemorySize();
 #include "core/hle/service/set/settings_types.h"
 #include "hid_core/frontend/emulated_controller.h"
 #include "hid_core/hid_core.h"
+// The game's Joy-Con hold type (UpdateGrips) is asked of the HID service; its headers bring kernel
+// ones that do not pass this file's warnings.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-private-field"
+#include "core/hle/service/hid/hid_server.h"
+#include "core/hle/service/sm/sm.h"
+#include "hid_core/resource_manager.h"
+#include "hid_core/resources/applet_resource.h"
+#include "hid_core/resources/npad/npad.h"
+#pragma GCC diagnostic pop
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-private-field"
 #include "core/hle/kernel/k_process.h"  // every build: the game's code address (jit_list.h)
@@ -141,6 +151,38 @@ static void MigrateSandboxData() {
     }
 }
 #endif
+
+// A game that has single Joy-Cons held sideways (their hold type, set by the game) is played on a
+// DualSense held as usual: the pad then turns the stick, the button places and the motion by a
+// quarter for each player who has such a Joy-Con (Pad::Grip). Asked a few times a second.
+static void UpdateGrips(Core::System& system, Eden::Pad& pad) {
+    using Grip = Eden::Pad::Grip;
+    static unsigned calls = 0;
+    static std::array<Grip, Eden::Pad::kMaxPlayers> last{};
+    if (calls++ % 15 != 0) return;
+    bool sideways = false;
+    if (const auto hid = system.ServiceManager().GetService<Service::HID::IHidServer>("hid")) {
+        const auto resources = hid->GetResourceManager();
+        const auto npad = resources ? resources->GetNpad() : nullptr;
+        const auto applets = resources ? resources->GetAppletResource() : nullptr;
+        auto hold = Service::HID::NpadJoyHoldType::Vertical;
+        sideways = npad && applets && npad->GetNpadJoyHoldType(applets->GetActiveAruid(), hold).IsSuccess() &&
+                   hold == Service::HID::NpadJoyHoldType::Horizontal;
+    }
+    for (std::size_t index = 0; index < Eden::Pad::kMaxPlayers; ++index) {
+        const auto style = system.HIDCore().GetEmulatedControllerByIndex(index)->GetNpadStyleIndex();
+        const Grip grip = !sideways ? Grip::usual :
+                          style == Core::HID::NpadStyleIndex::JoyconLeft ? Grip::sideways_left :
+                          style == Core::HID::NpadStyleIndex::JoyconRight ? Grip::sideways_right : Grip::usual;
+        pad.SetGrip(index, grip);
+        if (grip == last[index]) continue;
+        last[index] = grip;
+        Eden::Report("controllers", ("Player " + std::to_string(index + 1) +
+                                     (grip == Grip::usual ? ": controller as usual" :
+                                      grip == Grip::sideways_left ? ": a left Joy-Con held sideways, turned for a DualSense held as usual" :
+                                                                    ": a right Joy-Con held sideways, turned for a DualSense held as usual")).c_str());
+    }
+}
 
 int main(int argc, char** argv) {
     try {
@@ -1314,8 +1356,9 @@ int main(int argc, char** argv) {
                         if (!timed_replay) {
 #endif
 #ifdef EDEN_DEV_ROM_ID
-                        if (!development_input.active) pad->Poll();
+                        if (!development_input.active) { UpdateGrips(system, *pad); pad->Poll(); }
 #else
+                        UpdateGrips(system, *pad);
                         pad->Poll();
 #endif
 #ifdef EDEN_DEV_ROM_ID
