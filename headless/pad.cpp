@@ -7,6 +7,7 @@
 #include "common/input.h"
 #include "common/logging.h"
 #include "input_common/input_poller.h"
+#include <utility>
 
 namespace {
 // Signed-in users; unused entries are -1.
@@ -266,6 +267,7 @@ void Pad::Consume(std::size_t player, std::span<const ps5::pad::Data> samples) {
         {kButtonL1, static_cast<Button>(kRightSL)}, {kButtonR1, static_cast<Button>(kRightSR)},
     };
     auto& slot = slots[player];
+    const Grip grip = grips[player].load();
     // The game button the touchpad presses (tap or hold, see kSelectTapPolls); the Create button
     // presses it too while it has no game button of its own.
     const int touch_button = MappedTo(mapping, pad_touchpad);
@@ -328,8 +330,31 @@ void Pad::Consume(std::size_t player, std::span<const ps5::pad::Data> samples) {
                                                         (pad == pad_l2 && left) || (pad == pad_r2 && right));
         }
         set_touch(sample.buttons);
-        engine->SetStickPosition(player, 0, axis(sample.left_stick.x), -axis(sample.left_stick.y));
-        engine->SetStickPosition(player, 1, axis(sample.right_stick.x), -axis(sample.right_stick.y));
+        float left_x = axis(sample.left_stick.x), left_y = -axis(sample.left_stick.y);
+        float right_x = axis(sample.right_stick.x), right_y = -axis(sample.right_stick.y);
+        if (grip != Grip::usual) {
+            // A single Joy-Con held sideways: its game reads the stick and the four buttons by
+            // where they are in that grip. The left one lies with its top to the left, the right
+            // one with its top to the right; the DualSense is held as usual, so what it sends is
+            // turned by a quarter the other way. A place (top, right, bottom, left) is pressed by
+            // the arrow or the shape there, and either stick is the Joy-Con's.
+            const auto at = [&](ButtonMask arrow, ButtonMask shape) {
+                return (sample.buttons & (arrow | shape)) != 0;
+            };
+            const bool top = at(kButtonUp, kButtonTriangle), east = at(kButtonRight, kButtonCircle);
+            const bool bottom = at(kButtonDown, kButtonCross), west = at(kButtonLeft, kButtonSquare);
+            const bool sideways_left = grip == Grip::sideways_left;
+            engine->SetButtonState(player, sideways_left ? Button::ButtonRight : Button::ButtonY, top);
+            engine->SetButtonState(player, sideways_left ? Button::ButtonDown : Button::ButtonX, east);
+            engine->SetButtonState(player, sideways_left ? Button::ButtonLeft : Button::ButtonA, bottom);
+            engine->SetButtonState(player, sideways_left ? Button::ButtonUp : Button::ButtonB, west);
+            const bool use_right = right_x * right_x + right_y * right_y > left_x * left_x + left_y * left_y;
+            const float x = use_right ? right_x : left_x, y = use_right ? right_y : left_y;
+            left_x = right_x = sideways_left ? y : -y;
+            left_y = right_y = sideways_left ? -x : x;
+        }
+        engine->SetStickPosition(player, 0, left_x, left_y);
+        engine->SetStickPosition(player, 1, right_x, right_y);
         // Motion: acceleration in G and angular velocity in rad/s, mapped to Eden's axes and units
         // the way its SDL driver maps a DualSense.
         auto& last_motion = slots[player].last_motion_us;
@@ -344,7 +369,17 @@ void Pad::Consume(std::size_t player, std::span<const ps5::pad::Data> samples) {
                 constexpr float turn = 2.0f * std::numbers::pi_v<float>;
                 const auto& a = raw.acceleration;
                 const auto& w = raw.angular_velocity;
-                engine->SetMotionState(player, delta, w.x / turn, -w.z / turn, w.y / turn, -a.x, a.z, -a.y);
+                // Eden's axes: X to the right, Y away from the player, Z up. For a Joy-Con held
+                // sideways they turn about Z with the stick and the buttons (see above).
+                float gyro_x = w.x / turn, gyro_y = -w.z / turn, accel_x = -a.x, accel_y = a.z;
+                if (grip == Grip::sideways_left) {
+                    gyro_x = std::exchange(gyro_y, -gyro_x);
+                    accel_x = std::exchange(accel_y, -accel_x);
+                } else if (grip == Grip::sideways_right) {
+                    gyro_y = std::exchange(gyro_x, -gyro_y);
+                    accel_y = std::exchange(accel_x, -accel_y);
+                }
+                engine->SetMotionState(player, delta, gyro_x, gyro_y, w.y / turn, accel_x, accel_y, -a.y);
             }
         }
     }

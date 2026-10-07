@@ -72,6 +72,13 @@ public:
     // Which DualSense button presses each of the game's buttons (button_mapping.h), for every
     // controller. Set before the first poll of a session.
     void SetMapping(const ButtonMapping& value) { mapping = ValidMapping(value) ? value : kDefaultMapping; }
+    // How a player's controller is used: as usual, or in place of a single left or right Joy-Con
+    // that its game has held sideways. The DualSense is then still held as usual, and Consume
+    // turns what it sends by a quarter (stick, button places, motion) to be that Joy-Con.
+    enum class Grip : u8 { usual, sideways_left, sideways_right };
+    void SetGrip(std::size_t player, Grip grip) {
+        if (player < kMaxPlayers) grips[player].store(grip);
+    }
     void Consume(std::span<const ps5::pad::Data> samples) { Consume(0, samples); }
     void Consume(std::size_t player, std::span<const ps5::pad::Data> samples);
     PadEngine& Engine() { return *engine; }
@@ -95,6 +102,7 @@ private:
     float trigger_threshold;
     ButtonMapping mapping = kDefaultMapping;
     std::array<Slot, kMaxPlayers> slots{};
+    std::array<std::atomic<Grip>, kMaxPlayers> grips{};
     bool owns_user_service = false;
     std::atomic<bool> return_to_menu = false;
     std::atomic<bool> hud_toggle = false;

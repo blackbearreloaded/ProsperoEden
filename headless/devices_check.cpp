@@ -224,6 +224,62 @@ void CheckPad() {
         CHECK(motion.gyro_x == 0.0f); CHECK(motion.gyro_y == 0.0f); CHECK(motion.accel_z == -1.0f);
         sample.connected = 1; sample.acceleration = {}; sample.angular_velocity = {}; sample.timestamp_us = 0;
 
+        // A single Joy-Con held sideways, on a DualSense held as usual: the places of the arrows
+        // and shapes, either stick and the motion are turned by a quarter (left Joy-Con: top to
+        // the left; right Joy-Con: top to the right).
+        {
+            using Grip = Eden::Pad::Grip;
+            const auto pressed = [&](ButtonMask mask, std::initializer_list<int> buttons) {
+                sample.buttons = mask; consume();
+                for (const int button : {0, 1, 2, 3, 12, 13, 14, 15})
+                    if (pad.Engine().GetButton({}, button) !=
+                        (std::find(buttons.begin(), buttons.end(), button) != buttons.end())) return false;
+                return true;
+            };
+            pad.SetGrip(0, Grip::sideways_left);
+            // Top is the Joy-Con's Right (14), right its Down (15), bottom its Left (12), left its
+            // Up (13); the shapes still press the game's own buttons, which a left Joy-Con has not.
+            CHECK(pressed(kButtonUp, {14})); CHECK(pressed(kButtonRight, {15}));
+            CHECK(pressed(kButtonDown, {12})); CHECK(pressed(kButtonLeft, {13}));
+            CHECK(pressed(kButtonTriangle, {14, 2})); CHECK(pressed(kButtonCircle, {15, 0}));
+            CHECK(pressed(kButtonCross, {12, 1})); CHECK(pressed(kButtonSquare, {13, 3}));
+            sample.buttons = 0;
+            sample.left_stick = {128, 0}; sample.right_stick = {128, 128}; consume(); // up
+            CHECK(pad.Engine().GetAxis({}, 0) == 1); CHECK(pad.Engine().GetAxis({}, 1) == 0);
+            sample.left_stick = {128, 128}; sample.right_stick = {255, 128}; consume(); // right, other stick
+            CHECK(pad.Engine().GetAxis({}, 0) == 0); CHECK(pad.Engine().GetAxis({}, 1) == -1);
+            sample.right_stick = {128, 128};
+            sample.acceleration = {0.25f, 1.0f, -0.5f};
+            sample.angular_velocity = {pi, 0.0f, -2.0f * pi};
+            sample.timestamp_us = 1000; consume(); sample.timestamp_us = 5000; consume();
+            motion = pad.Engine().GetMotion({}, 0);
+            CHECK(motion.accel_x == -0.5f); CHECK(motion.accel_y == 0.25f); CHECK(motion.accel_z == -1.0f);
+            CHECK(motion.gyro_x == 1.0f); CHECK(motion.gyro_y == -0.5f); CHECK(motion.gyro_z == 0.0f);
+
+            pad.SetGrip(0, Grip::sideways_right);
+            // Top is Y (3), right X (2), bottom A (0), left B (1); the arrows also stay the arrows,
+            // which a right Joy-Con has not.
+            CHECK(pressed(kButtonTriangle, {3})); CHECK(pressed(kButtonCircle, {2}));
+            CHECK(pressed(kButtonCross, {0})); CHECK(pressed(kButtonSquare, {1}));
+            CHECK(pressed(kButtonUp, {3, 13})); CHECK(pressed(kButtonRight, {2, 14}));
+            CHECK(pressed(kButtonDown, {0, 15})); CHECK(pressed(kButtonLeft, {1, 12}));
+            sample.buttons = 0;
+            sample.left_stick = {128, 0}; consume(); // up
+            CHECK(pad.Engine().GetAxis({}, 2) == -1); CHECK(pad.Engine().GetAxis({}, 3) == 0);
+            sample.left_stick = {255, 128}; consume(); // right
+            CHECK(pad.Engine().GetAxis({}, 2) == 0); CHECK(pad.Engine().GetAxis({}, 3) == 1);
+            sample.left_stick = {128, 128};
+            sample.timestamp_us = 9000; consume();
+            motion = pad.Engine().GetMotion({}, 0);
+            CHECK(motion.accel_x == 0.5f); CHECK(motion.accel_y == -0.25f); CHECK(motion.accel_z == -1.0f);
+            CHECK(motion.gyro_x == -1.0f); CHECK(motion.gyro_y == 0.5f); CHECK(motion.gyro_z == 0.0f);
+
+            pad.SetGrip(0, Grip::usual);
+            sample.acceleration = {}; sample.angular_velocity = {}; sample.timestamp_us = 0;
+            sample.buttons = 0; sample.connected = 0; consume(); sample.connected = 1; consume();
+            std::puts("Single Joy-Con held sideways: button places, either stick and motion turned for both sides PASS");
+        }
+
         // Rumble: both guest sides on one DualSense; low band -> large motor, high band -> small.
         {
             using Common::Input::DriverResult;
