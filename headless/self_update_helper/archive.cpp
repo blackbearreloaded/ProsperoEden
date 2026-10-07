@@ -268,6 +268,14 @@ bool list(Reader &reader, std::string_view title, std::vector<Entry> &entries, A
     return true;
 }
 
+// The console starts an app only if its files can be read and run by everyone, as an app
+// copied to the console arrives (mode 0777). With 0644 it can answer "Can't start the game
+// or app" (CE-107750-0), so what the helper unpacks is opened to all.
+bool open_to_all(const std::string &path)
+{
+    return chmod(path.c_str(), 0777) == 0;
+}
+
 // Creates the folders of relative below base. Each must be a real directory.
 // Several workers unpack at once: the set of folders already made is shared,
 // and two workers making the same folder is harmless.
@@ -288,7 +296,7 @@ bool make_parents(const std::string &base, std::string_view relative, bool last_
         }
         if (!known)
         {
-            if (!make_directory(base + "/" + part))
+            if (!make_directory(base + "/" + part) || !open_to_all(base + "/" + part))
                 return false;
             std::lock_guard lock(guard);
             made.insert(part);
@@ -477,7 +485,7 @@ void *extract_worker(void *opaque)
                       work.written,
                       buffer};
         // The reader checks the stored CRC-32; the callback enforces the declared size.
-        bool ok = output.descriptor >= 0 &&
+        bool ok = output.descriptor >= 0 && fchmod(output.descriptor, 0777) == 0 &&
                   mz_zip_reader_extract_to_callback(reader.zip(), entry.index, write_output,
                                                     &output, 0) != 0 &&
                   output.written == output.expected && output.flush();
@@ -511,7 +519,7 @@ bool extract_archive(const std::string &path, std::string_view title,
             return false;
     }
     error = "The app could not be unpacked";
-    if (mkdir(destination.c_str(), 0755) != 0)
+    if (mkdir(destination.c_str(), 0755) != 0 || !open_to_all(destination))
         return false;
     ExtractWork work{path, destination, entries, cancelled, written};
     pthread_t workers[8];

@@ -44,8 +44,16 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as zip
     for path, name in files:
         info = zipfile.ZipInfo(name, (2026, 1, 1, 0, 0, 0))
         info.compress_type = zipfile.ZIP_DEFLATED
-        info.external_attr = 0o644 << 16
+        # Every entry stored as 0777: the console only starts an app whose files are open to all
+        # ("Can't start the game or app", CE-107750-0, otherwise), and a tool that unpacks the
+        # ZIP keeping its permissions would leave 0644 files.
+        info.create_system = 3  # Unix: the high half of external_attr is the mode
+        info.external_attr = 0o100777 << 16
         zip_file.writestr(info, path.read_bytes())
+with zipfile.ZipFile(archive) as check:
+    closed = [i.filename for i in check.infolist() if (i.external_attr >> 16) & 0o777 != 0o777]
+    if closed:
+        sys.exit(f'ZIP entries not stored as 0777: {closed[:3]}')
 digest = hashlib.sha256(archive.read_bytes()).hexdigest()
 subprocess.run(['bash', str(root / 'tools/ci/package-image.sh'), str(app), str(image)], check=True)
 image_digest = hashlib.sha256(image.read_bytes()).hexdigest()
