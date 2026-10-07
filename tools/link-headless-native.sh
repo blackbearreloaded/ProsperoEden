@@ -31,30 +31,12 @@ if [[ -n $radv_archive ]]; then
 fi
 # The SDK's dlfcn wrappers explicitly return unavailable when these optional
 # weak hooks are null. This static frontend supplies no dynamic-loader hooks.
-# Mesa's entry-point tables name every Vulkan function through a weak reference
-# that stays null when RADV does not implement it (radv_EnumeratePhysicalDevices:
-# the common runtime's is used). The title converter imports every entry of the
-# dynamic symbol table and refuses one no SDK stub exports, so those references
-# are kept out of it, as PS5_Vulkan links its titles (tools/check-vulkan-runtime.sh
-# there): --no-dynamic-linker does it for LLD 18 and 19 (which warn about the -z
-# value and ignore it), -z nodynamic-undefined-weak for LLD 21 and later. LLD 20 has
-# neither way. Which LLD runs is the SDK's choice (prospero-llvm-config: $LLVM_CONFIG,
-# else the newest of LLVM 21 to 18 installed).
-lld="$template/.deps/native/ps5-payload-sdk/bin/prospero-lld"
-lld_major=$("$lld" --version | sed -n 's/.*LLD \([0-9][0-9]*\)\..*/\1/p' | head -1)
-if [[ $lld_major == 20 ]]; then
-    echo "The PS5 SDK links with LLD 20, which cannot keep Mesa's undefined weak entry points" >&2
-    echo "out of the dynamic symbol table. Install LLVM 18, 19, 21 or 22 for it, or set" >&2
-    echo "LLVM_CONFIG to that version's llvm-config (docs/BUILDING.md)." >&2
-    exit 1
-fi
-"$lld" \
+"$template/.deps/native/ps5-payload-sdk/bin/prospero-lld" \
     "${tls_flags[@]}" "${radv_link_flags[@]}" -L "$sdk/target/lib" \
     --defsym=__dlopen=0 --defsym=__dlsym=0 --defsym=__dladdr=0 \
     --defsym=__dlclose=0 --defsym=__dlerror=0 \
     -T "$template/tooling/native/ps5-pie.ld" -T "$root/tools/unwind.ld" \
     --eh-frame-hdr --gc-sections --version-script "$root/tools/app-symbols.map" -e _start \
-    --no-dynamic-linker -z nodynamic-undefined-weak \
     --error-limit=0 -Map="$output.map" \
     --wrap=aligned_alloc --wrap=malloc --wrap=calloc --wrap=realloc --wrap=free \
     --wrap=posix_memalign --wrap=malloc_usable_size \
