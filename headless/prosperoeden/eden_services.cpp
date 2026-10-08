@@ -12,6 +12,10 @@
 #include "native_directory.h"
 #include "pe/core/strings.hpp"
 #include "radio_input.h"
+#include "remote/backends.h"
+#include "remote/remote.h"
+#include "remote/save_sync.h"
+#include "save_sync_config.h"
 #include "version.h"
 
 #include <algorithm>
@@ -25,6 +29,7 @@
 #include <fcntl.h>
 #include <filesystem>
 #include <initializer_list>
+#include <map>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -230,6 +235,34 @@ std::string EnsureCover(const std::string& filename, std::string* title = nullpt
     return Eden::FileExists(cover) ? cover : std::string{};
 }
 
+// The names of the download sources, by their keys.
+std::map<std::string, std::string> SourceNames() {
+    std::map<std::string, std::string> names;
+    if (Eden::FilesystemAccess())
+        for (const Eden::Remote::SourceStatus& source : Eden::Remote::Current().sources) names[source.key] = source.name;
+    return names;
+}
+
+// "6.4 GB", "512.0 MB".
+std::string SizeLabel(double bytes) {
+    char size[32];
+    if (bytes >= 1073741824.0) std::snprintf(size, sizeof(size), "%.1f GB", bytes / 1073741824.0);
+    else std::snprintf(size, sizeof(size), "%.1f MB", bytes / 1048576.0);
+    return size;
+}
+
+// The folders and files in a folder, read the console's way (ListEntries).
+std::vector<std::string> ListFolder(const std::string& folder) {
+    bool ok = false;
+    std::vector<std::string> names = ListEntries(folder, true, ok);
+    for (std::string& name : ListEntries(folder, false, ok)) names.push_back(std::move(name));
+    return names;
+}
+
+bool WriteCover(const std::string& encoded, const std::string& path) {
+    return eden_write_cover_tga(reinterpret_cast<const unsigned char*>(encoded.data()), encoded.size(), path.c_str()) != 0;
+}
+
 int CountInstalledGames() {
     std::error_code error;
     const auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), error);
@@ -309,6 +342,130 @@ std::vector<std::string> ProfileNames() {
     }
     return names;
 }
+
+// save-sync.json follows the profiles: an entry for each, in their order, with their names
+// (save_sync_config.h). Only with filesystem access, where the remote config folder is.
+void KeepSaveSyncFile(const std::vector<Eden::Profiles::Profile>& profiles) {
+    if (!Eden::FilesystemAccess() || profiles.empty()) return;
+    std::vector<Eden::SaveSync::Owner> owners;
+    for (const auto& profile : profiles) owners.push_back({profile.Key(), profile.name});
+    if (!Eden::SaveSync::Reconcile(owners))
+        Eden::Report("save sync", "save-sync.json is not readable as JSON: it is left as it is");
+}
+
+// ---- save sync ----
+
+std::string SyncFolder() { return Eden::ConfigFile("remote") + "/save-sync"; }
+// The games whose save data is still to be synced after they were played, by profile.
+std::string PendingFile() { return SyncFolder() + "/pending.json"; }
+
+// A field of a JSON object as text; empty when it is not there or no text (save-sync.json and
+// sources.json are edited by hand).
+std::string TextOf(const nlohmann::json& object, const char* key) {
+    if (!object.is_object()) return {};
+    const auto found = object.find(key);
+    return found != object.end() && found->is_string() ? found->get<std::string>() : std::string{};
+}
+std::string TextOf(const Eden::SaveSync::Json& object, const char* key) {
+    if (!object.is_object()) return {};
+    const auto found = object.find(key);
+    return found != object.end() && found->is_string() ? found->get<std::string>() : std::string{};
+}
+
+// A profile's entry in save-sync.json when it names a backend: what syncs its save data.
+struct SyncSetup {
+    std::string type;
+    nlohmann::json settings;
+    bool automatic = true;
+};
+bool SyncSetupOf(const std::string& profile, SyncSetup* setup) {
+    if (!Eden::FilesystemAccess() || profile.empty()) return false;
+    const Eden::SaveSync::Config config = Eden::SaveSync::Read();
+    const Eden::SaveSync::Entry* entry = config.readable ? Eden::SaveSync::Find(config, profile) : nullptr;
+    if (entry == nullptr || entry->type.empty()) return false;
+    setup->type = entry->type;
+    setup->settings = nlohmann::json::parse(entry->settings.dump(), nullptr, false);
+    setup->automatic = config.automatic;
+    return true;
+}
+
+// The names in a save folder (SaveArchive::Lister): false when it cannot be read whole.
+bool ListSaveFolder(const std::string& folder, std::vector<std::string>* names) {
+    bool ok = false;
+    *names = ListEntries(folder, true, ok);
+    if (!ok) return false;
+    std::vector<std::string> files = ListEntries(folder, false, ok);
+    names->insert(names->end(), files.begin(), files.end());
+    return ok;
+}
+
+std::vector<std::pair<std::string, std::string>> ReadPending() {
+    std::vector<std::pair<std::string, std::string>> pending;
+    std::string text;
+    if (!Eden::Settings::ReadFile(PendingFile(), text)) return pending;
+    const nlohmann::json list = nlohmann::json::parse(text, nullptr, false);
+    if (!list.is_array()) return pending;
+    for (const nlohmann::json& item : list)
+        if (!TextOf(item, "profile").empty() && !TextOf(item, "file").empty())
+            pending.emplace_back(TextOf(item, "profile"), TextOf(item, "file"));
+    return pending;
+}
+
+void WritePending(const std::vector<std::pair<std::string, std::string>>& pending) {
+    if (pending.empty()) {
+        (void)std::remove(PendingFile().c_str());
+        return;
+    }
+    nlohmann::json list = nlohmann::json::array();
+    for (const auto& [profile, file] : pending) list.push_back({{"profile", profile}, {"file", file}});
+    std::error_code ignored;
+    std::filesystem::create_directories(SyncFolder(), ignored);
+    (void)Eden::Settings::WriteFile(PendingFile(), list.dump(2) + "\n");
+}
+
+// The servers a profile can be paired with: the download sources whose kind of server can pair,
+// with what their entry in save-sync.json starts from (the type, the address, the platform).
+struct PairSource {
+    std::string name;
+    std::string address;
+    nlohmann::json settings;
+    const Eden::Remote::Pairing* pairing = nullptr;
+};
+std::vector<PairSource> PairSources() {
+    std::vector<PairSource> list;
+    std::string text;
+    if (!Eden::FilesystemAccess() || !Eden::Settings::ReadFile(Eden::ConfigFile("remote") + "/sources.json", text))
+        return list;
+    const nlohmann::json document = nlohmann::json::parse(text, nullptr, false);
+    if (!document.is_object() || !document.contains("sources") || !document["sources"].is_array()) return list;
+    for (const nlohmann::json& source : document["sources"]) {
+        if (!source.is_object()) continue;
+        // sources.json is written by hand: a field that is no text is not there.
+        const std::string type = TextOf(source, "type");
+        const std::string url = TextOf(source, "url");
+        const Eden::Remote::Backend* backend = Eden::Remote::FindBackend(type);
+        if (url.empty() || backend == nullptr || backend->saves == nullptr || backend->pairing == nullptr) continue;
+        PairSource item;
+        item.name = TextOf(source, "name").empty() ? type : TextOf(source, "name");
+        item.address = url;
+        item.settings = {{"type", type}, {"url", url}};
+        if (source.contains("platform")) item.settings["platform"] = source["platform"];
+        item.pairing = backend->pairing;
+        list.push_back(std::move(item));
+    }
+    return list;
+}
+
+std::string CurrentProfile(int user) {
+    const auto who = Eden::Profiles::Resolve(user);
+    return who.profiles.empty() ? std::string{} : who.profiles[static_cast<std::size_t>(who.current)].Key();
+}
+
+std::string ProfileName(const std::string& key) {
+    for (const auto& profile : Eden::Profiles::Read())
+        if (profile.Key() == key) return profile.name;
+    return {};
+}
 } // namespace
 
 EdenServices::EdenServices(std::string launch_error) : launch_error_(std::move(launch_error)) {
@@ -321,8 +478,33 @@ EdenServices::EdenServices(std::string launch_error) : launch_error_(std::move(l
         Eden::Report("profile", (who.profiles[static_cast<std::size_t>(who.current)].name + " (" +
                                  std::to_string(who.current + 1) + " of " + std::to_string(who.profiles.size()) +
                                  ")").c_str());
+    KeepSaveSyncFile(who.profiles);
     setup_ = eden_startup_error();
     Eden::Report("setup", setup_.empty() ? "Keys and firmware startup checks passed" : setup_.c_str());
+    // The download sources' games and the download queue (remote/remote.h): only with filesystem access,
+    // where the game files folder can be written.
+    if (Eden::FilesystemAccess())
+        Eden::Remote::Start({Eden::ConfigFile("remote"), Eden::CoversDir(), Eden::AssetsPath("roms"),
+                             Eden::AssetsPath("updates"), Eden::AssetsPath(".remote-downloads")},
+                            WriteCover, ListFolder);
+    // The games played since their save data was last synced after them.
+    if (Eden::FilesystemAccess()) {
+        std::vector<SyncJob> jobs;
+        for (const auto& [profile, file] : ReadPending()) jobs.push_back({profile, file});
+        if (!jobs.empty()) StartSync(std::move(jobs), false);
+    }
+}
+
+EdenServices::~EdenServices() {
+    if (Eden::FilesystemAccess()) Eden::Remote::Stop();
+    {
+        const std::lock_guard lock(sync_lock_);
+        sync_stop_ = true;
+    }
+    sync_changed_.notify_all();
+    if (sync_thread_.joinable()) sync_thread_.join();
+    pair_stop_ = true;
+    if (pair_thread_.joinable()) pair_thread_.join();
 }
 
 pe::ui::Home EdenServices::home() {
@@ -429,9 +611,21 @@ std::vector<pe::ui::Game> EdenServices::games() {
     (void)mkdir(Eden::ConfigDir().c_str(), 0777);
     (void)mkdir(Eden::CoversDir().c_str(), 0777);
     std::error_code directory_error;
-    const auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), directory_error);
-    if (directory_error) return games;
+    auto entries = Eden::ReadNativeDirectory(Eden::AssetsPath("roms"), directory_error);
+    // Without a roms folder there are still the download sources' games.
+    if (directory_error) entries.clear();
     eden_scan_addons(Eden::AssetsPath("updates").c_str(), Eden::AssetsPath("keys").c_str());
+    // The download sources' games, each title once: one that is on the console can be downloaded
+    // again, and is deleted from the console in its settings.
+    const std::vector<Eden::Remote::Title> titles = Titles();
+    const std::map<std::string, std::string> names = SourceNames();
+    std::vector<bool> local(titles.size(), false);
+    const auto sources_of = [&](const Eden::Remote::Title& title) {
+        std::vector<std::string> sources;
+        for (const Eden::Remote::Game& game : title.games)
+            sources.push_back(names.contains(game.source) ? names.at(game.source) : game.source);
+        return sources;
+    };
     for (const auto& entry : entries) {
         const std::string file = entry.path().filename().string();
         const std::size_t dot = file.find_last_of('.');
@@ -443,14 +637,10 @@ std::vector<pe::ui::Game> EdenServices::games() {
         const std::string path = Eden::AssetsPath("roms/" + file);
         struct stat info {};
         if (stat(path.c_str(), &info) != 0 || !S_ISREG(info.st_mode)) continue;
-        char size[32];
-        const double bytes = static_cast<double>(info.st_size);
-        if (bytes >= 1073741824.0) std::snprintf(size, sizeof(size), "%.1f GB", bytes / 1073741824.0);
-        else std::snprintf(size, sizeof(size), "%.1f MB", bytes / 1048576.0);
         pe::ui::Game game;
         game.name = CleanTitle(file);
         game.format = format;
-        game.size = size;
+        game.size = SizeLabel(static_cast<double>(info.st_size));
         game.file = file;
         // A game whose data cannot be read is still listed, by its file name.
         try {
@@ -478,6 +668,38 @@ std::vector<pe::ui::Game> EdenServices::games() {
         } catch (const std::exception& error) {
             Eden::Report("library", (file + ": " + error.what()).c_str());
         }
+        games.push_back(std::move(game));
+    }
+    // Which games of the console a title is: by title ID, by name or by file (Remote::SameAsLocal).
+    for (pe::ui::Game& game : games) {
+        const std::string normal_name = Eden::Remote::NormalName(game.name);
+        for (std::size_t i = 0; i < titles.size(); ++i)
+            if (std::any_of(titles[i].games.begin(), titles[i].games.end(), [&](const Eden::Remote::Game& entry) {
+                    return Eden::Remote::SameAsLocal(entry, game.title_id, normal_name, game.file);
+                })) {
+                game.sources = sources_of(titles[i]);
+                game.key = titles[i].key;
+                local[i] = true;
+                break;
+            }
+    }
+    // The titles that are not on the console (yet); one that is shows as above.
+    for (std::size_t i = 0; i < titles.size(); ++i) {
+        if (local[i]) continue;
+        const Eden::Remote::Game& entry = titles[i].games.front();
+        pe::ui::Game game;
+        game.name = entry.name.empty() ? CleanTitle(entry.file) : entry.name;
+        game.format = entry.file.size() > 4 ? entry.file.substr(entry.file.size() - 3) : std::string{};
+        std::transform(game.format.begin(), game.format.end(), game.format.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+        game.size = entry.size > 0 ? SizeLabel(static_cast<double>(entry.size)) : std::string{"-"};
+        game.file = entry.file;
+        // The first source's cover, or another one's when it has none.
+        for (const Eden::Remote::Game& other : titles[i].games)
+            if (game.cover.empty()) game.cover = other.cover;
+        game.sources = sources_of(titles[i]);
+        game.key = titles[i].key;
+        game.remote = true;
         games.push_back(std::move(game));
     }
     std::sort(games.begin(), games.end(),
@@ -548,6 +770,7 @@ int EdenServices::add_profile() {
     if (!Eden::Profiles::Write(list)) return -1;
     // It starts with the settings of whoever made it; from then on they are its own.
     (void)Eden::Profiles::Seed(list.back());
+    KeepSaveSyncFile(list);
     Eden::Report("profile", ("Added: " + name).c_str());
     return static_cast<int>(list.size()) - 1;
 }
@@ -569,7 +792,9 @@ bool EdenServices::rename_profile(int index, int step) {
     const int count = static_cast<int>(names.size());
     const int from = at == names.end() ? (step > 0 ? -1 : 0) : static_cast<int>(at - names.begin());
     profile.name = names[static_cast<std::size_t>(((from + step) % count + count) % count)];
-    return Eden::Profiles::Write(list);
+    if (!Eden::Profiles::Write(list)) return false;
+    KeepSaveSyncFile(list);
+    return true;
 }
 
 bool EdenServices::remove_profile(int index) {
@@ -581,6 +806,7 @@ bool EdenServices::remove_profile(int index) {
     list.erase(list.begin() + index);
     if (!Eden::Profiles::Write(list)) return false;
     (void)Eden::Profiles::Forget(gone);
+    KeepSaveSyncFile(list);
     // Its save data stays where it is (nand/user/save/.../<ID>): removing a name destroys nothing.
     Eden::Report("profile", ("Removed from the list: " + name + " (its save data stays on the console)").c_str());
     return true;
@@ -877,7 +1103,486 @@ bool EdenServices::make_mods_folder(std::uint64_t title_id) {
     return mkdir(Eden::Mods::TitleFolderToCreate(root, title_id).c_str(), 0777) == 0;
 }
 
+pe::ui::Sources EdenServices::sources() {
+    pe::ui::Sources sources;
+    sources.setup_file = Eden::ConfigFile("remote/sources.json");
+    if (!Eden::FilesystemAccess()) {
+        sources.error = "Download sources need filesystem access";
+        return sources;
+    }
+    const Eden::Remote::Status status = Eden::Remote::Current();
+    sources.configured = status.configured;
+    sources.error = status.error;
+    sources.generation = status.generation;
+    sources.ftp_port = status.ftp_port;
+    for (const Eden::Remote::SourceStatus& source : status.sources)
+        sources.list.push_back({source.name, source.address, source.refreshing, source.online, source.error,
+                                static_cast<int>(source.games)});
+    return sources;
+}
+
+void EdenServices::refresh_sources() {
+    if (Eden::FilesystemAccess()) Eden::Remote::Refresh();
+}
+
+std::vector<Eden::Remote::Title> EdenServices::Titles() {
+    if (!Eden::FilesystemAccess()) return {};
+    const std::lock_guard lock(titles_lock_);
+    RefreshTitles();
+    return titles_;
+}
+
+void EdenServices::RefreshTitles() {
+    const std::uint64_t generation = Eden::Remote::Current().generation;
+    if (generation != titles_generation_) {
+        titles_ = Eden::Remote::Titles();
+        titles_generation_ = generation;
+    }
+}
+
+std::string EdenServices::TitleKeyOf(const std::string& source, const std::string& id) {
+    const std::lock_guard lock(titles_lock_);
+    RefreshTitles();
+    for (const Eden::Remote::Title& title : titles_)
+        for (const Eden::Remote::Game& game : title.games)
+            if (game.source == source && game.id == id) return title.key;
+    return {};
+}
+
+bool EdenServices::download(const pe::ui::Game& game, int source, bool first) {
+    // The title on its sources, in the order of Game::sources.
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == game.key && source >= 0 && source < static_cast<int>(title.games.size()))
+            return Eden::Remote::Enqueue(title.games[static_cast<std::size_t>(source)].source,
+                                         title.games[static_cast<std::size_t>(source)].id, first);
+    return false;
+}
+
+bool EdenServices::cancel_download(const std::string& key) {
+    if (!Eden::FilesystemAccess()) return false;
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == key)
+            for (const Eden::Remote::Game& game : title.games)
+                if (Eden::Remote::Cancel(game.source, game.id)) return true;
+    return false;
+}
+
+std::vector<pe::ui::Download> EdenServices::downloads() {
+    std::vector<pe::ui::Download> list;
+    if (!Eden::FilesystemAccess()) return list;
+    // Asked four times a second: nothing more is read while the queue is empty.
+    const std::vector<Eden::Remote::Download> queue = Eden::Remote::Downloads();
+    if (queue.empty()) return list;
+    const std::map<std::string, std::string> names = SourceNames();
+    for (const Eden::Remote::Download& entry : queue) {
+        pe::ui::Download download;
+        static_assert(static_cast<int>(pe::ui::DownloadState::verifying) == static_cast<int>(Eden::Remote::State::verifying) &&
+                      static_cast<int>(pe::ui::DownloadState::failed) == static_cast<int>(Eden::Remote::State::failed));
+        download.state = static_cast<pe::ui::DownloadState>(entry.state); // the same order
+        download.done = entry.done;
+        download.total = entry.total;
+        download.rate = entry.rate;
+        download.error = entry.error;
+        download.source = names.contains(entry.source) ? names.at(entry.source) : entry.source;
+        Eden::Remote::Game game;
+        if (Eden::Remote::Find(entry.source, entry.id, &game)) {
+            download.name = game.name.empty() ? CleanTitle(game.file) : game.name;
+            download.file = game.file;
+            download.cover = game.cover;
+        } else {
+            download.name = entry.id;
+        }
+        // Its title: the game as the Library lists it.
+        download.key = TitleKeyOf(entry.source, entry.id);
+        list.push_back(std::move(download));
+    }
+    return list;
+}
+
+bool EdenServices::delete_game(const pe::ui::Game& game, std::string* message) {
+    if (!Eden::FilesystemAccess() || game.sources.empty() || game.remote || !Eden::ValidRomFilename(game.file))
+        return false;
+    const std::lock_guard lock(bridge_);
+    const std::string rom = Eden::AssetsPath("roms/" + game.file);
+    // The game, what came with it from its sources, and every update and DLC of it in updates/
+    // (also one put there by hand), found by the title IDs the files hold.
+    std::vector<std::string> files{rom};
+    for (const Eden::Remote::Title& title : Titles())
+        if (title.key == game.key)
+            for (const Eden::Remote::Game& entry : title.games)
+                for (std::string& path : Eden::Remote::Files(entry.source, entry.id)) files.push_back(std::move(path));
+    const std::uint64_t title_id = game.title_id ? game.title_id : eden_game_title_id(rom.c_str());
+    (void)eden_game_addon_files(title_id, Eden::AssetsPath("updates").c_str(), Eden::AssetsPath("keys").c_str(),
+                                [](void* user, const char* path) {
+                                    static_cast<std::vector<std::string>*>(user)->emplace_back(path);
+                                },
+                                &files);
+    std::sort(files.begin(), files.end());
+    files.erase(std::unique(files.begin(), files.end()), files.end());
+    int deleted = 0;
+    std::uint64_t bytes = 0;
+    std::string kept;
+    for (const std::string& path : files) {
+        struct stat info {};
+        if (stat(path.c_str(), &info) != 0) continue;
+        if (std::remove(path.c_str()) == 0) {
+            ++deleted;
+            bytes += static_cast<std::uint64_t>(info.st_size);
+        } else if (kept.empty()) {
+            kept = path;
+        }
+    }
+    // The Library reads its list again: the game is on its sources only now.
+    Eden::Remote::Changed();
+    if (!kept.empty()) {
+        *message = fill(tr("Could not delete {0}."), {kept});
+        return false;
+    }
+    *message = fill(deleted == 1 ? tr("Deleted 1 file ({0}). Save data and settings are kept.") :
+                                   tr("Deleted {1} files ({0}). Save data and settings are kept."),
+                    {SizeLabel(static_cast<double>(bytes)), std::to_string(deleted)});
+    return true;
+}
+
 bool EdenServices::load_image(const std::string& path, pe::gfx::Image* image) {
     // Covers have full paths; the launcher's own art is named from its ui folder.
     return pe::gfx::load_tga(!path.empty() && path[0] == '/' ? path : Eden::AppFile("ui/" + path), image);
+}
+
+// ---- save sync ----
+
+bool EdenServices::save_sync_wanted(const std::string& file) {
+    SyncSetup setup;
+    return !file.empty() && SyncSetupOf(CurrentProfile(user_), &setup) && setup.automatic;
+}
+
+void EdenServices::start_save_sync(const std::string& file, bool before) {
+    if (before) {
+        StartSync({{CurrentProfile(user_), file}}, true);
+        return;
+    }
+    std::vector<SyncJob> jobs;
+    for (const auto& [profile, pending] : ReadPending())
+        if (pending == file) jobs.push_back({profile, pending});
+    StartSync(std::move(jobs), false);
+}
+
+void EdenServices::StartSync(std::vector<SyncJob> jobs, bool before) {
+    if (sync_thread_.joinable()) {
+        {
+            const std::lock_guard lock(sync_lock_);
+            if (sync_.stage == pe::ui::SaveSyncStage::working || sync_.stage == pe::ui::SaveSyncStage::conflict) return;
+        }
+        sync_thread_.join();
+    }
+    // What each needs, read here; its title ID on the thread: Eden's reader takes one caller at a
+    // time, and the menu's scan of the games can hold it a while.
+    struct Work {
+        SyncJob job;
+        Eden::Remote::SyncGame game;
+        SyncSetup setup;
+        bool syncs = false;
+        std::string profile_name;
+    };
+    std::vector<Work> work;
+    for (SyncJob& job : jobs) {
+        Work item;
+        item.job = std::move(job);
+        item.game.file = item.job.file;
+        item.game.name = GameTitle(item.job.file);
+        // Turned off (save-sync.json's "auto"): neither before a game nor what waits from after one.
+        item.syncs = SyncSetupOf(item.job.profile, &item.setup) && item.setup.automatic;
+        item.profile_name = ProfileName(item.job.profile);
+        work.push_back(std::move(item));
+    }
+    if (work.empty()) return;
+    {
+        const std::lock_guard lock(sync_lock_);
+        sync_ = {};
+        sync_.stage = pe::ui::SaveSyncStage::working;
+        sync_.before = before;
+        sync_.game = work.front().game.name;
+        sync_.profile = work.front().profile_name;
+        sync_choice_.reset();
+    }
+    sync_stop_ = false;
+    sync_thread_ = std::thread([this, work = std::move(work), before] {
+        pe::ui::SaveSync last;
+        last.stage = pe::ui::SaveSyncStage::done;
+        last.before = before;
+        for (Work item : work) {
+            if (sync_stop_) break;
+            if (const std::string path = Eden::AssetsPath("roms/" + item.job.file); item.syncs && Eden::FileExists(path)) {
+                const std::lock_guard lock(bridge_);
+                item.game.title_id = eden_game_title_id(path.c_str());
+            }
+            {
+                const std::lock_guard lock(sync_lock_);
+                sync_.game = item.game.name;
+                sync_.profile = item.profile_name;
+                sync_.stage = pe::ui::SaveSyncStage::working;
+            }
+            Eden::Remote::SyncResult result;
+            if (!item.syncs || item.game.title_id == 0) {
+                // The profile no longer syncs, or the game is gone: nothing left to do for it.
+                result.outcome = Eden::Remote::SyncOutcome::same;
+            } else {
+                const std::string& profile = item.job.profile;
+                const std::string title = Eden::Remote::TitleFolder(item.game.title_id);
+                Eden::Remote::SyncPlaces places;
+                places.save = Eden::UserDir() + "/nand/user/save/0000000000000000/" + profile + "/" + title;
+                places.store = SyncFolder() + "/" + profile;
+                places.work = places.store + "/work";
+                places.backups = std::string{Eden::kDataDir} + "/backup/save-sync/" + profile;
+                places.lister = ListSaveFolder;
+                result = Eden::Remote::SyncSaveData(
+                    item.setup.type, item.setup.settings, item.game, places,
+                    [this](const Eden::Remote::SavePlan& plan, const Eden::Remote::LocalSave& local) {
+                        std::unique_lock lock(sync_lock_);
+                        sync_.stage = pe::ui::SaveSyncStage::conflict;
+                        sync_.console_time = local.updated;
+                        sync_.server_time = plan.remote_updated;
+                        sync_.server_device = plan.remote_device;
+                        sync_choice_.reset();
+                        sync_changed_.wait(lock, [this] { return sync_choice_.has_value() || sync_stop_.load(); });
+                        sync_.stage = pe::ui::SaveSyncStage::working;
+                        const pe::ui::SaveChoice choice = sync_choice_.value_or(pe::ui::SaveChoice::neither);
+                        return choice == pe::ui::SaveChoice::console ? Eden::Remote::SyncChoice::console :
+                               choice == pe::ui::SaveChoice::server  ? Eden::Remote::SyncChoice::server :
+                                                                       Eden::Remote::SyncChoice::neither;
+                    },
+                    [this] { return sync_stop_.load(); });
+                const std::string url = TextOf(item.setup.settings, "url");
+                last.server = result.user.empty() ? url : result.user + " @ " + url;
+                Eden::Report("save sync", (item.game.name + " (" + item.profile_name + "): " +
+                                           (result.outcome == Eden::Remote::SyncOutcome::failed ? result.message :
+                                            result.outcome == Eden::Remote::SyncOutcome::uploaded ? "uploaded" :
+                                            result.outcome == Eden::Remote::SyncOutcome::downloaded ? "downloaded" :
+                                            result.outcome == Eden::Remote::SyncOutcome::kept ? "conflict left as it is" :
+                                            result.outcome == Eden::Remote::SyncOutcome::no_game ? "the server does not have the game" :
+                                                                                                    "already in step"))
+                                              .c_str());
+            }
+            // After a game: done with it unless it failed (then it is tried again on the next start),
+            // or the menu closed in the middle (a conflict not answered is not an answer).
+            if (!before && result.outcome != Eden::Remote::SyncOutcome::failed && !sync_stop_) {
+                auto pending = ReadPending();
+                std::erase(pending, std::pair{item.job.profile, item.job.file});
+                WritePending(pending);
+            }
+            last.game = item.game.name;
+            last.profile = item.profile_name;
+            if (result.outcome == Eden::Remote::SyncOutcome::failed) {
+                last.stage = pe::ui::SaveSyncStage::failed;
+                last.error = result.message;
+                last.too_old = result.too_old;
+                last.server_version = result.version;
+                last.needed_version = result.needed;
+            } else if (last.stage != pe::ui::SaveSyncStage::failed) {
+                last.outcome = result.outcome == Eden::Remote::SyncOutcome::uploaded   ? pe::ui::SaveSyncOutcome::uploaded :
+                               result.outcome == Eden::Remote::SyncOutcome::downloaded ? pe::ui::SaveSyncOutcome::downloaded :
+                               result.outcome == Eden::Remote::SyncOutcome::kept       ? pe::ui::SaveSyncOutcome::kept :
+                               result.outcome == Eden::Remote::SyncOutcome::no_game    ? pe::ui::SaveSyncOutcome::no_game :
+                                                                                         pe::ui::SaveSyncOutcome::same;
+            }
+        }
+        const std::lock_guard lock(sync_lock_);
+        sync_ = last;
+    });
+}
+
+pe::ui::SaveSync EdenServices::save_sync() {
+    const std::lock_guard lock(sync_lock_);
+    return sync_;
+}
+
+void EdenServices::choose_save_data(pe::ui::SaveChoice choice) {
+    {
+        const std::lock_guard lock(sync_lock_);
+        sync_choice_ = choice;
+    }
+    sync_changed_.notify_all();
+}
+
+void EdenServices::end_save_sync() {
+    const std::lock_guard lock(sync_lock_);
+    if (sync_.stage == pe::ui::SaveSyncStage::done || sync_.stage == pe::ui::SaveSyncStage::failed) sync_ = {};
+}
+
+void EdenServices::stop_save_sync() {
+    {
+        const std::lock_guard lock(sync_lock_);
+        sync_stop_ = true;
+    }
+    sync_changed_.notify_all();
+}
+
+void EdenServices::will_play(const std::string& file) {
+    if (!save_sync_wanted(file)) return;
+    auto pending = ReadPending();
+    const std::pair<std::string, std::string> job{CurrentProfile(user_), file};
+    if (std::find(pending.begin(), pending.end(), job) == pending.end()) pending.push_back(job);
+    WritePending(pending);
+}
+
+// ---- Settings > Save sync ----
+
+pe::ui::SaveSyncSetup EdenServices::save_sync_setup() {
+    pe::ui::SaveSyncSetup setup;
+    setup.file = Eden::SaveSync::File();
+    if (!Eden::FilesystemAccess()) return setup;
+    const auto who = Eden::Profiles::Resolve(user_);
+    const Eden::SaveSync::Config config = Eden::SaveSync::Read();
+    if (!config.readable) setup.error = config.error;
+    setup.automatic = config.automatic;
+    for (std::size_t index = 0; index < who.profiles.size(); ++index) {
+        const auto& profile = who.profiles[index];
+        pe::ui::SaveSyncProfile item;
+        item.name = profile.name;
+        item.current = static_cast<int>(index) == who.current;
+        const Eden::SaveSync::Entry* entry = config.readable ? Eden::SaveSync::Find(config, profile.Key()) : nullptr;
+        item.linked = entry != nullptr && !entry->type.empty();
+        if (item.linked) {
+            const std::string url = TextOf(entry->settings, "url");
+            const std::string user = TextOf(entry->settings, "__server_user");
+            item.server = user.empty() ? url : user + " @ " + url;
+            const Eden::Remote::Backend* backend = Eden::Remote::FindBackend(entry->type);
+            if (backend == nullptr || backend->saves == nullptr)
+                item.note = "Unknown type \"" + entry->type + "\" in save-sync.json";
+        }
+        setup.profiles.push_back(std::move(item));
+    }
+    return setup;
+}
+
+std::vector<pe::ui::PairServer> EdenServices::pair_servers() {
+    std::vector<pe::ui::PairServer> list;
+    for (const PairSource& source : PairSources()) list.push_back({source.name, source.address});
+    return list;
+}
+
+bool EdenServices::start_pairing(int profile_index, int server_index) {
+    {
+        const std::lock_guard lock(pair_lock_);
+        if (pair_.stage == pe::ui::PairingStage::asking || pair_.stage == pe::ui::PairingStage::waiting) return false;
+    }
+    if (pair_thread_.joinable()) pair_thread_.join();
+    const auto profiles = Eden::Profiles::Read();
+    const std::vector<PairSource> sources = PairSources();
+    if (profile_index < 0 || profile_index >= static_cast<int>(profiles.size()) || server_index < 0 ||
+        server_index >= static_cast<int>(sources.size()))
+        return false;
+    const auto profile = profiles[static_cast<std::size_t>(profile_index)];
+    const PairSource source = sources[static_cast<std::size_t>(server_index)];
+    {
+        const std::lock_guard lock(pair_lock_);
+        pair_ = {};
+        pair_.stage = pe::ui::PairingStage::asking;
+        pair_.profile = profile.name;
+        pair_.server = source.name;
+    }
+    pair_stop_ = false;
+    KeepSaveSyncFile(profiles); // the profile's entry is there to be filled in
+    pair_thread_ = std::thread([this, key = profile.Key(), name = profile.name, source] {
+        const std::string folder = SyncFolder() + "/" + key;
+        const auto fail = [&](std::string error, bool denied = false, bool expired = false) {
+            const std::lock_guard lock(pair_lock_);
+            pair_.stage = pe::ui::PairingStage::failed;
+            pair_.error = std::move(error);
+            pair_.denied = denied;
+            pair_.expired = expired;
+            Eden::Report("save sync", ("pairing " + name + " with " + source.name + ": " +
+                                       (denied ? "denied" : expired ? "expired" : pair_.error)).c_str());
+        };
+        Eden::Remote::PairingStart start;
+        std::string error;
+        const auto stopped = [this] { return pair_stop_.load(); };
+        if (!source.pairing->start(source.settings, folder, &start, &error, stopped)) {
+            if (pair_stop_) {
+                const std::lock_guard lock(pair_lock_);
+                pair_ = {};
+                return;
+            }
+            return fail(error);
+        }
+        if (pair_stop_) {
+            const std::lock_guard lock(pair_lock_);
+            pair_ = {};
+            return;
+        }
+        {
+            const std::lock_guard lock(pair_lock_);
+            pair_.stage = pe::ui::PairingStage::waiting;
+            pair_.code = start.user_code;
+            pair_.address = start.address;
+            pair_until_ = std::chrono::steady_clock::now() + std::chrono::seconds(start.expires_in);
+        }
+        int interval = start.interval;
+        for (;;) {
+            // Waits the interval, looking now and then whether it is cancelled.
+            for (int tenth = 0; tenth < interval * 10; ++tenth) {
+                if (pair_stop_) {
+                    const std::lock_guard lock(pair_lock_);
+                    pair_ = {};
+                    return;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            if (std::chrono::steady_clock::now() > pair_until_) return fail({}, false, true);
+            start.interval = interval; // slow_down adds to the interval used so far
+            const Eden::Remote::PairingResult result = source.pairing->poll(source.settings, folder, start, stopped);
+            // Cancelled while it asked: not linked, whatever the answer.
+            if (pair_stop_) {
+                const std::lock_guard lock(pair_lock_);
+                pair_ = {};
+                return;
+            }
+            switch (result.state) {
+            case Eden::Remote::PairingState::pending:
+                interval = std::max(1, result.interval);
+                continue;
+            case Eden::Remote::PairingState::denied:
+                return fail({}, true);
+            case Eden::Remote::PairingState::expired:
+                return fail({}, false, true);
+            case Eden::Remote::PairingState::failed:
+                return fail(result.error);
+            case Eden::Remote::PairingState::approved: {
+                Eden::SaveSync::Json fields = Eden::SaveSync::Json::parse(result.entry.dump());
+                if (!result.user.empty()) fields["__server_user"] = result.user;
+                if (!Eden::SaveSync::SetEntry(key, fields)) return fail("save-sync.json cannot be written");
+                const std::lock_guard lock(pair_lock_);
+                pair_.stage = pe::ui::PairingStage::done;
+                pair_.user = result.user;
+                Eden::Report("save sync", ("paired " + name + " with " + source.name + " as " + result.user).c_str());
+                return;
+            }
+            }
+        }
+    });
+    return true;
+}
+
+pe::ui::PairingStatus EdenServices::pairing() {
+    const std::lock_guard lock(pair_lock_);
+    pe::ui::PairingStatus status = pair_;
+    if (status.stage == pe::ui::PairingStage::waiting)
+        status.seconds_left = static_cast<int>(std::max<std::int64_t>(
+            0, std::chrono::duration_cast<std::chrono::seconds>(pair_until_ - std::chrono::steady_clock::now()).count()));
+    return status;
+}
+
+void EdenServices::cancel_pairing() {
+    pair_stop_ = true;
+    const std::lock_guard lock(pair_lock_);
+    if (pair_.stage == pe::ui::PairingStage::done || pair_.stage == pe::ui::PairingStage::failed) pair_ = {};
+}
+
+bool EdenServices::unlink_profile(int profile_index) {
+    const auto profiles = Eden::Profiles::Read();
+    if (profile_index < 0 || profile_index >= static_cast<int>(profiles.size())) return false;
+    const auto& profile = profiles[static_cast<std::size_t>(profile_index)];
+    const bool unlinked = Eden::SaveSync::SetEntry(profile.Key(), Eden::SaveSync::Json::object());
+    if (unlinked) Eden::Report("save sync", ("unlinked " + profile.name).c_str());
+    return unlinked;
 }

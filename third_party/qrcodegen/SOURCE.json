@@ -1,0 +1,12 @@
+{
+  "name": "qrcodegen",
+  "version": "C, 2026-08-31",
+  "license": "MIT",
+  "repository": "https://github.com/nayuki/QR-Code-generator.git",
+  "commit": "3c6d0b3cefb4e049dc337e82237c9644399716a8",
+  "files": {
+    "LICENSE": "99e0c825c493346aed3ccd5170f67b5df253645d65ae76ace15677ab668eac35",
+    "qrcodegen.c": "6a2b9cc65176f2345dde260c74b6d352627e8a0a6385d086ae0e9c5d0913c70c",
+    "qrcodegen.h": "e82df4bff37d18b5863b9e7486fe6bda1b6cda8c3b9ecebfec473907265cb589"
+  }
+}

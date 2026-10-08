@@ -5,6 +5,7 @@
 #pragma once
 
 #include "pe/audio/sounds.hpp"
+#include "pe/ui/qr_code.hpp"
 #include "pe/ui/widgets.hpp"
 
 #include <array>
@@ -83,6 +84,12 @@ class Launcher
         mapping,      // the button mapping: Settings > Controls', or a game's own
         profiles,     // who is playing: Settings > Profiles
         update,       // a newer release of the app: install it or not (update.cpp)
+        download,     // a game from a download source, started once it is downloaded (remote.cpp)
+        source,       // which source a game is downloaded from, when several have it (remote.cpp)
+        sources,      // Settings > Downloads: the download sources and the queue (remote.cpp)
+        save_sync,    // a game's save data synced before it starts, or a conflict after (save_sync.cpp)
+        sync_setup,   // Settings > Save sync: the profiles and their servers (pairing.cpp)
+        pairing,      // a profile paired with a server by a QR code (pairing.cpp)
     };
     // The update dialog's steps: the offer, installing, stopping it, closing for the helper to
     // finish, and a failure.
@@ -105,7 +112,10 @@ class Launcher
     void open_modal(Modal modal);
     void close_modal();
     void say(const std::string &text, bool warning = false);
+    // Starts a game: its save data is synced first when the profile syncs it (save_sync.cpp).
     void launch(const std::string &file, const std::string &title, const std::string &cover);
+    // Starts it now.
+    void start_game(const std::string &file, const std::string &title, const std::string &cover);
     void draw_screen(Canvas &c, Screen screen);
     void draw_frame(Canvas &c, const char *title, const char *copy);
     void draw_footer(Canvas &c, const Hint *hints, int count);
@@ -154,6 +164,9 @@ class Launcher
     void refresh_selected_game();
     void press_game(Key key);
     void draw_game(Canvas &c, float open);
+    // What a row of the game settings dialog is (GameRow in library.cpp): Save data is there in
+    // builds that move saves, and the deleting of a game a download source has (it comes back from there).
+    int game_row(int row) const;
     void press_mods(Key key);
     void draw_mods(Canvas &c, float open);
 
@@ -200,6 +213,51 @@ class Launcher
     float notes_window() const;
     float notes_max_scroll() const;
     void draw_notes(Canvas &c, float height);
+
+    // ---- games on download sources (remote.cpp) ----
+    // Looks at the queue and the sources a few times a second: the Library reads its list again
+    // when their games changed, and the game being played starts once it is there.
+    void poll_sources(float dt);
+    // The queue's entry of a game (Game::key); nullptr when it has none.
+    const Download *download_of(const std::string &key) const;
+    // What a game on its sources shows in the Library: its source (or how many), queued, its
+    // share, failed.
+    std::string remote_state(const Game &game, Color *color) const;
+    // The cover of a game on its sources: darker, with a cloud at its bottom right.
+    static void remote_cover(Canvas &c, const std::string &path, const Rect &r, float radius, float shadow = 0.0f);
+    // Cross on one: downloaded first and started (the download dialog). Square: into the queue,
+    // or out of it. With several sources, which one is asked first (the source dialog).
+    void play_remote(const Game &game);
+    void queue_remote(const Game &game);
+    void choose_source(const Game &game, bool play);
+    void download_from(const Game &game, int source, bool play);
+    void press_choice(Key key);
+    void draw_choice(Canvas &c, float open);
+    void press_download(Key key);
+    void draw_download(Canvas &c, float open);
+    int source_row_count() const;
+    void open_sources();
+    void press_sources(Key key);
+    void draw_sources(Canvas &c, float open);
+
+    // ---- save sync (save_sync.cpp) ----
+    // Looks at the sync a few times a second: the game starts once its save data is in step, a
+    // conflict opens the dialog, and the end of a sync after a game shows at the top right.
+    void poll_save_sync(float dt);
+    void press_save_sync(Key key);
+    void draw_save_sync(Canvas &c, float open);
+    void draw_save_sync_notice(Canvas &c);
+
+    // ---- Settings > Save sync and pairing (pairing.cpp) ----
+    void open_sync_setup();
+    // Reads the profiles' servers again (save-sync.json) while Settings shows them.
+    void refresh_sync_setup(float dt);
+    void press_sync_setup(Key key);
+    void draw_sync_setup(Canvas &c, float open);
+    void start_pairing(int profile, int server);
+    void poll_pairing(float dt);
+    void press_pairing(Key key);
+    void draw_pairing(Canvas &c, float open);
 
     // ---- game files, language, about (browse.cpp) ----
     void enter_files();
@@ -320,6 +378,7 @@ class Launcher
     bool game_docked_ = true;
     SaveSource import_source_ = SaveSource::none; // what Save data could import for the game
     bool import_armed_ = false;                   // Cross was pressed once: the next one imports
+    bool delete_armed_ = false;                   // the same before a game is deleted
     ListView game_rows_;                          // the game dialog's rows (more than it shows)
     std::vector<Mod> mods_;                       // the game's mods, read when its dialog opens
     // The Mods list's rows: each mod, then its cheats when it lists several.
@@ -347,6 +406,52 @@ class Launcher
 
     // language
     ListView language_;
+
+    // the download sources
+    Sources sources_;
+    std::vector<Download> downloads_;
+    std::uint64_t sources_generation_ = 0; // the sources' games as the Library's list has them
+    bool lists_asked_ = false;             // the player asked for the game lists: the menu says when they are in
+    float sources_wait_ = 0.0f;
+    bool rescan_ = false;                  // the list is read again once the current reading is in
+    Game download_game_;                   // the game the download dialog shows (and then starts)
+    std::string download_file_;            // its file once there (as its source names it)
+    bool download_open_ = false;
+    Game choice_game_;                     // the game the source dialog asks about
+    bool choice_play_ = false;             // it is then played (else queued)
+    ListView choice_rows_;
+    tween::Spring download_fraction_;
+    float download_time_ = 0.0f;
+    ListView source_rows_; // Settings > Downloads: the sources, then the downloads
+
+    // save sync
+    SaveSync save_sync_;            // as last looked at
+    float save_sync_wait_ = 0.0f;
+    std::string sync_file_;         // the game that starts once its save data is in step
+    std::string sync_title_;
+    std::string sync_cover_;
+    bool sync_launch_ = false;      // the dialog is for a game about to start
+    bool sync_started_ = false;     // its sync was asked for (after the one before it ended)
+    ListView sync_rows_;            // the answers to a conflict or a failure
+    float sync_time_ = 0.0f;
+    SaveSync sync_notice_;          // what the notice at the top right says
+    float sync_notice_left_ = 0.0f; // seconds it still shows
+    tween::Spring sync_notice_in_;
+
+    // Settings > Save sync and pairing
+    SaveSyncSetup sync_setup_;
+    std::vector<PairServer> pair_servers_;
+    float sync_setup_wait_ = 1000.0f; // read at once the first time Settings shows
+    ListView sync_setup_rows_;
+    bool sync_setup_choosing_ = false; // the rows are the servers to pair sync_setup_profile_ with
+    int sync_setup_profile_ = 0;
+    int pair_server_ = 0;
+    int unlink_armed_ = -1;            // Square once on this profile: once more unlinks it
+    PairingStatus pairing_;
+    float pairing_wait_ = 0.0f;
+    float pairing_time_ = 0.0f;
+    QrCode pairing_qr_;
+    std::string pairing_qr_text_;      // the address pairing_qr_ is of
 };
 
 } // namespace pe::ui

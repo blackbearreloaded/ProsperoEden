@@ -25,7 +25,10 @@ builds on the following projects, each under its own license.
   and `tools/validate-loader-elf.py`.
 - **[miniz](https://github.com/richgel999/miniz)** 3.0.2, MIT, unmodified in
   `third_party/miniz` with its `LICENSE`. The self-update helper reads release
-  ZIPs with it.
+  ZIPs with it; the app packs and unpacks save data for the save sync with it.
+- **[QR Code generator library](https://github.com/nayuki/QR-Code-generator)** (C), MIT,
+  unmodified in `third_party/qrcodegen` with its `LICENSE`. The launcher draws the QR code
+  of a save sync's pairing with it.
 - **LLVM compiler-rt** `emutls.c`, Apache-2.0 WITH LLVM-exception.
 
 ## Graphics
