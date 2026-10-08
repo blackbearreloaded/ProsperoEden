@@ -60,7 +60,7 @@ void PadEngine::SetStickPosition(std::size_t player, int axis, float x, float y)
 void PadEngine::SetMotionState(std::size_t player, u64 delta_us, float gyro_x, float gyro_y, float gyro_z,
                                float accel_x, float accel_y, float accel_z) {
     if (player >= kPlayers) return;
-    const InputCommon::BasicMotion motion{.gyro_x = gyro_x, .gyro_y = gyro_y, .gyro_z = gyro_z,
+    const BasicMotion motion{.gyro_x = gyro_x, .gyro_y = gyro_y, .gyro_z = gyro_z,
                              .accel_x = accel_x, .accel_y = accel_y, .accel_z = accel_z,
                              .delta_timestamp = delta_us};
     SetMotion(Identifier(player), 0, motion);
