@@ -225,11 +225,14 @@ int main() {
         game.mute = 1;
         game.vibration = 0;
         game.language = 13;
+        game.controller = 3;  // left Joy-Con
         game.own_mapping = true;
         game.mapping = Eden::Assign(Eden::kDefaultMapping, Eden::game_a, Eden::pad_triangle);
         game.performance[2] = 1;  // fast GPU
         assert(Eden::SaveGameSettings(quest, game, file));
         const auto back = Eden::LoadGameSettings(quest, file);
+        assert(back.controller == 3 && Eden::PreferencesFor(quest, file).controller == 3 &&
+               Eden::PreferencesFor(racer, file).controller == -1 && Eden::LoadPreferences(file).controller == -1);
         assert(back.hud == 0 && back.volume == 40 && back.mute == 1 && back.vibration == 0 && back.language == 13 &&
                back.own_mapping && back.mapping == game.mapping && back.performance[2] == 1 &&
                back.performance[0] == -1);

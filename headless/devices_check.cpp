@@ -77,6 +77,21 @@ template<class F> void Reject(F&& f) {
 void CheckControllerStyle() {
     using Core::HID::NpadStyleIndex;
     Core::Frontend::ControllerParameters allowed{};
+    // A game's own Controller type goes first when the game takes it, the handheld for player 1
+    // only; one the game does not take is left aside.
+    {
+        Core::Frontend::ControllerParameters taken{};
+        taken.allow_pro_controller = taken.allow_handheld = taken.allow_left_joycon = true;
+        CHECK(Eden::ControllerStyle(taken, 0, -1) == NpadStyleIndex::Fullkey);
+        CHECK(Eden::ControllerStyle(taken, 1, 3) == NpadStyleIndex::JoyconLeft);
+        CHECK(Eden::ControllerStyle(taken, 0, 1) == NpadStyleIndex::Handheld);
+        CHECK(!Eden::ControllerStyle(taken, 1, 1));
+        CHECK(Eden::ControllerStyle(taken, 0, 4) == NpadStyleIndex::Fullkey);  // right Joy-Con: not taken
+        CHECK(Eden::ControllerStyle(taken, 0, 2) == NpadStyleIndex::Fullkey);  // pair: not taken
+        CHECK(Eden::ControllerSetting(-1) == Settings::ControllerType::ProController &&
+              Eden::ControllerSetting(1) == Settings::ControllerType::Handheld &&
+              Eden::ControllerSetting(4) == Settings::ControllerType::RightJoycon);
+    }
     // A game that names none of the styles: a Pro Controller for every player.
     CHECK(Eden::ControllerStyle(allowed, 0) == NpadStyleIndex::Fullkey);
     CHECK(Eden::ControllerStyle(allowed, 3) == NpadStyleIndex::Fullkey);
@@ -121,8 +136,13 @@ void CheckPad() {
             for (int i = 0; i < 22; ++i)
                 CHECK(pad.Engine().GetButton({}, i) == (i == button || (sl_sr >= 0 && (i == sl_sr || i == sl_sr + 4))));
         }
+        // Player 1's DualSense also plays Eden's handheld controller (port 8).
+        sample.buttons = kButtonCircle; consume();
+        CHECK(pad.Engine().GetButton({.port = 8}, 0)); CHECK(!pad.Engine().GetButton({.port = 8}, 1));
         sample.buttons = 0;
         sample.left_stick = {0, 255}; sample.right_stick = {255, 0}; consume();
+        CHECK(!pad.Engine().GetButton({.port = 8}, 0));
+        CHECK(pad.Engine().GetAxis({.port = 8}, 0) == -1); CHECK(pad.Engine().GetAxis({.port = 8}, 3) == 1);
         CHECK(pad.Engine().GetAxis({}, 0) == -1); CHECK(pad.Engine().GetAxis({}, 1) == -1);
         CHECK(pad.Engine().GetAxis({}, 2) == 1); CHECK(pad.Engine().GetAxis({}, 3) == 1);
         sample.left_stick = {128, 132}; sample.triggers = {127, 128}; consume();

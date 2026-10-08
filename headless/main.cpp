@@ -1010,14 +1010,29 @@ int main(int argc, char** argv) {
             // One Pro Controller per signed-in user's DualSense; later changes apply mid-game.
             const unsigned connected = pad->ConnectedPlayers();
             (void)pad->TakeConnectionChanges();
+            // The game's own Controller type (Game settings > Controls), a Pro Controller without
+            // one. The handheld is a controller of its own, for player 1 only.
+            Eden::session_controller = controls.controller;
+            const bool handheld = Eden::ControllerSetting(controls.controller) == Settings::ControllerType::Handheld;
             for (std::size_t index = 0; index < Eden::Pad::kMaxPlayers; ++index) {
                 auto& player = Settings::values.players.GetValue()[index];
-                player.connected = index == 0 || (connected & (1u << index)) != 0;
-                player.controller_type = Settings::ControllerType::ProController;
+                player.connected = handheld ? false : index == 0 || (connected & (1u << index)) != 0;
+                player.controller_type = handheld ? Settings::ControllerType::ProController :
+                                                    Eden::ControllerSetting(controls.controller);
                 // DualSense rumble (headless/pad.cpp) at Eden's full strength.
                 player.vibration_enabled = true;
                 player.vibration_strength = 100;
             }
+            {
+                auto& player = Settings::values.players.GetValue()[8];  // Eden's handheld controller
+                player.connected = handheld;
+                player.controller_type = Settings::ControllerType::Handheld;
+                player.vibration_enabled = true;
+                player.vibration_strength = 100;
+            }
+            if (controls.controller >= 0)
+                Eden::Report("launch", (std::string("Controller type: ") +
+                                        Eden::kControllerKeys[controls.controller]).c_str());
         }
         {
 #ifdef EDEN_PS5_OPENGL
@@ -1410,8 +1425,11 @@ int main(int argc, char** argv) {
                                 const bool present = (connected & (1u << index)) != 0;
                                 Settings::values.players.GetValue()[index].connected = present;
                                 auto* controller = system.HIDCore().GetEmulatedControllerByIndex(index);
+                                // With the handheld chosen, the game has one player.
+                                const auto chosen = Eden::ChosenStyle(Eden::session_controller.load());
+                                if (present && chosen == Core::HID::NpadStyleIndex::Handheld) continue;
                                 if (present) {
-                                    controller->SetNpadStyleIndex(Core::HID::NpadStyleIndex::Fullkey);
+                                    controller->SetNpadStyleIndex(chosen.value_or(Core::HID::NpadStyleIndex::Fullkey));
                                     controller->Connect();
                                 } else {
                                     controller->Disconnect();

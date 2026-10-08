@@ -5,6 +5,7 @@
 // same controller style priority (Pro Controller, dual Joy-Con, single Joy-Con, handheld).
 #pragma once
 #include <algorithm>
+#include <atomic>
 #include <bit>
 #include <cstdio>
 #include <optional>
@@ -22,9 +23,44 @@ namespace Eden {
 // Docked mode too, and a game that names none of these gets a Pro Controller: an answer the game
 // may refuse (it then shows its screen again), where no answer left it waiting for ever. Nothing
 // only for the players after the first of a handheld-only game.
-inline std::optional<Core::HID::NpadStyleIndex> ControllerStyle(
-    const Core::Frontend::ControllerParameters& parameters, std::size_t index) {
+//
+// A game's own Controller type (Library > Game settings > Controls, settings_store.h
+// kControllerKeys) goes first when the game takes it: some games take a Pro Controller and then
+// do not work with it. -1 is no choice. Set when a session starts.
+inline std::atomic<int> session_controller{-1};
+
+inline std::optional<Core::HID::NpadStyleIndex> ChosenStyle(int controller) {
     using Core::HID::NpadStyleIndex;
+    static constexpr NpadStyleIndex kStyles[] = {NpadStyleIndex::Fullkey, NpadStyleIndex::Handheld,
+                                                 NpadStyleIndex::JoyconDual, NpadStyleIndex::JoyconLeft,
+                                                 NpadStyleIndex::JoyconRight};
+    if (controller < 0 || controller >= static_cast<int>(std::size(kStyles))) return std::nullopt;
+    return kStyles[controller];
+}
+
+// The same choice as Eden's setting for a player, for the start of a session (a Pro Controller
+// without one).
+inline ::Settings::ControllerType ControllerSetting(int controller) {
+    using Type = ::Settings::ControllerType;
+    static constexpr Type kTypes[] = {Type::ProController, Type::Handheld, Type::DualJoyconDetached,
+                                      Type::LeftJoycon, Type::RightJoycon};
+    return controller < 0 || controller >= static_cast<int>(std::size(kTypes)) ? Type::ProController : kTypes[controller];
+}
+
+inline bool TakesStyle(const Core::Frontend::ControllerParameters& parameters, Core::HID::NpadStyleIndex style) {
+    using Core::HID::NpadStyleIndex;
+    return style == NpadStyleIndex::Fullkey ? parameters.allow_pro_controller :
+           style == NpadStyleIndex::Handheld ? parameters.allow_handheld :
+           style == NpadStyleIndex::JoyconDual ? parameters.allow_dual_joycons :
+           style == NpadStyleIndex::JoyconLeft ? parameters.allow_left_joycon :
+           style == NpadStyleIndex::JoyconRight && parameters.allow_right_joycon;
+}
+
+inline std::optional<Core::HID::NpadStyleIndex> ControllerStyle(
+    const Core::Frontend::ControllerParameters& parameters, std::size_t index, int controller = -1) {
+    using Core::HID::NpadStyleIndex;
+    if (const auto chosen = ChosenStyle(controller); chosen && TakesStyle(parameters, *chosen))
+        return *chosen != NpadStyleIndex::Handheld || index == 0 ? chosen : std::nullopt;
     if (parameters.allow_pro_controller) return NpadStyleIndex::Fullkey;
     if (parameters.allow_dual_joycons) return NpadStyleIndex::JoyconDual;
     if (parameters.allow_left_joycon && parameters.allow_right_joycon)
@@ -51,17 +87,24 @@ public:
         const std::size_t players = std::clamp(pads, min_players, max_players);
         const bool docked = ::Settings::IsDockedMode();
         std::size_t connected = 0;
-        hid_core.GetEmulatedController(Core::HID::NpadIdType::Handheld)->Disconnect();
+        const int chosen = session_controller.load();
+        // The handheld is a controller of its own, not player 1 with another style; player 1's
+        // DualSense plays it (pad.cpp).
+        auto* handheld = hid_core.GetEmulatedController(Core::HID::NpadIdType::Handheld);
+        handheld->Disconnect();
         for (std::size_t index = 0; index < Core::HID::HIDCore::available_controllers - 2; ++index) {
             auto* controller = hid_core.GetEmulatedControllerByIndex(index);
             controller->Disconnect();
             if (index >= players) continue;
-            const auto style = ControllerStyle(parameters, index);
+            const auto style = ControllerStyle(parameters, index, chosen);
             if (!style) continue;
-            controller->SetNpadStyleIndex(*style);
-            controller->Connect(true);
+            auto* target = *style == Core::HID::NpadStyleIndex::Handheld ? handheld : controller;
+            target->SetNpadStyleIndex(*style);
+            target->Connect(true);
             ++connected;
         }
+        if (const auto style = ChosenStyle(chosen); style && !TakesStyle(parameters, *style))
+            Report("controllers", "This game does not take the Controller type chosen for it: it gets what it takes");
         // What the game asked for goes to the log: a game stuck on this screen can then be told
         // apart from one that asks for a controller this port does not provide.
         char line[224];

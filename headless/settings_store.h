@@ -21,6 +21,7 @@
 //                                      "refresh_rate": "120", "fps_overlay": false,
 //                                      "volume": 80, "mute": false, "vibration": false,
 //                                      "language": "ja", "mapping": { "a": "cross" },
+//                                      "controller": "handheld",
 //                                      "mods": false,
 //                                      "mods_off": ["A mod's folder name"],
 //                                      "cheats_on": ["A mod's folder name#A cheat's name"],
@@ -104,6 +105,7 @@ struct Preferences {
     bool high_contrast = false;
     bool reduce_motion = false;
     ButtonMapping mapping = kDefaultMapping;  // Settings > Controls > Button mapping
+    int controller = -1;                 // a game's own Controller type (kControllerKeys); -1: automatic
 };
 
 inline int KeyIndex(const std::string& value, const char* const* keys, int count, int fallback) {
@@ -401,11 +403,16 @@ struct GameSettings {
     int mute = -1;
     int vibration = -1;
     int language = -1;          // index into kLanguageKeys
+    int controller = -1;        // index into kControllerKeys
     bool own_mapping = false;   // the game has a button mapping of its own: mapping
     ButtonMapping mapping = kDefaultMapping;
     std::array<int, kPerformanceSwitches> performance{-1, -1, -1, -1, -1, -1, -1};  // kPerformanceKeys
 };
 inline constexpr const char* kRendererKeys[] = {"opengl", "vulkan"};
+// Library > Game settings > Controls > Controller type: the controller every player of the game
+// gets (the handheld: player 1 only). Without one a game gets what it takes, a Pro Controller
+// first (controller_applet.h).
+inline constexpr const char* kControllerKeys[] = {"pro", "handheld", "dual_joycons", "left_joycon", "right_joycon"};
 
 inline GameSettings LoadGameSettings(uint64_t title_id, const std::string& file = SettingsFile()) {
     GameSettings result;
@@ -420,6 +427,7 @@ inline GameSettings LoadGameSettings(uint64_t title_id, const std::string& file 
                                        int(std::size(kUpscalingFilterKeys)), -1);
     result.refresh = KeyIndex(key("refresh_rate"), kRefreshKeys, int(std::size(kRefreshKeys)), -1);
     result.language = KeyIndex(key("language"), kLanguageKeys, int(std::size(kLanguageKeys)), -1);
+    result.controller = KeyIndex(key("controller"), kControllerKeys, int(std::size(kControllerKeys)), -1);
     const auto flag = [&](const std::string& path) {
         const Json::json_pointer at(base + path);
         return document.contains(at) && document.at(at).is_boolean() ? int(document.at(at).get<bool>()) : -1;
@@ -443,6 +451,7 @@ inline bool SaveGameSettings(uint64_t title_id, const GameSettings& value, const
         value.resolution >= int(std::size(kResolutionKeys)) ||
         value.upscaling_filter >= int(std::size(kUpscalingFilterKeys)) ||
         value.refresh >= int(std::size(kRefreshKeys)) || value.language >= int(std::size(kLanguageKeys)) ||
+        value.controller >= int(std::size(kControllerKeys)) ||
         value.volume > 100 || !flag_ok(value.hud) || !flag_ok(value.mute) || !flag_ok(value.vibration) ||
         !std::all_of(value.performance.begin(), value.performance.end(), flag_ok) ||
         (value.own_mapping && !ValidMapping(value.mapping))) return false;
@@ -459,6 +468,7 @@ inline bool SaveGameSettings(uint64_t title_id, const GameSettings& value, const
     store("upscaling_filter", value.upscaling_filter, kUpscalingFilterKeys);
     store("refresh_rate", value.refresh, kRefreshKeys);
     store("language", value.language, kLanguageKeys);
+    store("controller", value.controller, kControllerKeys);
     const auto flag = [](Settings::Json& owner, const char* name, int value) {
         if (value < 0) owner.erase(name);
         else owner[name] = value == 1;
@@ -492,6 +502,7 @@ inline Preferences PreferencesFor(uint64_t title_id, const std::string& file = S
     if (game.vibration >= 0) result.vibration = game.vibration == 1;
     if (game.language >= 0) result.language = game.language;
     if (game.own_mapping) result.mapping = game.mapping;
+    result.controller = game.controller;
     return result;
 }
 
