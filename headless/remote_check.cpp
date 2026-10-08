@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Host check of the download sources (remote/remote.h) with their RomM backend
-// (remote/romm/, remote/backends.h): the backend's reading of RomM's answers, the check of a
-// download's contents (stream_check.h) fed in every way a download feeds it, then, against
+// (remote/romm/, remote/backends.h) and of the save sync (remote/save_sync.h): the backend's reading
+// of RomM's answers, the save data's zips and RomM's times and versions, the check of a download's
+// contents (stream_check.h) fed in every way a download feeds it, then, against
 // tools/romm-mock-server.py, sources.json with one and two sources, the game lists, downloads
 // (written through tools/ftp-mock-server.py as through the console's FTP server; going on after a
 // stop, with a spoilt end, from a server that cannot resume, of a game in several files, and
@@ -14,7 +15,12 @@
 #include "remote/http.h"
 #include "remote/remote.h"
 #include "remote/romm/romm_client.h"
+#include "remote/romm/romm_saves.h"
+#include "remote/save_archive.h"
+#include "remote/save_sync.h"
 #include "remote/stream_check.h"
+
+#include "miniz.h"
 
 #include <openssl/evp.h>
 
@@ -61,6 +67,13 @@ std::vector<std::string> ListFolder(const std::string& folder) {
     std::error_code error;
     for (const auto& entry : fs::directory_iterator(folder, error)) names.push_back(entry.path().filename().string());
     return names;
+}
+
+// The same for the save sync (SaveArchive::Lister): false when the folder cannot be read.
+bool ReadFolder(const std::string& folder, std::vector<std::string>* names) {
+    std::error_code error;
+    for (const auto& entry : fs::directory_iterator(folder, error)) names->push_back(entry.path().filename().string());
+    return !error;
 }
 
 // The Range headers the mock server was asked for, as its /requests list has them.
@@ -227,6 +240,13 @@ void RommBackend() {
            "a RomM source without an address is not usable");
     Expect(MakeSource("ftp", {{"url", "x"}}, &error) == nullptr && error.find("Unknown") != std::string::npos,
            "an unknown type is reported");
+    Expect(FindBackend("romm") != nullptr && FindBackend("romm")->saves != nullptr,
+           "RomM is a backend that keeps save data");
+    Expect(MakeSaveStore("romm", {{"url", "nas:3000"}}, "/nowhere", &error) == nullptr && error.find("sign-in") != std::string::npos,
+           "a RomM entry in save-sync.json without a sign-in keeps no save data");
+    Expect(MakeSaveStore("", {}, "/nowhere", &error) == nullptr && MakeSaveStore("ftp", {}, "/nowhere", &error) == nullptr &&
+               error.find("ftp") != std::string::npos,
+           "no type, or an unknown one, keeps no save data");
     Expect(FindBackend("romm") != nullptr && FindBackend("romm")->source != nullptr && FindBackend("ftp") == nullptr,
            "RomM is a backend that has games to download");
     // The server's part of an entry, read for any config file: what goes wrong names that file.
@@ -623,12 +643,114 @@ void StreamChecks() {
     }
 }
 
+// ---- save data's zips ----
+
+// A folder of save data: name -> contents.
+void Fill(const fs::path& folder, const std::map<std::string, std::string>& files) {
+    fs::remove_all(folder);
+    for (const auto& [name, data] : files) {
+        fs::create_directories((folder / name).parent_path());
+        Write(folder / name, data);
+    }
+}
+
+std::map<std::string, std::string> Contents(const fs::path& folder) {
+    std::map<std::string, std::string> files;
+    std::error_code error;
+    for (const auto& entry : fs::recursive_directory_iterator(folder, error))
+        if (entry.is_regular_file()) files[fs::relative(entry.path(), folder).string()] = Read(entry.path());
+    return files;
+}
+
+void SaveArchives(const fs::path& root) {
+    std::string error, hash;
+    // RomM's content hash: of the files, by their names, whatever the zip is like.
+    Expect(SaveArchive::Md5("abc", 3) == "900150983cd24fb0d6963f7d28e17f72", "MD5");
+    Fill(root / "a", {{"main.sav", "one"}, {"sub/x.bin", "two"}});
+    SaveArchive::Folder files;
+    Expect(SaveArchive::List((root / "a").string(), "0100000000011000", ReadFolder, &files, &error) &&
+               files.files.size() == 2 && files.files[0].first == "0100000000011000/main.sav" &&
+               files.folders == std::vector<std::string>{"0100000000011000/sub/"} && files.bytes == 6,
+           "a save folder's files by their names in the zip");
+    const std::string lines = "0100000000011000/main.sav:" + SaveArchive::Md5("one", 3) +
+                              "\n0100000000011000/sub/x.bin:" + SaveArchive::Md5("two", 3);
+    Expect(SaveArchive::Hash(files, &hash, &error) && hash == SaveArchive::Md5(lines.data(), lines.size()),
+           "the content hash is RomM's");
+    std::string zipped_hash;
+    Expect(SaveArchive::Pack(files, (root / "a.zip").string(), &error) &&
+               SaveArchive::HashZip((root / "a.zip").string(), &zipped_hash, &error) && zipped_hash == hash,
+           "a packed folder has the folder's hash");
+    Expect(SaveArchive::Unpack((root / "a.zip").string(), (root / "b").string(), "0100000000011000", &error) &&
+               Contents(root / "b") == Contents(root / "a") && fs::is_directory(root / "b" / "sub"),
+           "unpacked, the folder's contents without its top folder");
+    Expect(!SaveArchive::Unpack((root / "a.zip").string(), (root / "b").string(), "0100000000011000", &error),
+           "not over a folder that is there");
+    SaveArchive::Folder none;
+    Expect(SaveArchive::List((root / "missing").string(), "X", ReadFolder, &none, &error) && none.files.empty(),
+           "no folder: no save data");
+    // A folder in it that cannot be read: no save data is taken from the rest.
+    SaveArchive::Folder partial;
+    Expect(!SaveArchive::List((root / "a").string(), "0100000000011000",
+                              [](const std::string& folder, std::vector<std::string>* names) {
+                                  return !folder.ends_with("sub") && ReadFolder(folder, names);
+                              },
+                              &partial, &error) &&
+               error.find("sub") != std::string::npos,
+           "a folder that cannot be read whole fails the listing");
+
+    // JKSV's zips have the files at their top and a file of its own; one with a way out is refused.
+    const auto zip = [&](const std::string& path, const std::vector<std::pair<std::string, std::string>>& entries) {
+        mz_zip_archive archive{};
+        bool ok = mz_zip_writer_init_file(&archive, path.c_str(), 0);
+        for (const auto& [name, data] : entries)
+            ok = ok && mz_zip_writer_add_mem(&archive, name.c_str(), data.data(), data.size(), MZ_DEFAULT_LEVEL);
+        ok = ok && mz_zip_writer_finalize_archive(&archive);
+        return mz_zip_writer_end(&archive) && ok;
+    };
+    Expect(zip((root / "jksv.zip").string(), {{"main.sav", "1"}, {".nx_save_meta.bin", "m"}, {"sub/x", "2"}}) &&
+               SaveArchive::Unpack((root / "jksv.zip").string(), (root / "c").string(), "0100000000011000", &error) &&
+               Contents(root / "c") == std::map<std::string, std::string>{{"main.sav", "1"}, {"sub/x", "2"}},
+           "a JKSV zip, without its .nx_save_meta.bin");
+    Expect(zip((root / "evil.zip").string(), {{"0100/main.sav", "1"}, {"0100/../../evil", "2"}}) &&
+               !SaveArchive::Unpack((root / "evil.zip").string(), (root / "d").string(), "0100", &error) &&
+               error.find("outside") != std::string::npos && !fs::exists(root / "evil"),
+           "a zip with a way out of its folder is refused");
+    // Save data that is one folder of the game's own, without the title's folder around it: kept.
+    Expect(zip((root / "own.zip").string(), {{"save/slot1.bin", "1"}, {"save/system.bin", "2"}}) &&
+               SaveArchive::Unpack((root / "own.zip").string(), (root / "e").string(), "0100000000011000", &error) &&
+               Contents(root / "e") == std::map<std::string, std::string>{{"save/slot1.bin", "1"}, {"save/system.bin", "2"}},
+           "a zip of one folder that is not the title's keeps it");
+    // Packed on a Mac: its own files beside the title's folder are left out, the folder taken off.
+    Expect(zip((root / "mac.zip").string(), {{"0100000000011000/main.sav", "1"}, {"__MACOSX/0100000000011000/._main.sav", "x"},
+                                             {".DS_Store", "x"}, {"0100000000011000/.DS_Store", "x"}}) &&
+               SaveArchive::Unpack((root / "mac.zip").string(), (root / "f").string(), "0100000000011000", &error) &&
+               Contents(root / "f") == std::map<std::string, std::string>{{"main.sav", "1"}},
+           "a Mac's zip: its __MACOSX and .DS_Store left out");
+
+    Expect(Romm::ParseTime("2026-10-08T12:34:56.123456+00:00") == 1791462896 &&
+               Romm::ParseTime("2026-10-08T12:34:56Z") == 1791462896 &&
+               Romm::ParseTime("2026-10-08T14:34:56+02:00") == 1791462896 && Romm::ParseTime("never") == 0 &&
+               Romm::FormatTime(1791462896) == "2026-10-08T12:34:56Z",
+           "RomM's times");
+    // The oldest version the save sync takes, and around it.
+    int major = 0, minor = 0, patch = 0;
+    std::sscanf(Romm::kMinimumVersion, "%d.%d.%d", &major, &minor, &patch);
+    const auto version = [](int a, int b, int c) { return std::to_string(a) + "." + std::to_string(b) + "." + std::to_string(c); };
+    Expect(Romm::CanSync(Romm::kMinimumVersion) && Romm::CanSync(version(major, minor, patch + 1)) &&
+               Romm::CanSync(version(major, minor + 1, 0) + "-beta.1") && Romm::CanSync(version(major + 1, 0, 0)) &&
+               Romm::CanSync("development") && !Romm::CanSync("3.10.0") &&
+               (patch == 0 || !Romm::CanSync(version(major, minor, patch - 1))) &&
+               (minor == 0 || !Romm::CanSync(version(major, minor - 1, 9))) && !Romm::CanSync(version(major - 1, 99, 0)),
+           "the RomM versions the save sync takes: kMinimumVersion and newer");
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
     Identity();
     RommBackend();
     StreamChecks();
+    if (argc >= 3) SaveArchives(fs::path(argv[2]) / "archives");
     if (argc >= 4) Sources(argv[1], argv[2], argv[3]);
     if (failures == 0) std::printf("remote check: PASS\n");
     return failures == 0 ? 0 : 1;

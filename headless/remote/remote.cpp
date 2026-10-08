@@ -903,6 +903,8 @@ bool SameGame(const Game& a, const Game& b) {
     return Lower(a.file) == Lower(b.file);
 }
 
+bool AsGame(const std::string& source, const SourceGame& from, Game* game) { return MakeGame(source, from, game); }
+
 bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& normal_name, const std::string& file) {
     // The file it is downloaded as: whatever the title IDs say (a server's can be another than the
     // one the console reads from the file), it is this game, and not offered again.

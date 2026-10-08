@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-# ProsperoEden - Host check of the download sources (headless/remote) against a stand-in RomM server.
+# ProsperoEden - Host check of the download sources and the save sync against a stand-in RomM server.
 # Copyright (C) 2026 BlackBearReloaded
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check-remote.py
 
-Builds headless/remote_check.cpp (the download sources with their RomM backend) with the host's
-C++ compiler, libcurl and OpenSSL's libcrypto and runs it against tools/romm-mock-server.py, with
-tools/ftp-mock-server.py writing the downloads as the console's FTP server does. Needs libcurl's
-headers (libcurl4-openssl-dev), OpenSSL's (libssl-dev) and nlohmann/json's (nlohmann-json3-dev,
-or the copy Eden's build fetched); CURL_INCLUDE, JSON_INCLUDE and CURL_LIBRARY name other places
-for them. Without the headers it says so and is skipped.
+Builds headless/remote_check.cpp (the download sources with their RomM backend, and the save
+sync's parts that need no server) with the host's C++ compiler, libcurl and OpenSSL's libcrypto
+and runs it against tools/romm-mock-server.py, with tools/ftp-mock-server.py writing the downloads
+as the console's FTP server does. Needs libcurl's headers (libcurl4-openssl-dev), OpenSSL's (libssl-dev) and
+nlohmann/json's (nlohmann-json3-dev, or the copy Eden's build fetched); CURL_INCLUDE,
+JSON_INCLUDE and CURL_LIBRARY name other places for them. Without the headers it says so and is
+skipped.
 """
 
 import os
@@ -67,13 +68,22 @@ def main():
         http = work / "http.o"
         subprocess.run([c_compiler, *flags, "-DREMOTE_HTTP_HOST=1", *includes, "-c",
                         str(HEADLESS / "remote/http.c"), "-o", str(http)], check=True)
+        # The save data's zips (remote/save_archive.cpp), with the copy of miniz the app builds.
+        miniz = ROOT / "third_party/miniz"
+        includes.append(f"-I{miniz}")
+        miniz_objects = []
+        for name in ("miniz", "miniz_tdef", "miniz_tinfl", "miniz_zip"):
+            miniz_objects.append(work / f"{name}.o")
+            subprocess.run([c_compiler, "-std=c11", "-O1", "-w", "-c", str(miniz / f"{name}.c"), "-o",
+                            str(miniz_objects[-1])], check=True)
         binary = work / "remote_check"
         subprocess.run([compiler, "-std=c++20", *flags, "-fno-rtti", *includes,
                         str(HEADLESS / "remote_check.cpp"), str(HEADLESS / "remote/remote.cpp"),
                         str(HEADLESS / "remote/backends.cpp"), str(HEADLESS / "remote/ftp.cpp"),
                         str(HEADLESS / "remote/stream_check.cpp"),
                         str(HEADLESS / "remote/romm/romm_client.cpp"), str(HEADLESS / "remote/romm/romm_source.cpp"),
-                        str(http),
+                        str(HEADLESS / "remote/romm/romm_saves.cpp"), str(HEADLESS / "remote/save_archive.cpp"),
+                        str(HEADLESS / "remote/save_sync.cpp"), str(http), *map(str, miniz_objects),
                         library, "-lcrypto", "-pthread", "-o", str(binary)], check=True)
         port_file = work / "port"
         ftp_port_file = work / "ftp-port"

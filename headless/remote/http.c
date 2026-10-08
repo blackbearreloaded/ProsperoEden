@@ -81,7 +81,13 @@ static int on_progress(void *user, curl_off_t total, curl_off_t now, curl_off_t 
 
 int remote_http_get(const remote_http_request *request, remote_http_result *result)
 {
+    return remote_http_run(request, result);
+}
+
+int remote_http_run(const remote_http_request *request, remote_http_result *result)
+{
     struct curl_slist *headers = NULL;
+    curl_mime *form = NULL;
     char line[600];
     char range[48];
     transfer t;
@@ -133,6 +139,50 @@ int remote_http_get(const remote_http_request *request, remote_http_result *resu
         headers = curl_slist_append(headers, line);
     }
     headers = curl_slist_append(headers, "Accept: application/json, */*");
+    if (request->body != NULL)
+    {
+        (void)snprintf(line, sizeof(line), "Content-Type: %s",
+                       request->content_type != NULL ? request->content_type : "application/json");
+        headers = curl_slist_append(headers, line);
+        (void)curl_easy_setopt(t.easy, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t)request->body_size);
+        (void)curl_easy_setopt(t.easy, CURLOPT_COPYPOSTFIELDS, request->body);
+    }
+    else if (request->file_path != NULL)
+    {
+        curl_mimepart *part;
+        form = curl_mime_init(t.easy);
+        part = curl_mime_addpart(form);
+        if (form == NULL || part == NULL ||
+            curl_mime_name(part, request->file_field != NULL ? request->file_field : "file") != CURLE_OK ||
+            curl_mime_filedata(part, request->file_path) != CURLE_OK ||
+            curl_mime_filename(part, request->file_name) != CURLE_OK ||
+            curl_mime_type(part, "application/octet-stream") != CURLE_OK)
+        {
+            curl_mime_free(form);
+            curl_slist_free_all(headers);
+            curl_easy_cleanup(t.easy);
+            result->curl_code = (int)CURLE_READ_ERROR;
+            (void)snprintf(result->error, sizeof(result->error), "The file to send cannot be read");
+            return -1;
+        }
+        (void)curl_easy_setopt(t.easy, CURLOPT_MIMEPOST, form);
+        headers = curl_slist_append(headers, "Expect:"); /* no 100-continue round trip first */
+    }
+    /* A body or a form makes it a POST already, and a redirect (a proxy's to https) then sends it
+     * again as a POST with its body; a verb set by hand would go without the body. Only another
+     * verb (PUT, DELETE) is set so. */
+    if (request->method != NULL && strcmp(request->method, "POST") == 0 && request->body == NULL &&
+        request->file_path == NULL)
+    {
+        /* A POST without a body is an empty one, not a GET. */
+        (void)curl_easy_setopt(t.easy, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t)0);
+        (void)curl_easy_setopt(t.easy, CURLOPT_COPYPOSTFIELDS, "");
+    }
+    if (request->body != NULL || request->file_path != NULL ||
+        (request->method != NULL && strcmp(request->method, "POST") == 0))
+        (void)curl_easy_setopt(t.easy, CURLOPT_POSTREDIR, (long)CURL_REDIR_POST_ALL);
+    if (request->method != NULL && strcmp(request->method, "POST") != 0)
+        (void)curl_easy_setopt(t.easy, CURLOPT_CUSTOMREQUEST, request->method);
     (void)curl_easy_setopt(t.easy, CURLOPT_HTTPHEADER, headers);
     if (request->resume_from > 0)
     {
@@ -149,6 +199,7 @@ int remote_http_get(const remote_http_request *request, remote_http_result *resu
     (void)curl_easy_getinfo(t.easy, CURLINFO_RESPONSE_CODE, &code);
     (void)curl_easy_getinfo(t.easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &length);
     curl_easy_cleanup(t.easy);
+    curl_mime_free(form);
     curl_slist_free_all(headers);
 
     result->status = (int)code;

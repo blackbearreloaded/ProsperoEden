@@ -81,7 +81,7 @@ class RommSource final : public Source {
                 continue;
             }
             if (transfer.status != 200 && transfer.status != 206) {
-                *error = transfer.status == 0 ? std::string{result.error} : client_->StatusError(transfer.status);
+                *error = transfer.status == 0 ? std::string{result.error} : client_->StatusError(transfer.status, "/api/roms");
                 return false;
             }
             if (got != 0) {

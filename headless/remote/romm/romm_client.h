@@ -38,6 +38,23 @@ class Client {
     // A file of at most `limit` bytes: the server's own (a path, signed in) or another site's (a
     // whole address, not signed in). False when it did not come whole with status 200.
     bool Fetch(const std::string& path_or_url, std::size_t limit, const Stopped& stopped, std::string* body) const;
+    // An answer of the server: its status and body (at most a JSON answer's size).
+    struct Answer {
+        int status = 0;
+        std::string body;
+    };
+    // A request with a JSON body ("POST", "PUT"; body empty: none); false with *error when no
+    // whole answer came (any status is an answer).
+    // stopped: asked along the transfer; true stops it (a game starts, the menu closes).
+    bool Send(const char* method, const std::string& path, const std::string& body, Answer* answer,
+              std::string* error, const Stopped& stopped = {}) const;
+    // A file sent as the form field `field` ("saveFile") of a POST or PUT, named `name`.
+    bool Upload(const char* method, const std::string& path, const std::string& field, const std::string& file,
+                const std::string& name, Answer* answer, std::string* error, const Stopped& stopped = {}) const;
+    // A file of the server (a GET of `path`) into the file `file`; false with *error when it did
+    // not come whole with status 200.
+    bool Download(const std::string& path, const std::string& file, std::string* error,
+                  const Stopped& stopped = {}) const;
     // The server's id of the platform asked for ("switch"); false with *error.
     bool Platform(const Stopped& stopped, std::int64_t* id, std::string* error) const;
     // All the games of the platform, with their files.
@@ -45,8 +62,9 @@ class Client {
 
     // The header value of the sign-in ("Bearer ...", "Basic ..."); empty without one.
     const std::string& authorization() const { return authorization_; }
-    // What an answer's status means, for the screen.
-    std::string StatusError(int status) const;
+    // What an answer's status means, for the screen. path: what was asked for ("/api/..."), so a
+    // refusal (403) can name the token's scope that is missing.
+    std::string StatusError(int status, const std::string& path = {}) const;
 
   private:
     Client(std::string url, std::string authorization, std::string platform, std::string file)

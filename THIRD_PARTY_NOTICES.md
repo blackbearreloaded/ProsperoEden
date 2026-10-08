@@ -25,7 +25,7 @@ builds on the following projects, each under its own license.
   and `tools/validate-loader-elf.py`.
 - **[miniz](https://github.com/richgel999/miniz)** 3.0.2, MIT, unmodified in
   `third_party/miniz` with its `LICENSE`. The self-update helper reads release
-  ZIPs with it.
+  ZIPs with it; the app packs and unpacks save data for the save sync with it.
 - **LLVM compiler-rt** `emutls.c`, Apache-2.0 WITH LLVM-exception.
 
 ## Graphics

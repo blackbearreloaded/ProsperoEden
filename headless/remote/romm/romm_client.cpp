@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <utility>
 
 namespace Eden::Remote::Romm {
@@ -107,8 +108,20 @@ std::unique_ptr<Client> Client::Make(const nlohmann::json& settings, const std::
     return std::unique_ptr<Client>(new Client(url, authorization, platform, file));
 }
 
-std::string Client::StatusError(int status) const {
-    if (status == 401 || status == 403) return "RomM did not accept the token or password in " + file_;
+std::string Client::StatusError(int status, const std::string& path) const {
+    if (status == 401) return "RomM did not accept the token or password in " + file_;
+    if (status == 403) {
+        // A refusal: RomM 4.9 answers a wrong token or password so as well, so both are named, with
+        // the scope a client API token needs for what was asked.
+        static constexpr std::pair<const char*, const char*> kScopes[] = {
+            {"/api/platforms", "platforms.read"}, {"/api/roms", "roms.read"}, {"/api/saves", "assets.read and assets.write"},
+            {"/api/sync", "assets.read and devices.read"}, {"/api/devices", "devices.write"}};
+        for (const auto& [prefix, scope] : kScopes)
+            if (path.starts_with(prefix))
+                return "RomM did not accept the token or password in " + file_ + ", or the token lacks the scope " +
+                       scope;
+        return "RomM did not accept the token or password in " + file_ + ", or did not let it do this";
+    }
     if (status == 404) return "The server has no such page (is the address in " + file_ + " RomM's?)";
     return "The server answered with status " + std::to_string(status);
 }
@@ -123,7 +136,7 @@ bool Client::Get(const std::string& path, const Stopped& stopped, std::string* b
         return false;
     }
     if (result.status != 200) {
-        *error = StatusError(result.status);
+        *error = StatusError(result.status, path);
         return false;
     }
     *body = std::move(memory.body);
@@ -143,6 +156,114 @@ bool Client::Fetch(const std::string& path_or_url, std::size_t limit, const Stop
         return false;
     *body = std::move(memory.body);
     return true;
+}
+
+bool Client::Send(const char* method, const std::string& path, const std::string& body, Answer* answer,
+                  std::string* error, const Stopped& stopped) const {
+    Memory memory;
+    memory.limit = kMostJson;
+    memory.stopped = &stopped;
+    const std::string url = url_ + path;
+    remote_http_request request{};
+    request.url = url.c_str();
+    request.authorization = authorization_.c_str();
+    request.timeout_ms = 60000;
+    request.method = method;
+    if (!body.empty()) {
+        request.body = body.c_str();
+        request.body_size = body.size();
+        request.content_type = "application/json";
+    }
+    request.sink = MemoryTake;
+    request.stop = MemoryStop;
+    request.user = &memory;
+    remote_http_result result{};
+    if (remote_http_run(&request, &result) != 0) {
+        *error = MemoryStop(&memory) ? "Stopped" : result.stopped ? "The server's answer is too large" : result.error;
+        return false;
+    }
+    answer->status = result.status;
+    answer->body = std::move(memory.body);
+    return true;
+}
+
+bool Client::Upload(const char* method, const std::string& path, const std::string& field, const std::string& file,
+                    const std::string& name, Answer* answer, std::string* error, const Stopped& stopped) const {
+    Memory memory;
+    memory.limit = kMostJson;
+    memory.stopped = &stopped;
+    const std::string url = url_ + path;
+    remote_http_request request{};
+    request.url = url.c_str();
+    request.authorization = authorization_.c_str();
+    request.method = method;
+    request.file_field = field.c_str();
+    request.file_path = file.c_str();
+    request.file_name = name.c_str();
+    request.sink = MemoryTake;
+    request.stop = MemoryStop;
+    request.user = &memory;
+    remote_http_result result{};
+    if (remote_http_run(&request, &result) != 0) {
+        *error = MemoryStop(&memory) ? "Stopped" : result.stopped ? "The server's answer is too large" : result.error;
+        return false;
+    }
+    answer->status = result.status;
+    answer->body = std::move(memory.body);
+    return true;
+}
+
+namespace {
+// A file's bytes into a file on the console.
+struct FileSink {
+    FILE* file = nullptr;
+    int status = 0;
+    const Stopped* stopped = nullptr;
+};
+
+int FileStop(void* user) {
+    const FileSink& sink = *static_cast<const FileSink*>(user);
+    return sink.stopped != nullptr && *sink.stopped && (*sink.stopped)() ? 1 : 0;
+}
+
+int FileBegin(void* user, int status, std::uint64_t) {
+    static_cast<FileSink*>(user)->status = status;
+    return status == 200 ? 1 : 0;
+}
+
+int FileTake(void* user, const void* data, std::size_t size) {
+    return std::fwrite(data, 1, size, static_cast<FileSink*>(user)->file) == size ? 1 : 0;
+}
+} // namespace
+
+bool Client::Download(const std::string& path, const std::string& file, std::string* error,
+                      const Stopped& stopped) const {
+    FileSink sink;
+    sink.stopped = &stopped;
+    sink.file = std::fopen(file.c_str(), "wb");
+    if (sink.file == nullptr) {
+        *error = "Cannot write " + file;
+        return false;
+    }
+    const std::string url = url_ + path;
+    remote_http_request request{};
+    request.url = url.c_str();
+    request.authorization = authorization_.c_str();
+    request.raw = 1;
+    request.begin = FileBegin;
+    request.sink = FileTake;
+    request.stop = FileStop;
+    request.user = &sink;
+    remote_http_result result{};
+    const int got = remote_http_run(&request, &result);
+    const bool closed = std::fclose(sink.file) == 0;
+    if (got == 0 && sink.status == 200 && closed) return true;
+    std::remove(file.c_str());
+    if (sink.status != 0 && sink.status != 200) *error = StatusError(sink.status);
+    else if (FileStop(&sink)) *error = "Stopped";
+    else if (!closed || (result.stopped && sink.status == 200)) *error = "Cannot write " + file;
+    else *error = result.error[0] ? std::string{result.error} : "The download stopped";
+    return false;
 }
 
 bool Client::Platform(const Stopped& stopped, std::int64_t* id, std::string* error) const {

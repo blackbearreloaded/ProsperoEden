@@ -25,6 +25,8 @@
 // state.
 #pragma once
 
+#include "remote/source.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <map>
@@ -89,6 +91,9 @@ bool SameGame(const Game& a, const Game& b);
 // normal_name: the console
 // game's name as NormalName makes it (once, for all the sources' games it is compared with).
 bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& normal_name, const std::string& file);
+// A source's game as the console takes it (its game file, its updates and DLC); false when it has
+// no game file the console can use. source: the key of its source ("" for none).
+bool AsGame(const std::string& source, const SourceGame& from, Game* game);
 // A name as names are compared: lower case, without accents, marks and anything but letters and
 // digits ("Pokémon: Let's Go!" is "pokemonletsgo").
 std::string NormalName(const std::string& name);

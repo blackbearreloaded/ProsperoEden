@@ -1,6 +1,6 @@
 /*
- * ProsperoEden - HTTP for the download sources (remote.h) that are web servers: one GET at a
- * time, to memory or to a file.
+ * ProsperoEden - HTTP for the backends (backends.h) that are web servers: one request at a
+ * time (a GET, or a POST/PUT with a JSON body or a file), its answer to memory or to a file.
  * Copyright (C) 2026 BlackBearReloaded
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -36,6 +36,15 @@ extern "C"
         long timeout_ms;           /* 0: no overall limit (a large file): only a stalled one ends */
         int raw;                   /* a game file: not asked for compressed (it does not shrink, and
                                     * both ends would spend their time on it) */
+        const char *method;        /* NULL: GET; else "POST", "PUT", "DELETE" */
+        const char *body;          /* sent as it is, with content_type ("application/json") */
+        size_t body_size;
+        const char *content_type;
+        /* A file sent as a form (multipart/form-data) field instead of a body: its contents are
+         * read from file_path while they are sent, under the name file_name. */
+        const char *file_field;
+        const char *file_path;
+        const char *file_name;
         remote_http_begin begin;     /* NULL: not asked */
         remote_http_sink sink;
         remote_http_stop stop;       /* NULL: never stopped */
@@ -53,6 +62,8 @@ extern "C"
 
     /* Runs the request, blocking. Returns 0 when the whole answer arrived (any status), -1 when
      * the transfer failed or was stopped; result->status is the status of what did arrive. */
+    int remote_http_run(const remote_http_request *request, remote_http_result *result);
+    /* The same; the name the GETs have. */
     int remote_http_get(const remote_http_request *request, remote_http_result *result);
 
     /* Writes the "Basic ..." value for a user name and password into out. 0 when it fits. */

@@ -12,6 +12,7 @@
 #include "pe/core/strings.hpp"
 #include "radio_input.h"
 #include "remote/remote.h"
+#include "save_sync_config.h"
 #include "version.h"
 
 #include <algorithm>
@@ -336,6 +337,16 @@ std::vector<std::string> ProfileNames() {
     }
     return names;
 }
+
+// save-sync.json follows the profiles: an entry for each, in their order, with their names
+// (save_sync_config.h). Only with filesystem access, where the remote config folder is.
+void KeepSaveSyncFile(const std::vector<Eden::Profiles::Profile>& profiles) {
+    if (!Eden::FilesystemAccess() || profiles.empty()) return;
+    std::vector<Eden::SaveSync::Owner> owners;
+    for (const auto& profile : profiles) owners.push_back({profile.Key(), profile.name});
+    if (!Eden::SaveSync::Reconcile(owners))
+        Eden::Report("save sync", "save-sync.json is not readable as JSON: it is left as it is");
+}
 } // namespace
 
 EdenServices::EdenServices(std::string launch_error) : launch_error_(std::move(launch_error)) {
@@ -348,6 +359,7 @@ EdenServices::EdenServices(std::string launch_error) : launch_error_(std::move(l
         Eden::Report("profile", (who.profiles[static_cast<std::size_t>(who.current)].name + " (" +
                                  std::to_string(who.current + 1) + " of " + std::to_string(who.profiles.size()) +
                                  ")").c_str());
+    KeepSaveSyncFile(who.profiles);
     setup_ = eden_startup_error();
     Eden::Report("setup", setup_.empty() ? "Keys and firmware startup checks passed" : setup_.c_str());
     // The download sources' games and the download queue (remote/remote.h): only with filesystem access,
@@ -625,6 +637,7 @@ int EdenServices::add_profile() {
     if (!Eden::Profiles::Write(list)) return -1;
     // It starts with the settings of whoever made it; from then on they are its own.
     (void)Eden::Profiles::Seed(list.back());
+    KeepSaveSyncFile(list);
     Eden::Report("profile", ("Added: " + name).c_str());
     return static_cast<int>(list.size()) - 1;
 }
@@ -646,7 +659,9 @@ bool EdenServices::rename_profile(int index, int step) {
     const int count = static_cast<int>(names.size());
     const int from = at == names.end() ? (step > 0 ? -1 : 0) : static_cast<int>(at - names.begin());
     profile.name = names[static_cast<std::size_t>(((from + step) % count + count) % count)];
-    return Eden::Profiles::Write(list);
+    if (!Eden::Profiles::Write(list)) return false;
+    KeepSaveSyncFile(list);
+    return true;
 }
 
 bool EdenServices::remove_profile(int index) {
@@ -658,6 +673,7 @@ bool EdenServices::remove_profile(int index) {
     list.erase(list.begin() + index);
     if (!Eden::Profiles::Write(list)) return false;
     (void)Eden::Profiles::Forget(gone);
+    KeepSaveSyncFile(list);
     // Its save data stays where it is (nand/user/save/.../<ID>): removing a name destroys nothing.
     Eden::Report("profile", ("Removed from the list: " + name + " (its save data stays on the console)").c_str());
     return true;
