@@ -28,6 +28,11 @@ struct TextAnswer {
     std::u16string text;
 };
 
+// Asks the system for the keyboard's module, once, as the first thing the app does: the request is
+// refused later in the app's life on some set-ups (seen: 0x80020063 once the app has filesystem
+// access). Returns the system's answer, 0 or more when the module is there.
+int PrepareSystemKeyboard();
+
 // Opens the keyboard and waits until the player closes it or `stop` is set (it is then closed).
 // One keyboard at a time: a second call waits for the first. Unavailable on the PC builds.
 TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>& stop);

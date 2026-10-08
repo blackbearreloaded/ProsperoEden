@@ -72,6 +72,16 @@ int sceUserServiceGetForegroundUser(std::int32_t* user_id);
 }
 
 namespace Eden {
+int PrepareSystemKeyboard() {
+    static std::mutex once;
+    static int answer = -1;
+    static bool asked = false;
+    const std::lock_guard lock(once);
+    if (!asked || answer < 0) answer = sceSysmoduleLoadModule(kImeDialogModule);
+    asked = true;
+    return answer;
+}
+
 TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>& stop) {
     using namespace std::chrono_literals;
     static std::mutex one_at_a_time;
@@ -83,20 +93,17 @@ TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>
         return answer;
     }
     if (!loaded) {
-        // The system's dialogs first, then the keyboard's own module.
+        // The keyboard's module (asked for when the app started, PrepareSystemKeyboard): without
+        // it its functions are not there to call.
+        if (const int module = PrepareSystemKeyboard(); module < 0) {
+            Note("The PS5 keyboard's module is not loaded", module);
+            return answer;
+        }
+        // The system's dialogs, then the keyboard.
         if (const int dialogs = sceCommonDialogInitialize();
             dialogs < 0 && static_cast<std::uint32_t>(dialogs) != kCommonDialogAlreadyInitialized) {
             Note("The PS5's dialogs did not start", dialogs);
             return answer;
-        }
-        // The keyboard's library is one the app imports, so it is there with the app; asking
-        // for its module as well is refused here (0x80020063) and does not decide whether the
-        // dialog opens. Its answer goes to the log, no more.
-        if (const int module = sceSysmoduleLoadModule(kImeDialogModule); module < 0) {
-            char line[96];
-            std::snprintf(line, sizeof(line), "Asking for the keyboard's module answered %#x; going on",
-                          static_cast<unsigned>(module));
-            Report("keyboard", line);
         }
         loaded = true;
     }
@@ -156,6 +163,10 @@ TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>
 #else
 
 namespace Eden {
+int PrepareSystemKeyboard() {
+    return -1;
+}
+
 TextAnswer AskSystemKeyboard(const TextRequest&, const std::atomic<bool>&) {
     return {};
 }
