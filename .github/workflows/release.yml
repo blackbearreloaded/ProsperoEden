@@ -1,45 +1,222 @@
 name: Release build
 
-# Builds the release ZIP (make release, which fetches pinned dependencies; docs/BUILDING.md)
-# on the self-hosted runner. A manual run keeps the ZIP as a 7-day artifact; a v* tag also
+# Builds the release ZIP (make release, which fetches pinned dependencies; docs/BUILDING.md) on a
+# GitHub-hosted runner, inside an Ubuntu 26.04 container with the packages in
+# tools/ci/ubuntu-packages.txt: the distribution and the LLVM versions (18 and 21) the releases
+# are built with on a developer machine, so the linker is the same and no link flag differs.
+#
+# A push to main, a pull request and a manual run build the ZIP, check it (intact, eboot.bin,
+# every entry 0777) and keep it as a 7-day artifact; nothing is published. A v* tag also
 # publishes it as a pre-release.
+#
+# Downloads, ccache and the RADV driver are cached between runs. A build with these caches takes
+# about a quarter of an hour; the first one compiles everything on four cores and takes hours.
+# The build step stops after 315 minutes so that ccache is still saved: running the workflow
+# again continues from there.
+# The actions are the Node 24 versions, pinned by commit.
 on:
   push:
+    branches: [main]
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
+# A newer push to the same branch or pull request replaces the run in progress; a tag's run is
+# never cancelled.
 concurrency:
-  group: release-build
-  cancel-in-progress: false
+  group: release-build-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, prosperoeden]
-    timeout-minutes: 240
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    container:
+      image: ubuntu:26.04
+      # SDKs preinstalled on the runner image, mounted so the job can delete them: the build
+      # (Eden, Mesa, FFmpeg and their caches) needs the disk space.
+      volumes:
+        - /usr/share/dotnet:/host-free/dotnet
+        - /usr/local/lib/android:/host-free/android
+        - /opt/ghc:/host-free/ghc
+        - /usr/local/.ghcup:/host-free/ghcup
+        - /opt/hostedtoolcache:/host-free/toolcache
+        - /usr/local/share/boost:/host-free/boost
+    defaults:
+      run:
+        shell: bash
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      CCACHE_MAXSIZE: 4G
     steps:
-      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          find /host-free -mindepth 2 -maxdepth 2 -exec rm -rf {} + 2>/dev/null || true
+          df -h "$GITHUB_WORKSPACE"
+
+      - name: Install git (for the checkout)
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends git ca-certificates
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install the build tools (tools/ci/ubuntu-packages.txt)
+        run: |
+          # shellcheck disable=SC2046 # one package name per word
+          apt-get install --yes --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
+          git config --global --add safe.directory '*'
+          make toolchain
+
+      - name: Locate the caches
+        run: |
+          # Beside the checkout, on the runner's disk; the paths stay the same between runs.
+          cache_root=$(dirname "$GITHUB_WORKSPACE")/ci-cache
+          mkdir -p "$cache_root"
+          {
+            echo "CACHE_ROOT=$cache_root"
+            echo "RADV_RELEASE=$(dirname "$GITHUB_WORKSPACE")/mihawk-vulkan-review/.deps/native/radv-release"
+            echo "PROSPEROEDEN_DEPS_CACHE=$cache_root/downloads"
+            echo "CCACHE_DIR=$cache_root/ccache"
+            echo "XDG_CACHE_HOME=$cache_root/xdg"
+            echo "JOBS=$(nproc)"
+            echo "RADV_BUILD_JOBS=$(nproc)"
+          } >> "$GITHUB_ENV"
+
+      # A pull request's artifact is named by its number and its own commit (github.sha is a
+      # temporary merge commit there); the version in param.json stays the release's.
+      - name: Name this build
+        id: label
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ $GITHUB_EVENT_NAME == pull_request ]]; then
+            echo "artifact=${GITHUB_REPOSITORY##*/}-PR$PR_NUMBER-${PR_HEAD:0:7}" >> "$GITHUB_OUTPUT"
+          else
+            echo "artifact=ProsperoEden" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore downloads
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ${{ env.CACHE_ROOT }}/downloads
+          key: downloads-${{ hashFiles('tools/deps.json') }}
+
+      - name: Fetch dependencies
+        run: make deps
+
+      # After `make deps`: a restored RADV folder would otherwise stand in for the git checkout
+      # it lives in, and deps.py would not fetch that checkout.
+      - name: Restore the RADV driver
+        id: radv
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            ${{ env.RADV_RELEASE }}
+            build/radv-isolated
+          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+
+      - name: Restore ccache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ${{ env.CACHE_ROOT }}/ccache
+          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ccache-
 
       - name: Build and package
-        run: bash tools/ci/build-release.sh
+        id: build
+        timeout-minutes: 315
+        run: |
+          ccache --zero-stats
+          bash tools/ci/build-release.sh
+
+      - name: Report disk, ccache and the linker
+        if: always()
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          ccache --show-stats || true
+          "$(dirname "$GITHUB_WORKSPACE")/ps5-native-app-boilerplate/.deps/native/ps5-payload-sdk/bin/prospero-lld" --version || true
+
+      # A pull request that built reuses main's ccache and saves none of its own (the
+      # repository's cache space is limited); one that stopped early saves it to continue.
+      - name: Save ccache
+        if: always() && (github.event_name != 'pull_request' || steps.build.outcome != 'success')
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ${{ env.CACHE_ROOT }}/ccache
+          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save the RADV driver
+        if: always() && steps.radv.outputs.cache-hit != 'true' && hashFiles('build/radv-isolated/libvulkan_radeon.ps5.a') != ''
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: |
+            ${{ env.RADV_RELEASE }}
+            build/radv-isolated
+          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
 
       - name: Match the tag to the package version
         if: startsWith(github.ref, 'refs/tags/')
         run: test -f "dist/ProsperoEden-${GITHUB_REF_NAME}.zip"
 
-      - uses: actions/upload-artifact@v4
+      # tools/ci/make-dist.py writes every entry as 0777 (the console only starts an app whose
+      # files are open to all); this looks at the finished file once more.
+      - name: Check the ZIP and its checksum
+        run: |
+          set -euo pipefail
+          cd dist
+          python3 - ProsperoEden-v*.zip <<'PY'
+          import json, sys, zipfile
+          assert len(sys.argv) == 2, f"expected one ZIP: {sys.argv[1:]}"
+          archive = sys.argv[1]
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None, "damaged entry"
+              names = z.namelist()
+              assert "PPSA99008/eboot.bin" in names, "no eboot.bin"
+              wrong = [i.filename for i in z.infolist() if (i.external_attr >> 16) & 0o777 != 0o777]
+              assert not wrong, f"entries not stored as 0777: {wrong[:3]}"
+              version = json.loads(z.read("PPSA99008/sce_sys/param.json"))["contentVersion"]
+              assert archive == f"ProsperoEden-v{version.removeprefix('0')}.zip", (archive, version)
+              print(f"{archive}: {len(names)} entries, all 0777, version {version}")
+          PY
+          sha256sum -c SHA256SUMS
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ProsperoEden
+          name: ${{ steps.label.outputs.artifact }}
           path: dist/
+          if-no-files-found: error
           retention-days: 7
 
+      # The unstripped executable that reads this build's crash reports (docs/BUILDING.md). The
+      # runner is discarded after the job, so it is kept as an artifact; it is not published.
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.label.outputs.artifact }}-symbols
+          path: build/symbols/
+          retention-days: ${{ github.ref_type == 'tag' && 90 || 7 }}
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ProsperoEden
+          path: dist
+
       - name: Publish the pre-release
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: >
-          gh release create "$GITHUB_REF_NAME" --verify-tag --prerelease
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --prerelease
           --title "ProsperoEden $GITHUB_REF_NAME" --notes-file dist/release-notes.md
           "dist/ProsperoEden-$GITHUB_REF_NAME.zip" dist/SHA256SUMS
