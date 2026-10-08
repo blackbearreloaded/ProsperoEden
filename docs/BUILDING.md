@@ -203,6 +203,11 @@ dependencies are reused instead of fetched) for a build on your own machine.
   come from the README's "Changes in vX.Y.Z" section.
 - Every run also keeps `build/symbols/` as an artifact with `-symbols` after the name: 90 days
   for a tag, 7 days otherwise.
+- A tag's or a manual run's ZIP is attested (signed build provenance): a release ZIP built by
+  the workflow can be checked with
+  `gh attestation verify ProsperoEden-vX.Y.Z.zip -R blackbearreloaded/ProsperoEden` (GitHub
+  CLI). This covers releases built by GitHub Actions from now on (after v1.000.090), not
+  earlier ones.
 
 To cut a release:
 
