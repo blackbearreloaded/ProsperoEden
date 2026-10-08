@@ -6,6 +6,7 @@
 
 #include "pe/core/log.hpp"
 
+#include <cctype>
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
@@ -72,6 +73,29 @@ void Launcher::start_scan()
         scan_ = std::async(std::launch::async, [this] { return services_.games(); });
 }
 
+// A game's name as it is shown: with the characters a font has, the launcher's own or the
+// console's. One with nothing left that says anything (a name in a script no font here has, or
+// on a console whose fonts could not be read) is replaced by the name its file gives, rather than
+// drawn as question marks.
+static std::string shown_name(const gfx::Font *font, const std::string &name, const std::string &file)
+{
+    if (font == nullptr || name.empty() || font->can_draw(name))
+        return name;
+    std::string kept;
+    for (const char c : font->drawable(name))
+        if (c != ' ' || (!kept.empty() && kept.back() != ' '))
+            kept += c;
+    while (!kept.empty() && kept.back() == ' ')
+        kept.pop_back();
+    const bool says = std::any_of(kept.begin(), kept.end(), [](char c)
+                                  { return std::isalnum(static_cast<unsigned char>(c)) != 0 ||
+                                           static_cast<unsigned char>(c) >= 0x80; });
+    if (says)
+        return kept;
+    const std::string stem = file.substr(0, file.find_last_of('.'));
+    return stem.empty() ? name : stem;
+}
+
 void Launcher::finish_scan(bool wait)
 {
     if (!scan_.valid())
@@ -100,6 +124,8 @@ void Launcher::apply_games(std::vector<Game> games)
                                      games_[static_cast<std::size_t>(library_.selected)].file :
                                      std::string{};
     games_ = std::move(games);
+    for (Game &game : games_)
+        game.name = shown_name(fonts_.font, game.name, game.file);
     games_loaded_ = true;
     for (Game &game : games_)
         if (game.title_id != 0)
@@ -133,6 +159,9 @@ void Launcher::name_home_games()
 void Launcher::read_home()
 {
     home_ = services_.home();
+    home_.last_title = shown_name(fonts_.font, home_.last_title, home_.last_file);
+    for (Recent &recent : home_.recents)
+        recent.title = shown_name(fonts_.font, recent.title, recent.file);
     if (home_.last_title_id == 0)
         return;
     const std::vector<Mod> mods = services_.mods(home_.last_title_id);
