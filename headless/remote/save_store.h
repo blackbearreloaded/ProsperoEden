@@ -51,7 +51,7 @@ class SaveStore {
     virtual std::string address() const = 0;
     // Signs in and gets ready for a sync. Blocking (the network); false with *error, in English.
     virtual bool prepare(const Stopped& stopped, std::string* error) = 0;
-    // Who it is signed in as ("mario"), once prepared; empty when the server does not say.
+    // Who it is signed in as ("alex"), once prepared; empty when the server does not say.
     virtual std::string user() const = 0;
     // After prepare() failed: whether it was because the server is older than the backend takes,
     // with the server's version and the oldest one taken.

@@ -34,7 +34,7 @@ struct SourceGame {
     // What tells the game apart on any source, as far as this one knows (remote.h, SameGame):
     std::string title_id;                     // its Switch title ID ("0100000000010000"); empty when unknown
     std::map<std::string, std::string> ids;   // its ids at metadata providers: "igdb" -> "1234",
-                                              // "screenscraper" -> "195863"... (lower-case provider names)
+                                              // "screenscraper" -> "123456"... (lower-case provider names)
     bool identified = false;                  // its name comes from such metadata, not from a file name
     std::string cover; // the source's own name for its cover, which changes when the picture does;
                        // empty without one

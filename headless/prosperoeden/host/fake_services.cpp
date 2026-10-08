@@ -644,8 +644,8 @@ ui::PairingStatus FakeServices::pairing()
     else if (pair_.stage == ui::PairingStage::waiting && pair_looks_ > 40)
     {
         pair_.stage = ui::PairingStage::done;
-        pair_.user = "mario";
-        linked_[static_cast<std::size_t>(pair_profile_)] = "mario @ http://192.168.1.20:3000";
+        pair_.user = "alex";
+        linked_[static_cast<std::size_t>(pair_profile_)] = "alex @ http://192.168.1.20:3000";
     }
     return pair_;
 }

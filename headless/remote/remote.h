@@ -95,10 +95,10 @@ bool SameAsLocal(const Game& game, std::uint64_t title_id, const std::string& no
 // no game file the console can use. source: the key of its source ("" for none).
 bool AsGame(const std::string& source, const SourceGame& from, Game* game);
 // A name as names are compared: lower case, without accents, marks and anything but letters and
-// digits ("Pokémon: Let's Go!" is "pokemonletsgo").
+// digits ("Café: Let's Go!" is "cafeletsgo").
 std::string NormalName(const std::string& name);
 // A title's key, from its first game: its title ID, else its first provider id, else its name or
-// file name ("title:0100...", "screenscraper:195863", "name:...", "file:...").
+// file name ("title:0100...", "screenscraper:123456", "name:...", "file:...").
 std::string TitleKey(const Game& game);
 
 // verifying: a download that goes on from where it was reads what its file has so far first, for

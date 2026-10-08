@@ -133,7 +133,7 @@ struct SaveSync
     bool before = true;      // before the game starts; false: after it ended
     std::string game;        // its name
     std::string profile;     // the profile's name
-    std::string server;      // where it syncs to: "mario on http://nas:3000"
+    std::string server;      // where it syncs to: "alex on http://nas:3000"
     SaveSyncOutcome outcome = SaveSyncOutcome::same; // done: what happened
     std::string error;       // failed: why (English, technical)
     // Failed because the server is older than the save sync takes (shown until the player confirms

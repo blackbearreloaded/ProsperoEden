@@ -117,11 +117,11 @@ std::vector<SourceGame> Parse(const std::string& json, std::size_t* listed = nul
 
 // Which game is which (remote.h): title IDs, then provider ids, then names, then file names.
 void Identity() {
-    Expect(NormalName("Pokémon: Let's Go, Pikachu!") == "pokemonletsgopikachu", "accents and marks go");
-    Expect(NormalName("THE LEGEND OF ZELDA™ Breath of the Wild") == "thelegendofzeldabreathofthewild",
+    Expect(NormalName("Café: Let's Go, Nocturne!") == "cafeletsgonocturne", "accents and marks go");
+    Expect(NormalName("THE STORY OF EMBER™ Knights of the Wild") == "thestoryofemberknightsofthewild",
            "case, spaces and symbols go");
     Expect(NormalName("Æon Straße Øresund") == "aeonstrasseoresund", "letters of two");
-    Expect(NormalName("ゼルダの伝説") == "ゼルダの伝説" && NormalName("Ведьмак 3") == "Ведьмак3",
+    Expect(NormalName("星のかけら") == "星のかけら" && NormalName("Маяк 3") == "Маяк3",
            "other scripts stay as they are, only spaces and marks go");
     const auto game = [](std::string name, std::string file, bool identified, std::string title_id,
                          std::map<std::string, std::string> ids) {
@@ -133,35 +133,35 @@ void Identity() {
         g.ids = std::move(ids);
         return g;
     };
-    const Game odyssey = game("Super Mario Odyssey", "Super.Mario.Odyssey.NSW-BigBlueBox.xci", true, "", {{"screenscraper", "195863"}});
-    Expect(SameGame(odyssey, game("Super Mario Odyssey (EU)", "smo.xci", true, "", {{"screenscraper", "195863"}})),
+    const Game journey = game("Great Ember Journey", "Great.Ember.Journey.Dump.xci", true, "", {{"screenscraper", "123456"}});
+    Expect(SameGame(journey, game("Great Ember Journey (EU)", "gej.xci", true, "", {{"screenscraper", "123456"}})),
            "the same provider id: the same game, whatever the names");
-    Expect(!SameGame(odyssey, game("Super Mario Odyssey", "smo.xci", true, "", {{"screenscraper", "1"}})),
+    Expect(!SameGame(journey, game("Great Ember Journey", "gej.xci", true, "", {{"screenscraper", "1"}})),
            "another id at the same provider: another game, although the names agree");
-    Expect(SameGame(odyssey, game("SUPER MARIO ODYSSEY", "other.xci", true, "", {{"igdb", "7346"}})),
+    Expect(SameGame(journey, game("GREAT EMBER JOURNEY", "other.xci", true, "", {{"igdb", "4321"}})),
            "no provider in common: the names decide");
-    Expect(!SameGame(odyssey, game("Super Mario Odyssey", "other.xci", false, "", {})),
+    Expect(!SameGame(journey, game("Great Ember Journey", "other.xci", false, "", {})),
            "a name that is only guessed from a file name does not decide");
     Expect(SameGame(game("A", "Same File.nsp", false, "", {}), game("B", "same file.NSP", false, "", {})),
            "else the file names decide");
-    Expect(!SameGame(game("Mario", "a.xci", true, "0100000000010000", {{"igdb", "1"}}),
-                     game("Mario", "a.xci", true, "0100000000020000", {{"igdb", "1"}})),
+    Expect(!SameGame(game("Ember", "a.xci", true, "0100000000010000", {{"igdb", "1"}}),
+                     game("Ember", "a.xci", true, "0100000000020000", {{"igdb", "1"}})),
            "the title IDs come first");
     const auto local = [](Game g, std::uint64_t title_id, const std::string& name, const std::string& file) {
         g.normal_name = NormalName(g.name); // as a source's list has it
         return SameAsLocal(g, title_id, NormalName(name), file);
     };
-    Expect(local(game("Odyssey", "x.xci", true, "0100000000010000", {}), 0x0100000000010000ull, "Other", "y.xci"),
+    Expect(local(game("Journey", "x.xci", true, "0100000000010000", {}), 0x0100000000010000ull, "Other", "y.xci"),
            "a game on the console by its title ID");
-    Expect(local(odyssey, 0x0100000000010000ull, "Super Mario Odyssey™", "smo.xci"),
+    Expect(local(journey, 0x0100000000010000ull, "Great Ember Journey™", "gej.xci"),
            "by its name, when the source does not know the title ID");
-    Expect(!local(game("Mario", "x.xci", false, "", {}), 1, "Mario", "y.xci") &&
-               local(game("Mario", "x.xci", false, "", {}), 1, "Other", "X.xci"),
+    Expect(!local(game("Ember", "x.xci", false, "", {}), 1, "Ember", "y.xci") &&
+               local(game("Ember", "x.xci", false, "", {}), 1, "Other", "X.xci"),
            "by its file name, when the source's name is a guess");
     Expect(local(game("Galaxy 2", "Galaxy.2.nsp", true, "01B84DBAFD84A000", {}), 0x0100000000020000ull, "Galaxy 2",
                  "galaxy.2.NSP"),
            "the file it was downloaded as, although the title IDs disagree");
-    Expect(TitleKey(odyssey) == "screenscraper:195863" && TitleKey(game("A", "F.nsp", false, "", {})) == "file:f.nsp" &&
+    Expect(TitleKey(journey) == "screenscraper:123456" && TitleKey(game("A", "F.nsp", false, "", {})) == "file:f.nsp" &&
                TitleKey(game("A", "F.nsp", false, "0100000000010000", {})) == "title:0100000000010000",
            "a title's key");
 }
@@ -187,11 +187,11 @@ void RommBackend() {
                games[0].files[0].id == "9" && games[0].files[0].size == 42,
            "a ROM on the server's disk, its files by id");
     // What tells a game apart: its title ID, its provider ids, whether RomM identified it.
-    games = Parse(R"({"items":[{"id":4,"name":"Odyssey","is_identified":true,"title_id":"0100000000010000",
-                                 "ss_id":195863,"igdb_id":null,"moby_id":0,"launchbox_id":77,"libretro_id":"abc",
+    games = Parse(R"({"items":[{"id":4,"name":"Journey","is_identified":true,"title_id":"0100000000010000",
+                                 "ss_id":123456,"igdb_id":null,"moby_id":0,"launchbox_id":77,"libretro_id":"abc",
                                  "files":[{"id":9,"file_name":"O.xci","file_size_bytes":1,"category":"game"}]}],"total":1})");
     Expect(games.size() == 1 && games[0].identified && games[0].title_id == "0100000000010000" &&
-               games[0].ids.size() == 3 && games[0].ids["screenscraper"] == "195863" && games[0].ids["launchbox"] == "77" &&
+               games[0].ids.size() == 3 && games[0].ids["screenscraper"] == "123456" && games[0].ids["launchbox"] == "77" &&
                games[0].ids["libretro"] == "abc",
            "its title ID and its ids at the providers it matched");
     // RomM's categories say what each file is; other files stay on the server.
@@ -368,7 +368,7 @@ std::string Partition(const char* magic, std::size_t entry_size, const std::vect
     return out;
 }
 
-// An NCA, named after its SHA-256 as Nintendo's are; the contents list's name is not.
+// An NCA, named after its SHA-256 as a game's are; the contents list's name is not.
 std::pair<std::string, std::string> Nca(int id, std::size_t size) {
     const std::string data = Pattern(id, size);
     unsigned char digest[EVP_MAX_MD_SIZE];

@@ -80,7 +80,7 @@ def partition(magic, entry_size, files):
 
 def package(path, size):
     """A game file of `size` bytes as an NSP or XCI is laid out, of random NCAs, each named after
-    the first half of its SHA-256 as Nintendo's are (no keys needed to check them), and a contents
+    the first half of its SHA-256 as a game's are (no keys needed to check them), and a contents
     list (.cnmt.nca), which is not."""
     small = [4096, 1024] if size < 100_000 else [65536, 4096]
     cnmt = os.urandom(16).hex() + ".cnmt.nca"
