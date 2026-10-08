@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d/%m/%Y %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (lebih cepat, kurang tajam)"
@@ -34,6 +38,10 @@ msgstr "4x (paling lambat)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "Salah satu NCA firmware tidak dapat dibaca. Instal ulang dump firmware."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Pemasangan sudah berjalan."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "ADD-ON"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Add-on: {0}  /  Bahasa: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Ditambahkan ke unduhan. Pengaturan, Unduhan menampilkan antrean."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Ditambahkan. Silang bermain dengan profil ini; kiri dan kanan mengubah namanya."
@@ -106,6 +118,10 @@ msgstr "Bahasa lain"
 msgid "As usual"
 msgstr "Seperti biasa"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Meminta kode ke server..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "AUDIO"
 msgid "Australia"
 msgstr "Australia"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Otomatis"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Kembali"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Mencadangkan data simpanan"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Pemetaan tombol"
 msgid "BUTTON MAPPING"
 msgstr "PEMETAAN TOMBOL"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Batal"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Batalkan unduhan"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Ubah"
 msgid "Change mode. Saved per game."
 msgstr "Ubah mode. Disimpan per game."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Jangan ubah apa pun"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Diubah"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Cheat"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Pastikan kode di sana sama dengan yang ini, lalu setujui."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Memeriksa file game {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Memeriksa {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Tionghoa (Tradisional)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Pilih"
 
@@ -258,6 +302,10 @@ msgstr "LANJUTKAN BERMAIN"
 msgid "Controller shortcuts and supported features."
 msgstr "Pintasan controller dan fitur yang didukung."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Jenis kontroler"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "CONTROLLER"
@@ -270,9 +318,25 @@ msgstr "Kontrol"
 msgid "CONTROLS"
 msgstr "KONTROL"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Tidak dapat membatalkan unduhan."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Tidak dapat mengubah save-sync.json."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "Folder tidak dapat dibuat. Periksa apakah folder file game dapat ditulisi."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Tidak dapat menghapus game."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Tidak dapat menghapus {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Folder default"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Folder default disimpan. Buka ulang ProsperoEden untuk menggunakannya."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Hapus"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Hapus dari konsol"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "1 file dihapus ({0}). Data simpanan dan pengaturan tetap ada."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "{1} file dihapus ({0}). Data simpanan dan pengaturan tetap ada."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Pencatatan log terperinci"
@@ -361,14 +441,62 @@ msgstr "DIAGNOSTIK"
 msgid "Docked"
 msgstr "TV"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Selesai"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Unduh"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Unduh dan mainkan"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Unduhan dibatalkan."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "Unduhan gagal"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Unduh dari"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Unduh di latar belakang"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Ukuran unduhan: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Unduh game untuk mengubah pengaturannya."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Mengunduh"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Mengunduh {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Unduhan"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "UNDUHAN"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "Unduhan memerlukan server FTP yang berjalan di konsol, pada port {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Menggambar efek setelah shader-nya siap alih-alih menjeda. Ada yang bisa
 msgid "Draws the menu's small text larger."
 msgstr "Memperbesar teks kecil pada menu."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Dua Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Belanda"
@@ -385,6 +517,14 @@ msgstr "Belanda"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Setiap profil punya data simpanan, pengaturan, dan game terbaru sendiri."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Setiap profil menyimpan data simpanannya di server, sebagai penggunanya sendiri. Pasangkan dengan Silang: tanpa mengetik, proses masuk dilakukan di ponsel Anda."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Data simpanan tiap profil di servernya sendiri, disinkronkan sebelum dan sesudah bermain."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Prancis"
 msgid "French (Canada)"
 msgstr "Prancis (Kanada)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "Dari {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "SERVER FTP"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "Volume game dan suara menu ini."
 msgid "GAMES"
 msgstr "GAME"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "Game di jaringan Anda, diunduh saat Anda memainkannya."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "Game menggunakan bahasa ini jika tersedia, dan bahasa default-nya jika tidak. Berlaku saat game dijalankan."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "Inisialisasi renderer grafis gagal. Coba renderer lain di Pengaturan; lihat stderr.log dan eden_log.txt untuk detail driver."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Genggam"
 
@@ -633,6 +785,22 @@ msgstr "Berhasil diimpor. Data tersimpan yang digantikan telah dicadangkan."
 msgid "IN USE"
 msgstr "DIGUNAKAN"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Dikirim ke server."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Akan dicoba lagi saat menu dibuka berikutnya."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Menggantikan milik konsol ini."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "Ditolak di server."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Italia"
@@ -649,6 +817,10 @@ msgstr "Jepang"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Simpan folder keys, firmware, dan roms di tempat yang sama. SEGITIGA menggunakan folder yang ditampilkan."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Pertahankan milik konsol ini"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Game terakhir yang dibuka"
 msgid "Launch game"
 msgstr "Jalankan game"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Joy-Con kiri"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Perpustakaan"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "PERPUSTAKAAN"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Tertaut"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Navigasi"
 msgid "Nearest"
 msgstr "Terdekat"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Perlu perhatian"
 
@@ -804,6 +984,14 @@ msgstr "SESI BERIKUTNYA"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Tidak ada sampul"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Belum ada sumber unduhan yang disiapkan. Simpan file bernama {0} yang berisi daftar sumber Anda, seperti contoh ini dengan server RomM, lalu buka menu ini lagi. Unduhan memerlukan server FTP yang berjalan di konsol, pada port {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Tidak ada unduhan. Di Perpustakaan, Kotak memasukkan game dari sumber ke antrean."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "Belum ada ROM dipilih"
 msgid "No roms folder"
 msgstr "Tidak ada folder roms"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Tidak ada server untuk dipasangkan: tambahkan server RomM ke sources.json, atau siapkan save-sync.json lewat FTP."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Tidak ada yang menyetujui kode tepat waktu."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Tidak ada"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Belum terhubung"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Tidak tertaut"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Tidak tertaut: data simpanannya tetap di konsol"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Tidak ada di konsol"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Belum ada di konsol. Unduh untuk memainkannya dan mengubah pengaturannya."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Tidak terpasang"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Tidak terjangkau"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Tidak terbaca"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Belum disiapkan"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Tidak ada data untuk diimpor"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Nonaktif"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Offline"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Resolusi keluaran"
 msgid "Page"
 msgstr "Halaman"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Pasangkan"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Pasangkan lagi"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "Pasangkan {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "Pasangkan {0} dengan"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Terpasang"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Terpasang. Data simpanan profil ini disinkronkan mulai sekarang."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Folder induk"
@@ -919,9 +1179,25 @@ msgstr "Performa"
 msgid "PERFORMANCE"
 msgstr "PERFORMA"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Tetap mainkan"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Main sebagai"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Mainkan setelah diunduh"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Bermain dengan milik konsol ini; Anda akan ditanya lagi lain kali."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "sedang bermain"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Bermain sebagai {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Polandia"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Port {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "PREFERENSI"
 msgid "Preparing"
 msgstr "Menyiapkan"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Tekan lagi untuk menghapus game beserta pembaruan dan DLC-nya dari konsol. Data simpanan dan pengaturan tetap ada."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Tekan lagi untuk mengganti data tersimpan game ini. Data saat ini akan dicadangkan."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "prod.keys ditemukan"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "prod.keys tidak ada"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Profil {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "EDISI PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "EDISI PS5  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "Dalam antrean"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "Dalam antrean, dari {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Flushing reaktif"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "FLUSHING REAKTIF"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Baca ulang daftar"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Membaca daftar game..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Membaca..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "RESOLUSI"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Joy-Con kanan"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Tekan stik kanan"
 
@@ -1120,14 +1436,66 @@ msgstr "Terbatas (kode {0}): hanya folder aplikasi"
 msgid "Save data"
 msgstr "Data tersimpan"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Data simpanan dicadangkan"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Data simpanan berubah di kedua sisi"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Data simpanan dari server"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Data simpanan dibiarkan apa adanya"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Data simpanan tidak dicadangkan"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Data simpanan tidak disinkronkan"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Folder data ditemukan"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Sinkronisasi data simpanan"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "SINKRONISASI DATA SIMPANAN"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "save-sync.json tidak dapat dibaca ({0}). Tidak ada yang disinkronkan sampai diperbaiki lewat FTP."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "save-sync.json tidak dapat dibaca: perbaiki dulu lewat FTP."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Disimpan untuk game ini. Berlaku saat game dijalankan lagi."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Disimpan {0}. Dikirim ke server."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Disimpan {0}. Menggantikan milik konsol ini."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Disimpan. Berlaku saat game dijalankan."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Disimpan. Buka ulang ProsperoEden untuk menggunakan folder ini."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Pindai kode dengan ponsel Anda, atau buka alamat di bawah."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Gulir"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Pilih"
 
@@ -1173,6 +1545,10 @@ msgstr "DIPILIH"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "ROM yang dipilih sudah tidak tersedia"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Server terlalu lama untuk sinkronisasi"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Status penyiapan dan log terperinci."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Validasi penyiapan gagal. Periksa apakah file firmware dan kunci dapat dibaca dan valid."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Beberapa server dapat menyimpan data simpanan. Mana yang dipakai profil ini?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Beberapa sumber memiliki game ini. Unduh dari yang mana?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Tampilkan atau sembunyikan penghitung FPS"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Masuk ke {0} sebagai pengguna pemilik data simpanan profil ini."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Melewati beberapa pemeriksaan saat game mengubah memori yang dipakai GPU
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Panel solid, teks lebih terang, dan sorotan bergaris tepi."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "SUMBER"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "SUMBER"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Spanyol"
@@ -1246,6 +1642,10 @@ msgstr "Kotak"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "Kotak sekali lagi menghapus {0} dari daftar. Data simpanannya tetap di konsol."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Kotak sekali lagi memutuskan tautan {0}. Data simpanannya tetap di konsol dan di server."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Jalankan game apa pun sekali sebelum mengimpor data tersimpan."
 msgid "STARTING"
 msgstr "MEMULAI"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "STATUS"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Menghentikan gerakan latar belakang dan pergeseran layar, di sini dan di layar pemuatan."
@@ -1264,9 +1668,25 @@ msgstr "Menghentikan gerakan latar belakang dan pergeseran layar, di sini dan di
 msgid "Supply your own files"
 msgstr "Sediakan file Anda sendiri"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "SINKRONISASI"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Sinkronkan data simpanan sekali lagi."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Menyinkronkan data simpanan"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Taiwan"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Ambil milik server"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "TERIMA KASIH"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Terima kasih kepada seluruh komunitas homebrew PS5 dan setiap pengembang yang driver, alat, dan pustakanya mewujudkan ProsperoEden."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "Unduhan terhenti"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "Folder yang berisi kunci, firmware, dan game Anda."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Game tidak dimulai."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Daftar game {0} tidak dapat dibaca."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Daftar game telah dibaca: {0} game."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Daftar game telah dibaca: {0} game."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "Game kehabisan memori grafis. Turunkan resolusi di Pengaturan, Video (atau di pengaturan game itu sendiri), lalu jalankan lagi."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Game dimulai setelah data simpanannya selaras."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "Game dimulai setelah unduhan selesai."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "Bahasa yang digunakan game jika tersedia."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Profil atau server sudah tidak ada."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Profil yang sedang bermain tetap ada. Pilih yang lain dulu."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "Data simpanan profil ini disinkronkan sebagai {0} mulai sekarang."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "Data simpanan profil ini disinkronkan dengan server mulai sekarang."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "Selebihnya ada di halaman aplikasi di homebrew.page."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "Server tidak memiliki {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "Server menjalankan RomM {0}; sinkronisasi memerlukan RomM {1} atau yang lebih baru. Perbarui server: sampai saat itu tidak ada data simpanan yang disinkronkan dengannya."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "Sumber tidak lagi memiliki game ini."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "Pembaruan tidak dapat diselesaikan"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "Konsol ini dan server sama-sama punya data simpanan yang tidak dikenal pihak lainnya. Mana yang dipertahankan? Yang lain disimpan sebagai cadangan."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Touchpad"
 msgid "Triangle"
 msgstr "Segitiga"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Coba lagi"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Mencoba lagi."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Aktifkan atau nonaktifkan"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Tidak tersedia"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Mengerti"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Putuskan tautan"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Tautan diputus. Data simpanannya tidak lagi disinkronkan."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "LIHAT SEMUA GAME"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (disarankan)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Menunggu persetujuan  ·  kode berlaku {0} lagi"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "Menunggu {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "Menunggu untuk diunduh"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "Yang baru di versi {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Siapa yang bermain. Setiap profil punya data simpanan dan pengaturan sendiri."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Dengan data simpanan konsol ini; tidak disinkronkan."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Dengan data simpanan konsol ini; disinkronkan setelah bermain."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "dengan {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Anda akan ditanya lagi lain kali."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Anda akan diberi tahu lagi pada sinkronisasi berikutnya."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Game Anda"
@@ -1492,6 +2016,10 @@ msgstr "Game, data simpanan, dan pengaturan Anda tetap ada."
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Petualangan Anda berikutnya"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "Data simpanan Anda dicocokkan dengan yang di server."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} game"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "{0} game terinstal"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "{0} daftar game tidak dapat dibaca."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "{0} dari {1} mod aktif"
 msgid "{0} of {1} on"
 msgstr "{0} dari {1} aktif"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0} dari {1} profil"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} di {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} sumber"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Profil {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP atau XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (satu folder per ID judul)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Jenis kontroler"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Otomatis"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Dua Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Joy-Con kiri"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Joy-Con kanan"

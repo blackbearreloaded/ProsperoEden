@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d.%m.%Y %H.%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (nopeampi, pehmeämpi)"
@@ -34,6 +38,10 @@ msgstr "4x (hitain)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "Laiteohjelmiston NCA-tiedostoa ei voi lukea. Asenna laiteohjelmistovedos uudelleen."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Paritus on jo käynnissä."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "LISÄOSAT"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Lisäosat: {0}  /  Kieli: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Lisätty latauksiin. Jono näkyy kohdassa Asetukset, Lataukset."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Lisätty. Risti pelaa tällä profiililla; vasen ja oikea vaihtavat nimen."
@@ -106,6 +118,10 @@ msgstr "Muu kieli"
 msgid "As usual"
 msgstr "Tavallinen"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Pyydetään koodia palvelimelta..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "ÄÄNI"
 msgid "Australia"
 msgstr "Australia"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Automaattinen"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Takaisin"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Varmuuskopioidaan tallennuksia"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Painikkeiden määritys"
 msgid "BUTTON MAPPING"
 msgstr "PAINIKKEIDEN MÄÄRITYS"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Peruuta"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Peruuta lataus"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Muuta"
 msgid "Change mode. Saved per game."
 msgstr "Vaihda tilaa. Tallennetaan pelikohtaisesti."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Älä muuta mitään"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Muutettu"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Huijaukset"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Tarkista, että siellä näkyy tämä koodi, ja hyväksy."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Tarkistetaan pelitiedostoja {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Tarkistetaan {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Kiina (perinteinen)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Valitse"
 
@@ -258,6 +302,10 @@ msgstr "JATKA PELAAMISTA"
 msgid "Controller shortcuts and supported features."
 msgstr "Ohjaimen pikatoiminnot ja tuetut ominaisuudet."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Ohjaintyyppi"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "OHJAIMET"
@@ -270,9 +318,25 @@ msgstr "Ohjaus"
 msgid "CONTROLS"
 msgstr "OHJAUS"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Latausta ei voitu peruuttaa."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Tiedostoa save-sync.json ei voitu muuttaa."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "Kansiota ei voitu luoda. Varmista, että pelitiedostojen kansioon voi kirjoittaa."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Peliä ei voitu poistaa."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Kohdetta {0} ei voitu poistaa."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Oletuskansio"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Oletuskansio tallennettu. Avaa ProsperoEden uudelleen, niin se otetaan käyttöön."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Poista"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Poista konsolista"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "1 tiedosto poistettu ({0}). Tallennukset ja asetukset säilyvät."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "{1} tiedostoa poistettu ({0}). Tallennukset ja asetukset säilyvät."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Tarkat lokit"
@@ -361,14 +441,62 @@ msgstr "DIAGNOSTIIKKA"
 msgid "Docked"
 msgstr "Telakoitu"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Valmis"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Lataa"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Lataa ja pelaa"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Lataus peruutettu."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "Lataus epäonnistui"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Lataa lähteestä"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Lataa taustalla"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Latauksen koko: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Lataa peli, jotta voit muuttaa sen asetuksia."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Ladataan"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Ladataan {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Lataukset"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "LATAUKSET"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "Lataukset vaativat konsolissa käynnissä olevan FTP-palvelimen portissa {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Piirtää tehosteen, kun sen varjostin on valmis, eikä pysäytä peliä
 msgid "Draws the menu's small text larger."
 msgstr "Näyttää valikon pienen tekstin suurempana."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Kaksi Joy-Conia"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Hollanti"
@@ -385,6 +517,14 @@ msgstr "Hollanti"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Jokaisella profiililla on omat tallennuksensa, asetuksensa ja viimeisimmät pelinsä."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Jokainen profiili säilyttää tallennuksensa palvelimella omana käyttäjänään. Parita Ristillä: ei kirjoittamista, puhelimesi hoitaa kirjautumisen."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Jokaisen profiilin tallennukset omalla palvelimellaan, synkronoituna ennen peliä ja sen jälkeen."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Ranska"
 msgid "French (Canada)"
 msgstr "Ranska (Kanada)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "Lähde: {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "FTP-PALVELIN"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "Pelien äänenvoimakkuus ja tämän valikon äänet."
 msgid "GAMES"
 msgstr "PELIT"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "Verkossasi olevat pelit, ladataan kun pelaat niitä."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "Pelit käyttävät tätä kieltä, jos ne tukevat sitä, ja muuten omaa oletuskieltään. Muutos tulee voimaan, kun peli käynnistyy."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "Renderöijän alustus epäonnistui. Kokeile toista Asetuksissa; katso ajurin tiedot tiedostoista stderr.log ja eden_log.txt."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Kannettava"
 
@@ -633,6 +785,22 @@ msgstr "Tuotu. Korvattu tallennus varmuuskopioitiin."
 msgid "IN USE"
 msgstr "KÄYTÖSSÄ"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Ne siirtyvät palvelimelle."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Yritetään uudelleen, kun valikko avataan seuraavan kerran."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Ne korvaavat konsolin tallennukset."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "Pyyntö hylättiin palvelimella."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Italia"
@@ -649,6 +817,10 @@ msgstr "Japani"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Pidä kansiot keys, firmware ja roms yhdessä. KOLMIO ottaa näkyvän kansion käyttöön."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Säilytä konsolin tallennukset"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Viimeksi avattu peli"
 msgid "Launch game"
 msgstr "Käynnistä peli"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Vasen Joy-Con"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Kirjasto"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "KIRJASTO"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Linkitetty"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Siirry"
 msgid "Nearest"
 msgstr "Lähin"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Vaatii huomiota"
 
@@ -804,6 +984,14 @@ msgstr "SEURAAVAKSI"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Ei kansikuvaa"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Latauslähdettä ei ole määritetty. Tallenna tiedosto nimellä {0}, jossa lähteesi luetellaan, kuten tässä RomM-palvelimen kanssa, ja avaa tämä valikko uudelleen. Lataukset vaativat konsolissa käynnissä olevan FTP-palvelimen portissa {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Ei latauksia. Kirjastossa Neliö lisää lähteen pelin jonoon."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "ROM-tiedostoa ei valittu"
 msgid "No roms folder"
 msgstr "Ei roms-kansiota"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Ei palvelinta, johon parittaa: lisää RomM-palvelin tiedostoon sources.json tai määritä save-sync.json FTP:llä."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Kukaan ei hyväksynyt koodia ajoissa."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Ei ole"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Ei vielä yhdistetty"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Ei linkitetty"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Ei linkitetty: tallennukset jäävät konsoliin"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Ei konsolissa"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Ei vielä konsolissa. Lataa se, jotta voit pelata ja muuttaa sen asetuksia."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Ei paritettu"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Ei tavoitettavissa"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Ei luettavissa"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Ei määritetty"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Ei tuotavaa"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Pois"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Ei yhteyttä"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Lähtöresoluutio"
 msgid "Page"
 msgstr "Sivu"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Parita"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Parita uudelleen"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "Parita {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "Parita {0} palvelimeen"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Paritettu"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Paritettu. Profiilin tallennukset synkronoidaan tästä lähtien."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Yläkansio"
@@ -919,9 +1179,25 @@ msgstr "Suorituskyky"
 msgid "PERFORMANCE"
 msgstr "SUORITUSKYKY"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Pelaa silti"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Pelaa tällä"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Pelaa latauksen jälkeen"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Pelaa konsolin tallennuksilla; kysytään uudelleen ensi kerralla."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "pelaa"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Pelaaja: {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Puola"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Portti {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "VALINNAT"
 msgid "Preparing"
 msgstr "Valmistellaan"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Paina uudelleen, niin peli, sen päivitykset ja DLC poistetaan konsolista. Tallennukset ja asetukset säilyvät."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Paina uudelleen, niin pelin tallennus korvataan. Nykyinen varmuuskopioidaan."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "prod.keys löytyi"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "prod.keys puuttuu"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Profiili {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "PS5-VERSIO"
 msgid "PS5 EDITION  /  {0}"
 msgstr "PS5-VERSIO  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "Jonossa"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "Jonossa, lähde: {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Reaktiivinen tyhjennys"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "REAKTIIVINEN TYHJENNYS"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Lue luettelot uudelleen"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Luetaan peliluetteloita..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Luetaan..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "RESOLUUTIO"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Oikea Joy-Con"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Oikean sauvan painallus"
 
@@ -1120,14 +1436,66 @@ msgstr "Rajoitettu (koodi {0}): vain sovelluskansio"
 msgid "Save data"
 msgstr "Tallennetut tiedot"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Tallennukset varmuuskopioitu"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Tallennukset muuttuneet molemmilla puolilla"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Tallennukset palvelimelta"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Tallennukset jätetty ennalleen"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Tallennuksia ei varmuuskopioitu"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Tallennuksia ei synkronoitu"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Tallennuskansio löytyi"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Tallennusten synkronointi"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "TALLENNUSTEN SYNKRONOINTI"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "Tiedostoa save-sync.json ei voi lukea ({0}). Mitään ei synkronoida ennen kuin se korjataan FTP:llä."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "Tiedostoa save-sync.json ei voi lukea: korjaa se ensin FTP:llä."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Tallennettu tälle pelille. Tulee voimaan seuraavalla käynnistyksellä."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Tallennettu {0}. Ne siirtyvät palvelimelle."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Tallennettu {0}. Ne korvaavat konsolin tallennukset."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Tallennettu. Tulee voimaan, kun peli käynnistyy."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Tallennettu. Avaa ProsperoEden uudelleen, niin kansio otetaan käyttöön."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Skannaa koodi puhelimella tai avaa alla oleva osoite."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Vieritä"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Valitse"
 
@@ -1173,6 +1545,10 @@ msgstr "VALITTU"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "Valittu ROM ei ole enää käytettävissä"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Palvelin liian vanha synkronointiin"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Määrityksen tila ja tarkat lokit."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Määrityksen tarkistus epäonnistui. Varmista, että laiteohjelmisto ja avaintiedostot ovat luettavissa ja kelvollisia."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Tallennuksia voi säilyttää usea palvelin. Mitä niistä tämä profiili käyttää?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Tämä peli on usealla lähteellä. Mistä se ladataan?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Näytä tai piilota FPS-laskuri"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Kirjaudu palveluun {0} käyttäjänä, jolle tämän profiilin tallennukset kuuluvat."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Ohittaa joitakin tarkistuksia, kun peli muuttaa GPU:n käyttämää muis
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Läpinäkymättömät paneelit, kirkkaampi teksti ja ääriviivallinen korostus."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "LÄHDE"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "LÄHTEET"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Espanja"
@@ -1246,6 +1642,10 @@ msgstr "Neliö"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "Neliö uudelleen poistaa profiilin {0} luettelosta. Tallennukset jäävät konsoliin."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Neliö uudelleen poistaa profiilin {0} linkityksen. Tallennukset jäävät konsoliin ja palvelimelle."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Käynnistä jokin peli kerran ennen tallennuksen tuomista."
 msgid "STARTING"
 msgstr "KÄYNNISTETÄÄN"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "TILA"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Pysäyttää taustan liikkeen ja näkymien liukumisen täällä ja latausruudussa."
@@ -1264,9 +1668,25 @@ msgstr "Pysäyttää taustan liikkeen ja näkymien liukumisen täällä ja latau
 msgid "Supply your own files"
 msgstr "Käytä omia tiedostojasi"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "SYNKRONOINTI"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Synkronoi tallennukset vielä kerran."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Synkronoidaan tallennuksia"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Taiwan"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Ota palvelimen tallennukset"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "KIITOKSET"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Kiitos koko PS5:n homebrew-yhteisölle ja kaikille kehittäjille, joiden ajurien, työkalujen ja kirjastojen ansiosta ProsperoEden on mahdollinen."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "Lataus keskeytyi"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "Kansio, jossa avaimesi, laiteohjelmisto ja pelisi ovat."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Peli ei käynnisty."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Lähteen {0} peliluetteloa ei voitu lukea."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Peliluettelot luettu: {0} peli."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Peliluettelot luettu: {0} peliä."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "Peliltä loppui grafiikkamuisti. Pienennä resoluutiota kohdassa Asetukset, Video (tai kohdassa Pelin asetukset) ja käynnistä peli uudelleen."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Peli käynnistyy, kun sen tallennukset on synkronoitu."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "Peli käynnistyy, kun lataus on valmis."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "Kieli, jota pelit käyttävät, jos ne tukevat sitä."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Profiilia tai palvelinta ei enää ole."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Pelaava profiili pysyy. Valitse ensin toinen."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "Profiilin tallennukset synkronoidaan tästä lähtien käyttäjänä {0}."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "Profiilin tallennukset synkronoidaan tästä lähtien palvelimen kanssa."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "Loput ovat sovelluksen sivulla homebrew.pagessa."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "Palvelimella ei ole kohdetta {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "Palvelimella on RomM {0}; synkronointi vaatii vähintään version RomM {1}. Päivitä palvelin: siihen asti sen kanssa ei synkronoida tallennuksia."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "Lähteessä ei enää ole tätä peliä."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "Päivitystä ei voitu viedä loppuun"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "Sekä konsolissa että palvelimella on tallennuksia, joita toinen ei tunne. Kummat säilytetään? Toiset jäävät varmuuskopioksi."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Kosketuslevy"
 msgid "Triangle"
 msgstr "Kolmio"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Yritä uudelleen"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Yritetään uudelleen."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Ota käyttöön tai pois"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Ei käytettävissä"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Selvä"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Poista linkitys"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Linkitys poistettu. Tallennuksia ei enää synkronoida."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "NÄYTÄ KAIKKI PELIT"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (suositeltu)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Odotetaan hyväksyntää  ·  koodi on voimassa vielä {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "Odottaa: {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "Odottaa latausta"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "Uutta versiossa {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Kuka pelaa. Jokaisella profiililla on omat tallennuksensa ja asetuksensa."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Konsolin tallennuksilla; niitä ei synkronoida."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Konsolin tallennuksilla; ne synkronoidaan pelin jälkeen."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "palvelimeen {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Kysytään uudelleen ensi kerralla."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Saat ilmoituksen uudelleen seuraavassa synkronoinnissa."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Omat pelit"
@@ -1492,6 +2016,10 @@ msgstr "Pelisi, tallennukset ja asetukset säilyvät."
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Seuraava seikkailusi"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "Tallennuksiasi verrataan palvelimen tallennuksiin."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} peli"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "{0} peli asennettu"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "{0} peliluetteloa ei voitu lukea."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "{0}/{1} modia käytössä"
 msgid "{0} of {1} on"
 msgstr "{0}/{1} käytössä"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0}/{1} profiilia"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} palvelimella {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} lähdettä"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Profiili {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP tai XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (kansio kutakin nimiketunnusta kohden)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Ohjaintyyppi"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Automaattinen"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Kaksi Joy-Conia"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Vasen Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Oikea Joy-Con"

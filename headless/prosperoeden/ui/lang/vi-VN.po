@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d/%m/%Y %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (nhanh hơn, kém nét hơn)"
@@ -34,6 +38,10 @@ msgstr "4x (chậm nhất)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "Không đọc được một tệp NCA của firmware. Hãy cài đặt lại bản dump firmware."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Đang có một lượt ghép đôi."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "BỔ SUNG"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Bổ sung: {0}  /  Ngôn ngữ: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Đã thêm vào mục tải xuống. Cài đặt, Tải xuống hiển thị hàng chờ."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Đã thêm. Chéo để chơi bằng hồ sơ này; trái và phải đổi tên."
@@ -106,6 +118,10 @@ msgstr "Ngôn ngữ khác"
 msgid "As usual"
 msgstr "Như thường lệ"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Đang xin mã từ máy chủ..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "ÂM THANH"
 msgid "Australia"
 msgstr "Úc"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Tự động"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Quay lại"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Đang sao lưu dữ liệu lưu"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Gán nút"
 msgid "BUTTON MAPPING"
 msgstr "GÁN NÚT"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Hủy"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Hủy tải xuống"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Thay đổi"
 msgid "Change mode. Saved per game."
 msgstr "Đổi chế độ. Lưu theo từng trò chơi."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Không thay đổi gì"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Đã đổi"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Mã gian lận"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Kiểm tra mã ở đó trùng với mã này rồi chấp thuận."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Đang kiểm tra tệp trò chơi {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Đang kiểm tra {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Tiếng Trung (Phồn thể)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Chọn"
 
@@ -258,6 +302,10 @@ msgstr "TIẾP TỤC CHƠI"
 msgid "Controller shortcuts and supported features."
 msgstr "Lối tắt trên bộ điều khiển và các tính năng được hỗ trợ."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Loại tay cầm"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "BỘ ĐIỀU KHIỂN"
@@ -270,9 +318,25 @@ msgstr "Điều khiển"
 msgid "CONTROLS"
 msgstr "ĐIỀU KHIỂN"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Không thể hủy tải xuống."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Không thể thay đổi save-sync.json."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "Không tạo được thư mục. Hãy kiểm tra xem có ghi được vào thư mục tệp trò chơi không."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Không thể xóa trò chơi."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Không thể xóa {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Thư mục mặc định"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Đã lưu thư mục mặc định. Hãy mở lại ProsperoEden để sử dụng."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Xóa"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Xóa khỏi máy"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "Đã xóa 1 tệp ({0}). Dữ liệu lưu và cài đặt được giữ lại."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "Đã xóa {1} tệp ({0}). Dữ liệu lưu và cài đặt được giữ lại."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Ghi nhật ký chi tiết"
@@ -361,14 +441,62 @@ msgstr "CHẨN ĐOÁN"
 msgid "Docked"
 msgstr "TV"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Xong"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Tải xuống"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Tải xuống và chơi"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Đã hủy tải xuống."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "Tải xuống thất bại"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Tải xuống từ"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Tải xuống trong nền"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Dung lượng tải xuống: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Tải trò chơi xuống để thay đổi cài đặt của nó."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Đang tải xuống"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Đang tải xuống {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Tải xuống"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "TẢI XUỐNG"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "Tải xuống cần một máy chủ FTP chạy trên máy, ở cổng {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Vẽ hiệu ứng khi shader đã sẵn sàng thay vì tạm dừng. M�
 msgid "Draws the menu's small text larger."
 msgstr "Hiển thị chữ nhỏ trong menu lớn hơn."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Hai Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Tiếng Hà Lan"
@@ -385,6 +517,14 @@ msgstr "Tiếng Hà Lan"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Mỗi hồ sơ có dữ liệu lưu, cài đặt và trò chơi gần đây riêng."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Mỗi hồ sơ giữ dữ liệu lưu trên một máy chủ, với người dùng riêng ở đó. Ghép đôi bằng Chéo: không cần gõ, điện thoại của bạn lo việc đăng nhập."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Dữ liệu lưu của mỗi hồ sơ trên máy chủ riêng, đồng bộ trước và sau khi chơi."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Tiếng Pháp"
 msgid "French (Canada)"
 msgstr "Tiếng Pháp (Canada)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "Từ {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "MÁY CHỦ FTP"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "Âm lượng trò chơi và âm thanh của menu này."
 msgid "GAMES"
 msgstr "TRÒ CHƠI"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "Trò chơi trên mạng của bạn, được tải xuống khi bạn chơi."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "Trò chơi dùng ngôn ngữ này nếu có hỗ trợ, nếu không sẽ dùng ngôn ngữ mặc định của trò chơi. Áp dụng khi mở trò chơi."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "Khởi tạo trình kết xuất đồ họa thất bại. Hãy thử trình kết xuất khác trong Cài đặt; xem stderr.log và eden_log.txt để biết chi tiết về driver."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Cầm tay"
 
@@ -633,6 +785,22 @@ msgstr "Đã nhập. Bản lưu bị thay thế đã được sao lưu."
 msgid "IN USE"
 msgstr "ĐANG DÙNG"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Dữ liệu sẽ được gửi lên máy chủ."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Sẽ thử lại khi menu được mở lần tới."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Dữ liệu sẽ thay cho của máy này."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "Yêu cầu đã bị từ chối trên máy chủ."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Tiếng Ý"
@@ -649,6 +817,10 @@ msgstr "Tiếng Nhật"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Hãy để các thư mục keys, firmware và roms cùng một chỗ. TAM GIÁC dùng thư mục đang hiển thị."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Giữ của máy này"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Trò chơi mở gần nhất"
 msgid "Launch game"
 msgstr "Mở trò chơi"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Joy-Con trái"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Thư viện"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "THƯ VIỆN"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Đã liên kết"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Di chuyển"
 msgid "Nearest"
 msgstr "Gần nhất"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Cần chú ý"
 
@@ -804,6 +984,14 @@ msgstr "LẦN MỞ TỚI"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Không có ảnh bìa"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Chưa thiết lập nguồn tải xuống. Lưu một tệp tên {0} liệt kê các nguồn của bạn, như tệp này làm với một máy chủ RomM, rồi mở lại menu này. Tải xuống cần một máy chủ FTP chạy trên máy, ở cổng {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Không có lượt tải xuống nào. Trong Thư viện, Vuông đưa trò chơi từ một nguồn vào hàng chờ."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "Chưa chọn ROM"
 msgid "No roms folder"
 msgstr "Không có thư mục roms"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Không có máy chủ để ghép đôi: thêm máy chủ RomM vào sources.json hoặc thiết lập save-sync.json qua FTP."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Không ai chấp thuận mã kịp thời."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Không có"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Chưa kết nối"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Chưa liên kết"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Chưa liên kết: dữ liệu lưu vẫn ở trên máy"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Không có trên máy"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Chưa có trên máy. Tải xuống để chơi và thay đổi cài đặt."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Chưa ghép đôi"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Không kết nối được"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Không đọc được"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Chưa thiết lập"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Không có gì để nhập"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Tắt"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Ngoại tuyến"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Độ phân giải đầu ra"
 msgid "Page"
 msgstr "Trang"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Ghép đôi"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Ghép đôi lại"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "Ghép đôi {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "Ghép đôi {0} với"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Đã ghép đôi"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Đã ghép đôi. Dữ liệu lưu của hồ sơ được đồng bộ từ bây giờ."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Thư mục cha"
@@ -919,9 +1179,25 @@ msgstr "Hiệu năng"
 msgid "PERFORMANCE"
 msgstr "HIỆU NĂNG"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Vẫn chơi"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Chơi bằng"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Chơi khi tải xong"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Chơi với dữ liệu của máy này; lần sau bạn sẽ được hỏi lại."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "đang chơi"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Đang chơi: {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Tiếng Ba Lan"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Cổng {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "TÙY CHỌN"
 msgid "Preparing"
 msgstr "Đang chuẩn bị"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Nhấn lần nữa để xóa trò chơi cùng các bản cập nhật và DLC khỏi máy. Dữ liệu lưu và cài đặt được giữ lại."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Nhấn lần nữa để thay bản lưu của trò chơi này. Bản lưu hiện tại sẽ được sao lưu."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "Đã tìm thấy prod.keys"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "Thiếu prod.keys"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Hồ sơ {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "PHIÊN BẢN PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "PHIÊN BẢN PS5  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "Đang chờ"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "Đang chờ, từ {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Xả phản ứng"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "XẢ PHẢN ỨNG"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Đọc lại danh sách"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Đang đọc danh sách trò chơi..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Đang đọc..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "ĐỘ PHÂN GIẢI"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Joy-Con phải"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Nhấn cần phải"
 
@@ -1120,14 +1436,66 @@ msgstr "Bị giới hạn (mã {0}): chỉ thư mục ứng dụng"
 msgid "Save data"
 msgstr "Dữ liệu đã lưu"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Đã sao lưu dữ liệu lưu"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Dữ liệu lưu đã thay đổi ở cả hai bên"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Dữ liệu lưu từ máy chủ"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Dữ liệu lưu được giữ nguyên"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Dữ liệu lưu chưa được sao lưu"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Dữ liệu lưu chưa được đồng bộ"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Đã tìm thấy thư mục lưu"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Đồng bộ dữ liệu lưu"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "ĐỒNG BỘ DỮ LIỆU LƯU"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "Không đọc được save-sync.json ({0}). Không có gì được đồng bộ cho đến khi tệp được sửa qua FTP."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "Không đọc được save-sync.json: hãy sửa tệp qua FTP trước."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Đã lưu cho trò chơi này. Áp dụng từ lần mở tới."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Lưu lúc {0}. Dữ liệu sẽ được gửi lên máy chủ."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Lưu lúc {0}. Dữ liệu sẽ thay cho của máy này."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Đã lưu. Áp dụng khi mở trò chơi."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Đã lưu. Hãy mở lại ProsperoEden để dùng thư mục này."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Quét mã bằng điện thoại hoặc mở địa chỉ bên dưới."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Cuộn"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Chọn"
 
@@ -1173,6 +1545,10 @@ msgstr "ĐANG CHỌN"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "ROM đã chọn không còn khả dụng"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Máy chủ quá cũ để đồng bộ dữ liệu lưu"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Trạng thái thiết lập và nhật ký chi tiết."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Xác thực thiết lập thất bại. Hãy kiểm tra xem các tệp firmware và khóa có đọc được và hợp lệ không."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Nhiều máy chủ có thể giữ dữ liệu lưu. Hồ sơ này nên dùng máy chủ nào?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Nhiều nguồn có trò chơi này. Nên lấy từ nguồn nào?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Hiện hoặc ẩn bộ đếm FPS"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Đăng nhập vào {0} bằng người dùng sở hữu dữ liệu lưu của hồ sơ này."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Bỏ qua một số kiểm tra khi trò chơi thay đổi bộ nhớ GPU
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Bảng nền đặc, chữ sáng hơn và vùng chọn có viền."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "NGUỒN"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "CÁC NGUỒN"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Tiếng Tây Ban Nha"
@@ -1246,6 +1642,10 @@ msgstr "Vuông"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "Vuông lần nữa sẽ bỏ {0} khỏi danh sách. Dữ liệu lưu vẫn ở trên máy."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Vuông lần nữa sẽ hủy liên kết {0}. Dữ liệu lưu vẫn ở trên máy và trên máy chủ."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Hãy mở một trò chơi bất kỳ một lần trước khi nhập b�
 msgid "STARTING"
 msgstr "ĐANG MỞ"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "TRẠNG THÁI"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Dừng hiệu ứng nền trôi và màn hình trượt, tại đây và trên màn hình tải."
@@ -1264,9 +1668,25 @@ msgstr "Dừng hiệu ứng nền trôi và màn hình trượt, tại đây và
 msgid "Supply your own files"
 msgstr "Tự chuẩn bị tệp của bạn"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "ĐỒNG BỘ"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Đồng bộ dữ liệu lưu thêm một lần."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Đang đồng bộ dữ liệu lưu"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Đài Loan"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Lấy của máy chủ"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "LỜI CẢM ƠN"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Cảm ơn toàn thể cộng đồng homebrew PS5 và mọi nhà phát triển có driver, công cụ và thư viện giúp ProsperoEden thành hiện thực."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "Quá trình tải xuống đã dừng"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "Thư mục chứa khóa, firmware và trò chơi của bạn."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Trò chơi không bắt đầu."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Không đọc được danh sách trò chơi của {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Đã đọc danh sách trò chơi: {0} trò chơi."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Đã đọc danh sách trò chơi: {0} trò chơi."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "Trò chơi đã hết bộ nhớ đồ họa. Hãy giảm độ phân giải trong Cài đặt, Video (hoặc trong cài đặt riêng của trò chơi) rồi mở lại trò chơi."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Trò chơi sẽ bắt đầu khi dữ liệu lưu đã đồng bộ."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "Trò chơi sẽ bắt đầu khi tải xong."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "Ngôn ngữ trò chơi sẽ dùng nếu có hỗ trợ."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Hồ sơ hoặc máy chủ không còn nữa."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Hồ sơ đang chơi được giữ lại. Hãy chọn hồ sơ khác trước."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "Dữ liệu lưu của hồ sơ được đồng bộ dưới tên {0} từ bây giờ."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "Dữ liệu lưu của hồ sơ được đồng bộ với máy chủ từ bây giờ."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "Phần còn lại có trên trang của ứng dụng tại homebrew.page."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "Máy chủ không có {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "Máy chủ đang chạy RomM {0}; đồng bộ dữ liệu lưu cần RomM {1} trở lên. Hãy cập nhật máy chủ: cho đến lúc đó, không có dữ liệu lưu nào được đồng bộ với nó."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "Nguồn không còn trò chơi này."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "Không thể hoàn tất cập nhật"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "Máy này và máy chủ đều có dữ liệu lưu mà bên kia không biết. Nên giữ bên nào? Bên còn lại được giữ làm bản sao lưu."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Bàn di cảm ứng"
 msgid "Triangle"
 msgstr "Tam giác"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Thử lại"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Đang thử lại."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Bật hoặc tắt"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Không khả dụng"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Đã hiểu"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Hủy liên kết"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Đã hủy liên kết. Dữ liệu lưu không còn được đồng bộ."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "XEM TẤT CẢ TRÒ CHƠI"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (khuyên dùng)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Đang chờ chấp thuận  ·  mã còn hiệu lực {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "Đang chờ {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "Đang chờ tải xuống"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "Có gì mới trong phiên bản {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Ai đang chơi. Mỗi hồ sơ có dữ liệu lưu và cài đặt riêng."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Với dữ liệu lưu của máy này; không được đồng bộ."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Với dữ liệu lưu của máy này; sẽ được đồng bộ sau khi chơi."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "với {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Lần sau bạn sẽ được hỏi lại."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Bạn sẽ được báo lại ở lần đồng bộ tới."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Trò chơi của bạn"
@@ -1492,6 +2016,10 @@ msgstr "Trò chơi, dữ liệu lưu và cài đặt của bạn được giữ 
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Cuộc phiêu lưu tiếp theo"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "Dữ liệu lưu của bạn được đối chiếu với máy chủ."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} trò chơi"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "{0} trò chơi đã cài đặt"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "Không đọc được {0} danh sách trò chơi."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "Bật {0}/{1} mod"
 msgid "{0} of {1} on"
 msgstr "Bật {0}/{1}"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0} trên {1} hồ sơ"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} trên {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} nguồn"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Hồ sơ {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP hoặc XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (mỗi ID trò chơi một thư mục)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Loại tay cầm"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Tự động"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Hai Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Joy-Con trái"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Joy-Con phải"
