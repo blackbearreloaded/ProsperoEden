@@ -89,9 +89,14 @@ TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>
             Note("The PS5's dialogs did not start", dialogs);
             return answer;
         }
+        // The keyboard's library is one the app imports, so it is there with the app; asking
+        // for its module as well is refused here (0x80020063) and does not decide whether the
+        // dialog opens. Its answer goes to the log, no more.
         if (const int module = sceSysmoduleLoadModule(kImeDialogModule); module < 0) {
-            Note("The PS5 keyboard's module did not load", module);
-            return answer;
+            char line[96];
+            std::snprintf(line, sizeof(line), "Asking for the keyboard's module answered %#x; going on",
+                          static_cast<unsigned>(module));
+            Report("keyboard", line);
         }
         loaded = true;
     }
