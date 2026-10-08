@@ -78,6 +78,149 @@ struct Game
     int mods = 0;
     int mods_on = 0;
     bool mods_enabled = true;
+    // The download sources that have the game (their names, in the order they are set up in): it
+    // can be downloaded from any of them, again once deleted. Empty for a game only on the console.
+    std::vector<std::string> sources;
+    // Which game it is on the sources (the same on all of them; Download::key); empty without.
+    std::string key;
+    // Not on the console yet: on its sources only. Its file is the name it gets in roms/.
+    bool remote = false;
+};
+
+// A download source: a place on the network with Switch games (headless/remote/remote.h).
+struct SourceInfo
+{
+    std::string name;
+    std::string address;
+    bool refreshing = false; // its game list is being read
+    bool online = false;     // the last look at it worked
+    std::string error;       // why the last look failed, or what is wrong with its entry (English)
+    int games = 0;
+};
+struct Sources
+{
+    bool configured = false; // sources.json names at least one source
+    std::string setup_file;  // where sources.json goes
+    std::string error;       // what is wrong with sources.json itself (English)
+    std::vector<SourceInfo> list;
+    // Changes when a source's games, their covers or the downloaded files changed: the Library
+    // reads its list again.
+    std::uint64_t generation = 0;
+    int ftp_port = 2121; // the console's FTP server, which writes the downloads; it has to run
+};
+
+// The sync of a game's save data with the profile's save store (save-sync.json): before the game
+// starts, and once the menu is back after it ended.
+enum class SaveSyncStage : std::uint8_t
+{
+    idle,
+    working,
+    conflict, // both changed since they were last the same: the player chooses (choose_save_data)
+    done,
+    failed,
+};
+enum class SaveSyncOutcome : std::uint8_t
+{
+    same,       // nothing to do
+    uploaded,   // the console's save data went to the server
+    downloaded, // the server's replaced the console's (the console's is in the backups)
+    kept,       // a conflict left as it is
+    no_game,    // the server does not have the game, so it cannot keep its save data
+};
+struct SaveSync
+{
+    SaveSyncStage stage = SaveSyncStage::idle;
+    bool before = true;      // before the game starts; false: after it ended
+    std::string game;        // its name
+    std::string profile;     // the profile's name
+    std::string server;      // where it syncs to: "alex on http://nas:3000"
+    SaveSyncOutcome outcome = SaveSyncOutcome::same; // done: what happened
+    std::string error;       // failed: why (English, technical)
+    // Failed because the server is older than the save sync takes (shown until the player confirms
+    // it): its version and the oldest one taken.
+    bool too_old = false;
+    std::string server_version;
+    std::string needed_version;
+    // A conflict: when each was last changed (seconds since 1970, 0: not known), and the device
+    // that changed the server's.
+    std::int64_t console_time = 0;
+    std::int64_t server_time = 0;
+    std::string server_device;
+};
+// What the player chose in a conflict.
+enum class SaveChoice : std::uint8_t
+{
+    console, // the console's goes to the server
+    server,  // the server's replaces the console's
+    neither, // both stay as they are
+};
+
+// Settings > Save sync: each profile and where it keeps its save data (save-sync.json).
+struct SaveSyncProfile
+{
+    std::string name;
+    bool current = false; // the one playing
+    bool linked = false;  // its entry names a server
+    std::string server;   // where: "player @ http://nas:3000" (who, when known)
+    std::string note;     // what is wrong with its entry (English); empty when nothing
+};
+struct SaveSyncSetup
+{
+    std::vector<SaveSyncProfile> profiles;
+    std::string error; // save-sync.json cannot be read (English): nothing syncs
+    bool automatic = true;
+    std::string file;  // where save-sync.json is, for editing it over FTP
+};
+// A server a profile can be paired with: a download source whose kind of server can pair.
+struct PairServer
+{
+    std::string name;
+    std::string address;
+};
+// A pairing: the code shown, approved on the server signed in as the profile's user.
+enum class PairingStage : std::uint8_t
+{
+    idle,
+    asking,  // the server is asked for a code
+    waiting, // the code shows: approve it on the server
+    done,    // approved: the profile syncs with that user
+    failed,  // see error; denied and expired say so
+};
+struct PairingStatus
+{
+    PairingStage stage = PairingStage::idle;
+    std::string profile;  // its name
+    std::string server;   // the server's name
+    std::string code;     // to tell the request on the server's page
+    std::string address;  // the page that approves it, the code in it (the QR code)
+    int seconds_left = 0; // until the code expires
+    std::string user;     // done: who it signed in as
+    bool denied = false;  // failed: the player said no on the server
+    bool expired = false; // failed: nobody approved it in time
+    std::string error;    // failed otherwise (English)
+};
+
+// A game in the download queue.
+enum class DownloadState : std::uint8_t
+{
+    queued,
+    downloading,
+    verifying, // one that goes on from where it was: what its files have is read first, for the check
+               // of their contents (done goes up to where it goes on)
+    failed,
+};
+struct Download
+{
+    std::string key;     // which game it is (Game::key)
+    std::string file;    // its file in roms/ once downloaded (from this source)
+    std::string name;
+    std::string source;  // the name of the source it comes from
+    std::string cover;
+    DownloadState state = DownloadState::queued;
+    std::uint64_t done = 0;
+    std::uint64_t total = 0; // 0 when not known
+    std::uint64_t rate = 0;  // bytes a second while it downloads; 0 when not known yet
+    std::string error;       // why it failed (English, technical)
 };
 
 struct Recent
@@ -375,6 +518,104 @@ class Services
     }
     // Makes that folder; false when it cannot be made.
     virtual bool make_mods_folder(std::uint64_t)
+    {
+        return false;
+    }
+
+    // ---- download sources: games on the network, downloaded to the games folder when wanted ----
+    virtual Sources sources()
+    {
+        return {};
+    }
+    // Reads every source's game list again.
+    virtual void refresh_sources()
+    {
+    }
+    // Puts a game in the download queue, from one of its sources (an index into Game::sources):
+    // first (to play it as soon as it is there) or last; a failed one is tried again. False when
+    // the source no longer has it.
+    virtual bool download(const Game &, int, bool)
+    {
+        return false;
+    }
+    // Takes a game (Game::key) out of the queue and deletes what it had downloaded.
+    virtual bool cancel_download(const std::string &)
+    {
+        return false;
+    }
+    // The queue, in order.
+    virtual std::vector<Download> downloads()
+    {
+        return {};
+    }
+    // Deletes a game that a source has from the console (Game::sources): its file and all of its
+    // updates and DLC in updates/. Its save data and settings stay. Says what was done in message.
+    virtual bool delete_game(const Game &, std::string *)
+    {
+        return false;
+    }
+
+    // ---- save sync: a game's save data in step with the profile's save store ----
+    // Whether the profile playing syncs the game's save data before it starts and after it ended.
+    virtual bool save_sync_wanted(const std::string &)
+    {
+        return false;
+    }
+    // Syncs a game's save data (its file in roms/), on a thread of its own; save_sync() tells how
+    // it goes. before: the game is about to start (else: it ended, the menu is back).
+    virtual void start_save_sync(const std::string &, bool)
+    {
+    }
+    virtual SaveSync save_sync()
+    {
+        return {};
+    }
+    // The player's choice in a conflict.
+    virtual void choose_save_data(SaveChoice)
+    {
+    }
+    // What the last sync came to was shown: save_sync() is idle again.
+    virtual void end_save_sync()
+    {
+    }
+    // The player does not wait for the sync before a game: it stops, changing nothing more.
+    virtual void stop_save_sync()
+    {
+    }
+    // A game starts: once the menu is back, its save data is synced after it (start_save_sync,
+    // not before), and on later starts until that worked.
+    virtual void will_play(const std::string &)
+    {
+    }
+
+    // ---- Settings > Save sync: profiles linked with a server ----
+    virtual SaveSyncSetup save_sync_setup()
+    {
+        return {};
+    }
+    // The servers a profile can be paired with, in the order of sources.json.
+    virtual std::vector<PairServer> pair_servers()
+    {
+        return {};
+    }
+    // Pairs a profile (an index into save_sync_setup().profiles) with a server (into
+    // pair_servers()), on a thread of its own; pairing() tells how it goes. False when it cannot
+    // start (one runs already).
+    virtual bool start_pairing(int, int)
+    {
+        return false;
+    }
+    virtual PairingStatus pairing()
+    {
+        return {};
+    }
+    // Stops a pairing that waits, or forgets the end of one: pairing() is idle again.
+    virtual void cancel_pairing()
+    {
+    }
+    // Takes a profile's server out of save-sync.json: its save data stays on the console and on
+    // the server.
+    virtual bool unlink_profile(int)
     {
         return false;
     }

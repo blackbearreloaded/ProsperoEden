@@ -20,6 +20,10 @@ int eden_extract_game_metadata(const char* rom_path, const char* keys_dir,
                                const char* cover_tga_path, char* title,
                                size_t title_capacity);
 
+// A cover in a picture file's bytes (PNG or JPEG, as a download source sends it) as the TGA the
+// launcher draws, at most 512 pixels a side. Nonzero when it was written.
+int eden_write_cover_tga(const unsigned char* encoded, size_t size, const char* cover_tga_path);
+
 // The languages the game declares in its own control data (NACP flags: bit n is NS
 // ApplicationLanguage n), or 0 when they cannot be read.
 uint32_t eden_game_supported_languages(const char* rom_path, const char* keys_dir);
@@ -32,6 +36,11 @@ int eden_game_language(const char* rom_path, const char* keys_dir, uint64_t titl
 // Update and DLC files (NSP or XCI, any depth) in updates_dir, read with the provider that also
 // applies them to a running game. Replaces the previous scan; eden_game_addons queries it.
 void eden_scan_addons(const char* updates_dir, const char* keys_dir);
+// The update and DLC files of a game in updates_dir (NSP or XCI, any depth), by the title IDs
+// they hold: each one's full path is handed to found. Returns how many there were.
+typedef void (*eden_found_file)(void* user, const char* path);
+int eden_game_addon_files(uint64_t title_id, const char* updates_dir, const char* keys_dir, eden_found_file found,
+                          void* user);
 // For a base game: the newest update's display version (empty without one) and its DLC count.
 // Returns nonzero when either exists.
 int eden_game_addons(uint64_t title_id, char* update_version, size_t capacity, unsigned* dlc_count);

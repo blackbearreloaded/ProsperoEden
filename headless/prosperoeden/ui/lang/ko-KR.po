@@ -44,12 +44,12 @@ msgid "About ProsperoEden"
 msgstr "ProsperoEden 정보"
 
 #. Time left while downloading; {0} is a number of minutes. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} min left"
 msgstr "약 {0}분 남음"
 
 #. Time left while downloading; {0} is a number of seconds. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} s left"
 msgstr "약 {0}초 남음"
 
@@ -128,7 +128,7 @@ msgid "Australia"
 msgstr "호주"
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "뒤로"
 
@@ -229,7 +229,7 @@ msgstr "게임에서 사용할 언어를 선택하세요"
 msgid "Circle"
 msgstr "동그라미"
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Close"
 msgstr "닫기"
 
@@ -403,7 +403,7 @@ msgstr "게임을 종료하고 이 메뉴로 돌아가기"
 msgid "English (UK)"
 msgstr "영어(영국)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "영어(미국)"
 
@@ -957,7 +957,7 @@ msgid "PREFERENCES"
 msgstr "환경 설정"
 
 #. Update dialog headline while the download starts.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Preparing"
 msgstr "준비 중"
 
@@ -1148,7 +1148,7 @@ msgid "Scroll"
 msgstr "스크롤"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "선택"
 
@@ -1347,7 +1347,7 @@ msgstr "터치패드"
 msgid "Triangle"
 msgstr "세모"
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "다시 시도"
 
@@ -1504,7 +1504,7 @@ msgid "{0} DLC"
 msgstr "DLC {0}개"
 
 #. Exactly one game. In a language with more than two plural forms, word it so that it reads well with any number (Games: {0}).
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp
 msgid "{0} game"
 msgstr "게임 {0}개"
 
@@ -1514,7 +1514,7 @@ msgid "{0} game installed"
 msgstr "게임 {0}개 설치됨"
 
 #. Any number of games other than one (also 0). See '{0} game'.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
 msgid "{0} games"
 msgstr "게임 {0}개"
 
@@ -1569,7 +1569,7 @@ msgid "{0} of {1} on"
 msgstr "{1}개 중 {0}개 켜짐"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

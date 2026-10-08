@@ -1,0 +1,60 @@
+# ProsperoEden - A RomM with fake Switch games for tools/check-romm.py, reachable from this
+# computer only, and the console's FTP server (ftpsrv) that writes the downloads. ROMM_VERSION picks
+# RomM's image, ROMM_PORT its port, ROMM_LIBRARY the folder of fake games; what RomM writes stays
+# in the project's volumes (docker compose down -v). FTP_PORT is ftpsrv's port and CHECK_WORK the
+# folder it writes to, at the same path as on this computer (the app names whole paths), as the
+# user CHECK_USER (uid:gid), so the files are that user's.
+services:
+  romm:
+    image: rommapp/romm:${ROMM_VERSION:?}
+    environment:
+      - DB_HOST=romm-db
+      - DB_NAME=romm
+      - DB_USER=romm-user
+      - DB_PASSWD=romm-check
+      - ROMM_AUTH_SECRET_KEY=0000000000000000000000000000000000000000000000000000000000000000
+      - HASHEOUS_API_ENABLED=false
+      # The first user is made without signing in, as RomM's setup does it in a browser.
+      - DISABLE_CSRF_PROTECTION=true
+      - SCAN_WORKERS=1
+      - WEB_SERVER_CONCURRENCY=2
+    volumes:
+      - ${ROMM_LIBRARY:?}:/romm/library:ro
+      - assets:/romm/assets
+      - resources:/romm/resources
+      - config:/romm/config
+    ports:
+      - 127.0.0.1:${ROMM_PORT:?}:8080
+    depends_on:
+      romm-db:
+        condition: service_healthy
+  romm-db:
+    image: mariadb:11
+    environment:
+      - MARIADB_ROOT_PASSWORD=romm-check
+      - MARIADB_DATABASE=romm
+      - MARIADB_USER=romm-user
+      - MARIADB_PASSWORD=romm-check
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      start_interval: 2s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  ftp:
+    build:
+      context: .
+      dockerfile: ftpsrv.Dockerfile
+    image: prosperoeden-ftpsrv:23737c4
+    command: ["-p", "${FTP_PORT:?}"]
+    # Its passive mode names ports of its own for the data: on this computer's network, as on the
+    # console. It listens on all addresses there; the check only uses 127.0.0.1.
+    network_mode: host
+    user: ${CHECK_USER:?}
+    volumes:
+      - ${CHECK_WORK:?}:${CHECK_WORK:?}
+volumes:
+  assets:
+  resources:
+  config:

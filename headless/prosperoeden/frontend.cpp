@@ -6,6 +6,7 @@
 
 #include "assets_dir.h"
 #include "audio_out_init.h"
+#include "boot_trace.h"
 #include "diagnostics.h"
 #include "eden_services.h"
 #include "update_notice.h"
@@ -127,6 +128,9 @@ void LoadLanguage(pe::gfx::Font& font) {
                  static_cast<unsigned>(rc), tag.c_str(), catalog.c_str(), texts);
     std::fprintf(stderr, "EDEN_FONTS folder=%s files=%zu read=%s\n", folder.c_str(), files,
                  font.system_fonts_read().c_str());
+    // For a report from another console: what is shown depends on both.
+    Eden::BootTrace::Line("system language %s (%d, rc %#x), menu texts %s; console fonts: %zu in %s", tag.c_str(),
+                          system_language, static_cast<unsigned>(rc), catalog.c_str(), files, folder.c_str());
 }
 
 #ifdef EDEN_DEV_ROM_ID

@@ -108,6 +108,19 @@ bool write_cover(const std::string &path, const Sample &sample, int index)
     return ok;
 }
 
+// Invented games on the sample download sources.
+constexpr Sample kServerSamples[] = {
+    {"Lighthouse Keeper", "NSP", "3.2 GB", "", 0, "English (US)", "", 0x0b1d3a, 0x2a6f97, 0xffe66d},
+    {"Rune Gardens", "XCI", "11.6 GB", "", 0, "English (US)", "", 0x1f3d1a, 0x9bc53d, 0xe55934},
+    {"Orbit Postman", "NSP", "780.4 MB", "", 0, "English (US)", "", 0x14051f, 0x6a4c93, 0x8ac926},
+};
+constexpr std::uint64_t kServerSizes[] = {3435973837ull, 12455405158ull, 818311987ull};
+// What of them is in .remote-downloads/ already (in percent), from a download stopped before:
+// Orbit Postman's goes on, read from the drive first for the check of its contents.
+constexpr std::uint64_t kServerHad[] = {0, 0, 40};
+// Which sources have them: Rune Gardens is on both.
+const std::vector<std::string> kServerSources[] = {{"Home"}, {"Home", "Office"}, {"Office"}};
+
 // The same labels as the console's settings (headless/settings_store.h), translated like them.
 constexpr const char *kResolutionLabels[] = {"0.5x (faster, softer)", "0.75x (faster)",
                                              "1x (native)", "1.5x (sharper)", "2x (sharpest)",
@@ -169,6 +182,21 @@ FakeServices::FakeServices(const std::string &covers_directory)
         }
         games_.push_back(game);
         ++index;
+    }
+    for (const Sample &sample : kServerSamples)
+    {
+        ui::Game game;
+        game.name = sample.name;
+        game.format = sample.format;
+        game.size = sample.size;
+        game.file = std::string(sample.name) + "." + (std::string(sample.format) == "NSP" ? "nsp" : "xci");
+        game.sources = kServerSources[remote_.size() % 3];
+        game.key = "name:" + game.file;
+        game.remote = true;
+        game.cover = covers_directory + "/server-" + std::to_string(remote_.size()) + ".tga";
+        if (!write_cover(game.cover, sample, index++))
+            game.cover.clear();
+        remote_.push_back(game);
     }
     std::sort(games_.begin(), games_.end(),
               [](const ui::Game &a, const ui::Game &b) { return a.name < b.name; });
@@ -354,6 +382,278 @@ ui::FolderInfo FakeServices::folder_info(const std::string &directory)
         info.games = static_cast<int>(games_.size());
     }
     return info;
+}
+
+bool FakeServices::delete_game(const ui::Game &game, std::string *message)
+{
+    const auto local = std::find_if(games_.begin(), games_.end(),
+                                    [&](const ui::Game &g) { return g.file == game.file && !g.sources.empty(); });
+    if (local == games_.end())
+        return false;
+    // On its sources only again.
+    ui::Game remote = *local;
+    remote.remote = true;
+    remote.title_id = 0;
+    remote_.push_back(remote);
+    games_.erase(local);
+    ++generation_;
+    *message = fill(tr("Deleted {1} files ({0}). Save data and settings are kept."), {game.size, "2"});
+    return true;
+}
+
+} // namespace pe::host
+
+namespace pe::host
+{
+
+ui::Sources FakeServices::sources()
+{
+    ui::Sources sources;
+    sources.setup_file = "/data/prosperoeden/config/remote/sources.json";
+    sources.generation = generation_;
+    if (!has_server)
+        return sources;
+    sources.configured = true;
+    sources.list.push_back({"Home", "http://192.168.1.20:3000", false, true, "", 12});
+    sources.list.push_back({"Office", "https://games.example.org", false, !server_fails,
+                            server_fails ? "The server did not answer" : "", server_fails ? 0 : 5});
+    return sources;
+}
+
+bool FakeServices::download(const ui::Game &game, int source, bool first)
+{
+    const auto found = std::find_if(remote_.begin(), remote_.end(), [&](const ui::Game &g) { return g.key == game.key; });
+    if (found == remote_.end() || source < 0 || source >= static_cast<int>(found->sources.size()))
+        return false;
+    for (ui::Download &download : queue_)
+        if (download.key == game.key)
+        {
+            if (download.state == ui::DownloadState::failed)
+            {
+                download.state = ui::DownloadState::queued;
+                download.error.clear();
+                download_fails = false;
+            }
+            return true;
+        }
+    ui::Download download;
+    download.key = found->key;
+    download.file = found->file;
+    download.name = found->name;
+    download.source = found->sources[static_cast<std::size_t>(source)];
+    download.cover = found->cover;
+    for (std::size_t i = 0; i < std::size(kServerSamples); ++i)
+        if (found->name == kServerSamples[i].name)
+        {
+            download.total = kServerSizes[i];
+            download.done = kServerSizes[i] * kServerHad[i] / 100;
+        }
+    if (first)
+    {
+        // After the one downloading.
+        auto at = queue_.begin();
+        while (at != queue_.end() &&
+               (at->state == ui::DownloadState::downloading || at->state == ui::DownloadState::verifying))
+            ++at;
+        queue_.insert(at, download);
+    }
+    else
+    {
+        queue_.push_back(download);
+    }
+    return true;
+}
+
+bool FakeServices::cancel_download(const std::string &key)
+{
+    const auto at = std::find_if(queue_.begin(), queue_.end(), [&](const ui::Download &d) { return d.key == key; });
+    if (at == queue_.end())
+        return false;
+    going_on_.erase(std::remove_if(going_on_.begin(), going_on_.end(), [&](const auto &g) { return g.first == key; }),
+                    going_on_.end());
+    queue_.erase(at);
+    return true;
+}
+
+std::vector<ui::Download> FakeServices::downloads()
+{
+    // One step of the first game that can move: 2.5% of it.
+    for (ui::Download &download : queue_)
+    {
+        if (download.state == ui::DownloadState::failed)
+            continue;
+        // One that goes on: what it had is read first, for the check of its contents, a step of 10%
+        // a look, up to where it was (verifying), then it downloads from there.
+        auto going_on = std::find_if(going_on_.begin(), going_on_.end(), [&](const auto &g) { return g.first == download.key; });
+        if (download.state == ui::DownloadState::queued && download.done > 0 && going_on == going_on_.end())
+        {
+            going_on_.emplace_back(download.key, download.done);
+            download.state = ui::DownloadState::verifying;
+            download.done = 0;
+            download.rate = 0;
+            break;
+        }
+        if (download.state == ui::DownloadState::verifying)
+        {
+            download.done = std::min(going_on->second, download.done + download.total / 10);
+            if (download.done >= going_on->second)
+                download.state = ui::DownloadState::downloading;
+            break;
+        }
+        download.state = ui::DownloadState::downloading;
+        download.done = std::min(download.total, download.done + download.total / 40);
+        download.rate = 48ull << 20;
+        if (download_fails && download.done * 10 >= download.total * 3)
+        {
+            download.state = ui::DownloadState::failed;
+            download.error = "The connection timed out";
+        }
+        else if (download.done >= download.total)
+        {
+            // On the console now: it joins the library.
+            const auto game = std::find_if(remote_.begin(), remote_.end(),
+                                           [&](const ui::Game &g) { return g.file == download.file; });
+            if (game != remote_.end())
+            {
+                ui::Game local = *game;
+                local.remote = false;
+                local.title_id = 0x0100B00000001000ull + static_cast<std::uint64_t>(game - remote_.begin()) * 0x10000;
+                local.language = tr("English (US)");
+                games_.push_back(local);
+                remote_.erase(game);
+            }
+            const std::string file = download.file;
+            queue_.erase(std::find_if(queue_.begin(), queue_.end(), [&](const ui::Download &d) { return d.file == file; }));
+            ++generation_;
+        }
+        break;
+    }
+    return queue_;
+}
+
+// ---- save sync ----
+
+void FakeServices::start_save_sync(const std::string &file, bool before)
+{
+    sync_ = {};
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_.before = before;
+    sync_.profile = "Player 1";
+    for (const ui::Game &game : games_)
+        if (game.file == file)
+            sync_.game = game.name;
+    sync_looks_ = 0;
+}
+
+ui::SaveSync FakeServices::save_sync()
+{
+    // A few looks while it works, then what came of it.
+    if (sync_.stage == ui::SaveSyncStage::working && ++sync_looks_ >= 8)
+    {
+        if (save_sync_too_old)
+        {
+            sync_.stage = ui::SaveSyncStage::failed;
+            sync_.error = "RomM 4.9.2 is older than the save sync takes: it needs RomM 5.0.0 or newer";
+            sync_.too_old = true;
+            sync_.server_version = "4.9.2";
+            sync_.needed_version = "5.0.0";
+        }
+        else if (save_sync_fails)
+        {
+            sync_.stage = ui::SaveSyncStage::failed;
+            sync_.error = "The server did not answer";
+        }
+        else if (save_sync_conflict)
+        {
+            sync_.stage = ui::SaveSyncStage::conflict;
+            sync_.console_time = 1791457200; // 2026-10-08, 11:00 UTC
+            sync_.server_time = 1791468000;  // and 14:00
+            sync_.server_device = "Pixel 8";
+            save_sync_conflict = false;
+        }
+        else
+        {
+            sync_.stage = ui::SaveSyncStage::done;
+            sync_.outcome = sync_.before ? ui::SaveSyncOutcome::same : ui::SaveSyncOutcome::uploaded;
+        }
+    }
+    return sync_;
+}
+
+void FakeServices::choose_save_data(ui::SaveChoice choice)
+{
+    if (sync_.stage != ui::SaveSyncStage::conflict)
+        return;
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_looks_ = 0;
+    sync_.outcome = choice == ui::SaveChoice::console ? ui::SaveSyncOutcome::uploaded :
+                    choice == ui::SaveChoice::server  ? ui::SaveSyncOutcome::downloaded :
+                                                        ui::SaveSyncOutcome::kept;
+}
+
+void FakeServices::played(const std::string &name)
+{
+    sync_ = {};
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_.before = false;
+    sync_.game = name;
+    sync_.profile = "Player 1";
+    sync_looks_ = 0;
+}
+
+// ---- Settings > Save sync ----
+
+ui::SaveSyncSetup FakeServices::save_sync_setup()
+{
+    ui::SaveSyncSetup setup;
+    setup.file = "/data/prosperoeden/config/remote/save-sync.json";
+    const char *names[] = {"Player 1", "Kids"};
+    for (int i = 0; i < 2; ++i)
+    {
+        ui::SaveSyncProfile profile;
+        profile.name = names[i];
+        profile.current = i == 0;
+        profile.linked = !linked_[static_cast<std::size_t>(i)].empty();
+        profile.server = linked_[static_cast<std::size_t>(i)];
+        setup.profiles.push_back(profile);
+    }
+    return setup;
+}
+
+bool FakeServices::start_pairing(int profile, int server)
+{
+    pair_ = {};
+    pair_.stage = ui::PairingStage::asking;
+    pair_.profile = profile == 0 ? "Player 1" : "Kids";
+    pair_.server = pair_servers()[static_cast<std::size_t>(server)].name;
+    pair_profile_ = profile;
+    pair_looks_ = 0;
+    return true;
+}
+
+ui::PairingStatus FakeServices::pairing()
+{
+    ++pair_looks_;
+    if (pair_.stage == ui::PairingStage::asking && pair_looks_ > 2)
+    {
+        pair_.stage = ui::PairingStage::waiting;
+        pair_.code = "K7QM2XWP";
+        pair_.address = "http://192.168.1.20:3000/pair/device?user_code=K7QM2XWP";
+        pair_.seconds_left = 598;
+    }
+    else if (pair_.stage == ui::PairingStage::waiting && pair_looks_ > 40)
+    {
+        pair_.stage = ui::PairingStage::done;
+        pair_.user = "alex";
+        linked_[static_cast<std::size_t>(pair_profile_)] = "alex @ http://192.168.1.20:3000";
+    }
+    return pair_;
+}
+
+bool FakeServices::unlink_profile(int profile)
+{
+    linked_[static_cast<std::size_t>(profile)].clear();
+    return true;
 }
 
 } // namespace pe::host

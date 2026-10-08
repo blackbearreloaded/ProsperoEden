@@ -285,6 +285,19 @@ bool Font::can_draw(std::string_view text) const
     return true;
 }
 
+std::string Font::drawable(std::string_view text) const
+{
+    std::string kept;
+    for (std::size_t index = 0; index < text.size();)
+    {
+        const std::size_t start = index;
+        const char32_t c = next_codepoint(text, &index);
+        if (c == '\n' || invisible(c) || find(c) != nullptr || (dynamic_ && dynamic_->fonts.face_for(c) >= 0))
+            kept.append(text.substr(start, index - start));
+    }
+    return kept;
+}
+
 const ff::Glyph *Font::find(std::uint32_t codepoint) const
 {
     const auto it =

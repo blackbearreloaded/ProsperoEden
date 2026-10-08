@@ -6,6 +6,7 @@
 
 #include "pe/core/log.hpp"
 
+#include <cctype>
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
@@ -40,7 +41,8 @@ enum GameRow : int
     row_controls,
     row_language,
     row_mods,
-    row_save, // in builds that move saves
+    row_save,   // in builds that move saves
+    row_delete, // a game a download source has: deleted from the console
 };
 constexpr float kDialogRowsTop = 334.0f;
 constexpr float kDialogRowPitch = 96.0f;
@@ -72,6 +74,29 @@ void Launcher::start_scan()
         scan_ = std::async(std::launch::async, [this] { return services_.games(); });
 }
 
+// A game's name as it is shown: with the characters a font has, the launcher's own or the
+// console's. One with nothing left that says anything (a name in a script no font here has, or
+// on a console whose fonts could not be read) is replaced by the name its file gives, rather than
+// drawn as question marks.
+static std::string shown_name(const gfx::Font *font, const std::string &name, const std::string &file)
+{
+    if (font == nullptr || name.empty() || font->can_draw(name))
+        return name;
+    std::string kept;
+    for (const char c : font->drawable(name))
+        if (c != ' ' || (!kept.empty() && kept.back() != ' '))
+            kept += c;
+    while (!kept.empty() && kept.back() == ' ')
+        kept.pop_back();
+    const bool says = std::any_of(kept.begin(), kept.end(), [](char c)
+                                  { return std::isalnum(static_cast<unsigned char>(c)) != 0 ||
+                                           static_cast<unsigned char>(c) >= 0x80; });
+    if (says)
+        return kept;
+    const std::string stem = file.substr(0, file.find_last_of('.'));
+    return stem.empty() ? name : stem;
+}
+
 void Launcher::finish_scan(bool wait)
 {
     if (!scan_.valid())
@@ -100,6 +125,8 @@ void Launcher::apply_games(std::vector<Game> games)
                                      games_[static_cast<std::size_t>(library_.selected)].file :
                                      std::string{};
     games_ = std::move(games);
+    for (Game &game : games_)
+        game.name = shown_name(fonts_.font, game.name, game.file);
     games_loaded_ = true;
     for (Game &game : games_)
         if (game.title_id != 0)
@@ -133,6 +160,9 @@ void Launcher::name_home_games()
 void Launcher::read_home()
 {
     home_ = services_.home();
+    home_.last_title = shown_name(fonts_.font, home_.last_title, home_.last_file);
+    for (Recent &recent : home_.recents)
+        recent.title = shown_name(fonts_.font, recent.title, recent.file);
     if (home_.last_title_id == 0)
         return;
     const std::vector<Mod> mods = services_.mods(home_.last_title_id);
@@ -173,8 +203,9 @@ bool Launcher::drop_missing_games()
     const std::string selected =
         library_.selected < static_cast<int>(games_.size()) ? games_[static_cast<std::size_t>(library_.selected)].file :
                                                               std::string{};
-    const auto gone = std::remove_if(games_.begin(), games_.end(),
-                                     [this](const Game &game) { return !services_.game_exists(game.file); });
+    // A game on download sources has no file yet: it leaves when their lists do not have it.
+    const auto gone = std::remove_if(games_.begin(), games_.end(), [this](const Game &game)
+                                     { return !game.remote && !services_.game_exists(game.file); });
     if (gone == games_.end())
         return false;
     games_.erase(gone, games_.end());
@@ -324,6 +355,12 @@ void Launcher::press_library(Key key)
     }
     case Key::square:
     {
+        // A game on download sources: into the download queue, or out of it.
+        if (game != nullptr && game->remote)
+        {
+            queue_remote(*game);
+            return;
+        }
         // The Mods switch: all of the game's mods on or off at once. Their own switches (Game
         // settings > Mods) keep their state behind it.
         if (game == nullptr || game->title_id == 0 || game->mods == 0)
@@ -345,6 +382,12 @@ void Launcher::press_library(Key key)
     case Key::triangle:
         if (game == nullptr)
             return;
+        if (game->remote)
+        {
+            say(tr("Download the game to change its settings."), true);
+            cue(Cue::error);
+            return;
+        }
         if (game->title_id == 0)
         {
             say(tr("This game's settings cannot be saved (no title ID)."), true);
@@ -356,6 +399,7 @@ void Launcher::press_library(Key key)
         import_source_ = services_.save_transfer_available() ?
                              services_.save_import_source(game->title_id) : SaveSource::none;
         import_armed_ = false;
+        delete_armed_ = false;
         read_mods(games_[static_cast<std::size_t>(library_.selected)]);
         open_modal(Modal::game);
         game_rows_.visible = kDialogRowsShown;
@@ -366,6 +410,11 @@ void Launcher::press_library(Key key)
         if (game == nullptr || !home_.setup_ready)
         {
             cue(Cue::error);
+            return;
+        }
+        if (game->remote)
+        {
+            play_remote(*game);
             return;
         }
         launch(game->file, game->name, game->cover);
@@ -415,11 +464,41 @@ void Launcher::draw_library(Canvas &c)
             const Game &game = games_[static_cast<std::size_t>(row)];
             const Rect r = row_rect(row);
             list.push_opacity(library_.row_alpha(row, kRowHeight));
-            cover(c, game.cover, {r.x + 12.0f, r.y + 11.0f, 56.0f, 56.0f}, 8.0f);
-            text_fit(c, game.name, r.x + 86.0f, baseline(r.y, kRowHeight, theme::kText24),
-                     theme::kText24, Color::rgb(0xf3f5e9), 560.0f);
-            text(c, game.format, r.x + 730.0f, baseline(r.y, kRowHeight, theme::kSmall),
-                 theme::kSmall, theme::kMeta, Align::right);
+            if (game.remote)
+                remote_cover(c, game.cover, {r.x + 12.0f, r.y + 11.0f, 56.0f, 56.0f}, 8.0f);
+            else
+                cover(c, game.cover, {r.x + 12.0f, r.y + 11.0f, 56.0f, 56.0f}, 8.0f);
+            if (game.remote)
+            {
+                // A game on download sources: where it is or what is happening to it instead of its
+                // format, and its download's progress under its name.
+                Color tone = theme::kMeta;
+                const std::string state = remote_state(game, &tone);
+                const float taken = text_shrink(c, state, r.x + 730.0f, baseline(r.y, kRowHeight, theme::kSmall),
+                                                theme::kSmall, tone, 200.0f, Align::right);
+                text_fit(c, game.name, r.x + 86.0f, baseline(r.y, kRowHeight, theme::kText24), theme::kText24,
+                         Color::rgb(0xf3f5e9).with_alpha(0.78f), 644.0f - taken - 20.0f);
+                const Download *download = download_of(game.key);
+                if (download != nullptr &&
+                    (download->state == DownloadState::downloading || download->state == DownloadState::verifying) &&
+                    download->total > 0)
+                {
+                    const float done = std::clamp(static_cast<float>(static_cast<double>(download->done) /
+                                                                     static_cast<double>(download->total)),
+                                                  0.0f, 1.0f);
+                    list.rounded_rect({r.x + 86.0f, r.y + kRowHeight - 14.0f, 560.0f, 4.0f}, 2.0f,
+                                      theme::kPanelEdge.with_alpha(0.22f));
+                    list.rounded_rect({r.x + 86.0f, r.y + kRowHeight - 14.0f, std::max(4.0f, 560.0f * done), 4.0f},
+                                      2.0f, theme::kLime);
+                }
+            }
+            else
+            {
+                text_fit(c, game.name, r.x + 86.0f, baseline(r.y, kRowHeight, theme::kText24),
+                         theme::kText24, Color::rgb(0xf3f5e9), 560.0f);
+                text(c, game.format, r.x + 730.0f, baseline(r.y, kRowHeight, theme::kSmall),
+                     theme::kSmall, theme::kMeta, Align::right);
+            }
             list.pop_opacity();
         }
         list.pop_clip();
@@ -440,8 +519,11 @@ void Launcher::draw_library(Canvas &c)
     text_block(c, game != nullptr ? game->name : tr("No ROM selected"), 1016.0f,
                baseline(250.0f, 42.0f, theme::kHeading), theme::kHeading, 42.0f, theme::kTitle,
                760.0f, 2);
-    cover(c, game != nullptr ? game->cover : std::string{}, {1016.0f, 372.0f, 288.0f, 288.0f},
-          14.0f, 0.9f);
+    if (game != nullptr && game->remote)
+        remote_cover(c, game->cover, {1016.0f, 372.0f, 288.0f, 288.0f}, 14.0f, 0.9f);
+    else
+        cover(c, game != nullptr ? game->cover : std::string{}, {1016.0f, 372.0f, 288.0f, 288.0f},
+              14.0f, 0.9f);
     if (game == nullptr || game->cover.empty())
         text_shrink(c, game == nullptr ? tr("Select a game") : tr("No cover art"), 1160.0f,
                     baseline(676.0f, 30.0f, theme::kSmall), theme::kSmall, theme::kMeta, 288.0f,
@@ -462,6 +544,20 @@ void Launcher::draw_library(Canvas &c)
         {tr("LANGUAGE"), game != nullptr ? game->language : "-",
          game != nullptr && !game->language_note.empty() ? theme::kWarning : theme::kValue},
     };
+    // A game on download sources: what is happening to it and where it is, instead of what it comes
+    // with and its language, which are known once it is on the console.
+    const bool remote = game != nullptr && game->remote;
+    if (remote)
+    {
+        Color tone = theme::kValue;
+        const std::string state = remote_state(*game, &tone);
+        const bool coming = download_of(game->key) != nullptr;
+        fields[2] = {tr("STATE"), coming ? state : std::string{tr("Not on the console")}, coming ? tone : theme::kValue};
+        std::string sources;
+        for (const std::string &name : game->sources)
+            sources += (sources.empty() ? "" : ", ") + name;
+        fields[3] = {game->sources.size() == 1 ? tr("SOURCE") : tr("SOURCES"), sources, theme::kValue};
+    }
     for (int i = 0; i < 4; ++i)
     {
         const float line = baseline(384.0f + 42.0f * static_cast<float>(i), 30.0f, theme::kSmall);
@@ -470,7 +566,7 @@ void Launcher::draw_library(Canvas &c)
             text_shrink(c, fields[i].label, 1336.0f, line, theme::kSmall, theme::kLabel, 200.0f);
         const float room = 440.0f - label - 16.0f;
         // What a game comes with is said briefly where the whole line does not fit.
-        if (i == 2 && game != nullptr && text_width(c, fields[i].value, theme::kSmall) > room)
+        if (i == 2 && game != nullptr && !remote && text_width(c, fields[i].value, theme::kSmall) > room)
             fields[i].value = addons_line(game->addons_short, game->mods, game->mods_on, true);
         text_shrink(c, fields[i].value, 1776.0f, line, theme::kSmall, fields[i].color, room,
                     Align::right);
@@ -543,17 +639,37 @@ void Launcher::draw_library(Canvas &c)
                     kModsRow.x + kModsRow.w - 26.0f, baseline(kModsRow.y, kModsRow.h, theme::kText24),
                     theme::kText24, theme::kMeta, 400.0f, Align::right);
     }
-    draw_pad(c, Pad::leftright, 1022.0f, 876.0f, 26.0f);
+    // The console mode is changed with left and right (not on a game that is still on its sources).
+    if (game == nullptr || !game->remote)
+        draw_pad(c, Pad::leftright, 1022.0f, 876.0f, 26.0f);
     // A message said while Game settings is open belongs to that dialog.
     const bool said = !message_.empty() && modal_shown_ != Modal::game && modal_shown_ != Modal::mods &&
                       modal_shown_ != Modal::game_options && modal_shown_ != Modal::mapping;
+    const Download *download = remote ? download_of(game->key) : nullptr;
+    const bool failed = !said && download != nullptr && download->state == DownloadState::failed;
     const std::string hint = said ? message_ :
+                             failed ? download->error :
+                             remote ? tr("Not on the console yet. Download it to play and to change its settings.") :
                              can_configure ? tr("Change mode. Saved per game.") :
                                              tr("Select a readable game to configure its mode.");
     notice(c, hint, 1060.0f, 883.0f, theme::kSmall,
-           said ? (message_warning_ ? theme::kWarning : theme::kLimePale) : theme::kMeta, 700.0f,
-           said && message_warning_);
+           said ? (message_warning_ ? theme::kWarning : theme::kLimePale) : failed ? theme::kWarning : theme::kMeta,
+           700.0f, (said && message_warning_) || failed);
 
+    if (remote)
+    {
+        // A game on download sources: Square puts it in the queue, or takes it out.
+        static constexpr Hint kRemote[] = {{Pad::cross, TR("Download and play")},
+                                           {Pad::circle, TR("Back")},
+                                           {Pad::updown, TR("Browse games")},
+                                           {Pad::square, TR("Download")}};
+        static constexpr Hint kQueued[] = {{Pad::cross, TR("Play when downloaded")},
+                                           {Pad::circle, TR("Back")},
+                                           {Pad::updown, TR("Browse games")},
+                                           {Pad::square, TR("Cancel download")}};
+        draw_footer(c, download != nullptr ? kQueued : kRemote, 4);
+        return;
+    }
     static constexpr Hint kHints[] = {{Pad::cross, TR("Select")},
                                       {Pad::circle, TR("Back")},
                                       {Pad::updown, TR("Browse games")},
@@ -565,9 +681,17 @@ void Launcher::draw_library(Canvas &c)
 
 // ---------------------------------------------------------------- game settings dialog
 
+int Launcher::game_row(int row) const
+{
+    if (row < row_save)
+        return row;
+    return services_.save_transfer_available() ? row : row + 1;
+}
+
 void Launcher::press_game(Key key)
 {
     Game &game = games_[static_cast<std::size_t>(library_.selected)];
+    const int kind = game_row(option_);
     switch (key)
     {
     case Key::circle:
@@ -581,11 +705,12 @@ void Launcher::press_game(Key key)
             option_ = game_rows_.selected;
             message_.clear();
             import_armed_ = false;
+            delete_armed_ = false;
             cue(Cue::focus);
         }
         return;
     case Key::square:
-        if (option_ != row_save)
+        if (kind != row_save)
             return;
         break;
     case Key::left:
@@ -595,14 +720,14 @@ void Launcher::press_game(Key key)
     default:
         return;
     }
-    if (option_ >= row_video && option_ <= row_language)
+    if (kind >= row_video && kind <= row_language)
     {
         // A kind of setting has its own list.
         if (key == Key::cross)
-            open_game_options(option_ - row_video);
+            open_game_options(kind - row_video);
         return;
     }
-    if (option_ == row_mods)
+    if (kind == row_mods)
     {
         // The game's mods have their own list. It is read again: mods may have been copied in
         // since this dialog opened.
@@ -617,7 +742,43 @@ void Launcher::press_game(Key key)
         cue(Cue::open);
         return;
     }
-    if (option_ == row_save)
+    if (kind == row_delete)
+    {
+        // Deleting a game a download source has: its file and all of its updates and DLC go, its save
+        // data and settings stay. Cross asks first, then deletes.
+        if (key != Key::cross)
+            return;
+        if (!delete_armed_)
+        {
+            delete_armed_ = true;
+            say(tr("Press again to delete the game and its updates and DLC from the console. Save data and "
+                   "settings are kept."),
+                true);
+            cue(Cue::notify);
+            return;
+        }
+        delete_armed_ = false;
+        std::string result;
+        if (!services_.delete_game(game, &result))
+        {
+            say(result.empty() ? std::string{tr("Could not delete the game.")} : result, true);
+            cue(Cue::error);
+            return;
+        }
+        // On its sources only now: so it shows until the list is read again (it keeps its place).
+        game.remote = true;
+        game.title_id = 0;
+        game.addons.clear();
+        game.addons_short.clear();
+        game.mods = game.mods_on = 0;
+        close_modal();
+        read_home();
+        refresh_selected_game();
+        say(result);
+        cue(Cue::saved);
+        return;
+    }
+    if (kind == row_save)
     {
         // Save data: Square copies the game's save out, Cross (twice) copies one in.
         std::string result;
@@ -695,10 +856,11 @@ void Launcher::draw_game(Canvas &c, float open)
                   std::to_string(mods_.size())}),
         import_source_ == SaveSource::ryujinx ? tr("Ryujinx save found") :
         import_source_ == SaveSource::folder ? tr("Save folder found") : tr("Nothing to import"),
+        game != nullptr ? game->size : std::string{},
     };
     static constexpr const char *kLabels[] = {TR("Console mode"), TR("Video"),    TR("Performance"),
                                               TR("Audio"),        TR("Controls"), TR("Language"),
-                                              TR("Mods"),         TR("Save data")};
+                                              TR("Mods"),         TR("Save data"), TR("Delete from console")};
     // Five rows show; the list scrolls to the others.
     list.push_clip({kDialogWindow.x - 24.0f, kDialogWindow.y - 6.0f, kDialogWindow.w + 48.0f,
                     kDialogWindow.h + 12.0f});
@@ -718,21 +880,23 @@ void Launcher::draw_game(Canvas &c, float open)
     {
         const float top = row_top(row);
         const float focus = row == option_ ? 1.0f : 0.0f;
+        const int kind = game_row(row);
         list.push_opacity(game_rows_.row_alpha(row, kDialogRowHeight));
         // The value first: the row's name takes what it leaves. The kinds of setting, Mods and
-        // Save data say what is there; the console mode is a choice.
-        const bool there = row == row_mods ? !mods_.empty() && (game == nullptr || game->mods_enabled) :
-                           row == row_save ? import_source_ != SaveSource::none :
-                                             game_overrides(row - row_video) > 0;
+        // Save data say what is there; the console mode is a choice; deleting says the game's size.
+        const bool there = kind == row_mods ? !mods_.empty() && (game == nullptr || game->mods_enabled) :
+                           kind == row_save ? import_source_ != SaveSource::none :
+                           kind == row_delete ? false :
+                                              game_overrides(kind - row_video) > 0;
         const float taken =
-            row != row_mode ?
-                text_shrink(c, values[row], 1292.0f, baseline(top, kDialogRowHeight, theme::kSmall),
+            kind != row_mode ?
+                text_shrink(c, values[kind], 1292.0f, baseline(top, kDialogRowHeight, theme::kSmall),
                             theme::kSmall, there ? theme::kLimePale : theme::kMeta, 320.0f,
                             Align::right) :
-                chooser(c, values[row], 1296.0f, baseline(top, kDialogRowHeight, theme::kText24),
+                chooser(c, values[kind], 1296.0f, baseline(top, kDialogRowHeight, theme::kText24),
                         focus, theme::kLimePale);
-        text_shrink(c, tr(kLabels[row]), 628.0f, baseline(top, kDialogRowHeight, theme::kText24),
-                    theme::kText24, theme::kValue, 664.0f - taken - 28.0f);
+        text_shrink(c, tr(kLabels[kind]), 628.0f, baseline(top, kDialogRowHeight, theme::kText24),
+                    theme::kText24, kind == row_delete ? theme::kWarning : theme::kValue, 664.0f - taken - 28.0f);
         list.pop_opacity();
     }
     list.pop_clip();
@@ -745,7 +909,12 @@ void Launcher::draw_game(Canvas &c, float open)
                      message_warning_ ? theme::kWarning : theme::kLimePale, 736.0f, 2,
                      message_warning_);
     }
-    else if (option_ == row_save)
+    else if (game_row(option_) == row_delete)
+    {
+        static constexpr Hint kDelete[] = {{Pad::cross, TR("Delete")}, {Pad::circle, TR("Back")}};
+        draw_hints(c, kDelete, 2, 592.0f, kDialogHints, theme::kCopy, 736.0f);
+    }
+    else if (game_row(option_) == row_save)
     {
         static constexpr Hint kTransfer[] = {{Pad::cross, TR("Import")},
                                              {Pad::square, TR("Export a copy")},
