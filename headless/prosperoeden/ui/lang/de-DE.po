@@ -1799,6 +1799,154 @@ msgstr "{0}/ (NSP/XCI)"
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (ein Ordner je Titel-ID)"
 
+#. A date and time (strftime: %Y year, %m month, %d day, %H hour, %M minute).
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d.%m.%Y %H:%M"
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Speicherdaten werden abgeglichen"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Speicherdaten werden gesichert"
+
+#. {0} is a profile's name.
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Profil {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Das Spiel startet, sobald die Speicherdaten abgeglichen sind."
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "Deine Speicherdaten werden mit denen auf dem Server verglichen."
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Speicherdaten-Konflikt"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Speicherdaten nicht abgeglichen"
+
+#. {0} is a game, {1} a profile's name.
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Profil {1}"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "Die Konsole und der Server haben beide Speicherdaten, die die andere Seite nicht kennt. Welche sollen bleiben? Die anderen werden als Sicherung aufbewahrt."
+
+#. {0} is a date and time, {1} a device ("Pixel 8").
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} auf {1}"
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Die der Konsole behalten"
+
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Geht auf den Server."
+
+#. {0} is a date and time.
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Stand {0}. Geht auf den Server."
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Die des Servers übernehmen"
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Ersetzt die der Konsole."
+
+#. {0} is a date and time, maybe with the device.
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Stand {0}. Ersetzt die der Konsole."
+
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Nichts ändern"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Mit denen der Konsole spielen, später erneut fragen."
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Beim nächsten Abgleich erneut fragen."
+
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Trotzdem spielen"
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Mit denen der Konsole; Abgleich nach dem Spiel."
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Die Speicherdaten noch einmal abgleichen."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Das Spiel startet nicht."
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Speicherdaten nicht gesichert"
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Es wird beim nächsten Öffnen des Menüs erneut versucht."
+
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Speicherdaten gesichert"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Speicherdaten vom Server übernommen"
+
+#. {0} is a game.
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "{0} ist nicht auf dem Server."
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Speicherdaten unverändert gelassen"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Server zu alt für den Abgleich"
+
+#. {0} is the server's RomM version, {1} the oldest one the save sync takes.
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "Auf dem Server läuft RomM {0}; der Abgleich braucht RomM {1} oder neuer. Aktualisiere den Server: bis dahin werden keine Speicherdaten abgeglichen."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Mit denen der Konsole; kein Abgleich."
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Verstanden"
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Beim nächsten Abgleich kommt der Hinweis wieder."
+
 #. {0} is how far a check of a downloaded game's files is ("45%").
 #: pe/ui/remote.cpp
 msgid "Checking {0}"

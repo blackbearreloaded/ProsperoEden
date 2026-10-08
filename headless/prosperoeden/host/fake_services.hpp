@@ -318,7 +318,34 @@ class FakeServices final : public ui::Services
     }
     bool delete_game(const ui::Game &game, std::string *message) override;
 
+    // The profile syncs its save data (save_sync_on); a sync takes a few looks of the launcher.
+    // save_sync_conflict: both sides changed; save_sync_fails: the server cannot be reached.
+    // played(): a game just ended, its save data goes up once the menu is back.
+    bool save_sync_on = false;
+    bool save_sync_conflict = false;
+    bool save_sync_fails = false;
+    bool save_sync_too_old = false; // the server runs RomM 4.9.2
+    bool save_sync_wanted(const std::string &) override
+    {
+        return save_sync_on;
+    }
+    void start_save_sync(const std::string &file, bool before) override;
+    ui::SaveSync save_sync() override;
+    void choose_save_data(ui::SaveChoice choice) override;
+    void end_save_sync() override
+    {
+        if (sync_.stage == ui::SaveSyncStage::done || sync_.stage == ui::SaveSyncStage::failed)
+            sync_ = {};
+    }
+    void stop_save_sync() override
+    {
+        sync_ = {};
+    }
+    void played(const std::string &name);
+
   private:
+    ui::SaveSync sync_;
+    int sync_looks_ = 0;
     std::vector<ui::Game> remote_; // the sources' games not on the console
     std::vector<ui::Download> queue_;
     // Where a download that goes on was (verifying reads up to there first), by its key.

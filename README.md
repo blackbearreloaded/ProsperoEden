@@ -52,6 +52,7 @@ The complete ProsperoEden source is in this repository: the PS5 frontend and lau
 - **Save data in and out** - import a game's save from a folder or from a Ryujinx data folder, and export a copy (Triangle in the Library, then **Save data**).
 - **Game updates and DLC** - put update and DLC files (NSP or XCI) in the `updates` folder next to `roms`. They apply when the game starts, and each game's details show the update version and DLC count.
 - **Download sources** - the Switch games on servers in your network, such as a [RomM](https://github.com/rommapp/romm) server, appear in the Library next to the ones on the console. A game is downloaded when you play it, or ahead of time through a download queue, and then runs from the console like any other: nothing is streamed. Downloads need an FTP server running on the console; see [Download sources](#download-sources).
+- **Save sync** - each profile can keep its save data on a server, such as a [RomM](https://github.com/rommapp/romm) server, as Steam does: it is synced before a game starts and after it ended, and when it changed on two devices you choose which one stays. See [Save sync](#save-sync).
 - **Mods** - patches, replacement game files and cheats for a game, from a `mods` folder next to `roms`, each switched on or off in the game's settings (Triangle in the Library, then **Mods**).
 - **Performance switches** - seven switches that trade accuracy for speed (compiling a game's code ahead, asynchronous shaders, faster GPU, CPU and DMA emulation, and more) in **Settings > Performance**; see [Performance settings](#performance-settings).
 - **Shader cache** - shaders compiled in earlier sessions are loaded when a game starts, so an effect stutters only the first time it appears.
@@ -112,10 +113,14 @@ ProsperoEden keeps its own data in `/data/prosperoeden`, separately from the gam
 ```text
 /data/prosperoeden/
 ├── config/prosperoeden.json            # every profile's settings, and the game files folder
-├── config/remote/                      # download sources, when you use them:
+├── config/remote/                      # download sources and save sync, when you use them:
 │   ├── sources.json                    #   the sources and how to reach them (written by you)
 │   ├── queue.json                      #   the download queue
-│   └── <source>/catalog.json           #   each source's game list, kept for the next start
+│   ├── <source>/catalog.json           #   each source's game list, kept for the next start
+│   ├── save-sync.json                  #   where each profile syncs its save data (filled in by you)
+│   └── save-sync/                      #   what the save sync keeps: the console as a device of
+│                                       #   each profile's server, the games still to be synced
+├── backup/save-sync/                   # save data the save sync replaced, the last three per game
 ├── covers/                             # cached game covers
 ├── logs/                               # current and previous session logs, crash reports
 └── user/                               # every profile's saves, and emulator user data
@@ -189,11 +194,41 @@ A download source is a server in your network that has Switch games, such as a [
 - **Checked as it comes.** RomM does not hash Switch files, so a download is checked on its way in, as Eden's integrity check checks a game: each NCA of an NSP or XCI against the SHA-256 it is named after, with no keys needed. A file found damaged is deleted and the download fails saying so; trying again downloads it again. A download that goes on reads what it had from the drive first (**Checking** in the queue). What the console's FTP server writes is not read back, and files that are no NSP or XCI are taken as they are.
 - **Making room.** A game that a source has can be deleted from the console again: Triangle in the Library, then **Delete from console** (Cross twice). Its file and all of its updates and DLC in `updates/` are deleted, also ones put there by hand; its save data, its settings and its mods stay. The Library then lists it as on its sources again, and it can be downloaded any time.
 
-Sign-ins are kept in `sources.json` only, and each is sent to its own source only. Download sources need filesystem access (the payload loader on port 9021), as the game files folder does, and an FTP server on the console (see above). Save data is not synchronised with the sources yet.
+Sign-ins are kept in `sources.json` only, and each is sent to its own source only. Download sources need filesystem access (the payload loader on port 9021), as the game files folder does, and an FTP server on the console (see above). Save data is synced apart from the sources; see [Save sync](#save-sync).
 
 #### RomM
 
 `"type": "romm"` is a [RomM](https://github.com/rommapp/romm) server (a current version); as with any source, its games are written by the console's FTP server, which has to run. Its entry in `sources.json` has the server's `"url"` and a `"token"`: in RomM, create a client API token (your profile, **Client API tokens**) with the scopes `platforms.read` and `roms.read`. `"username"` and `"password"` work instead of `"token"`, and `"platform"` names the platform's slug when the server does not call it `switch`. RomM's file categories decide what is the game and what are its updates and DLC; manuals, mods, soundtracks and the like stay on the server. In RomM a game is a folder, with its updates in `update/` and its DLC in `dlc/`. What RomM matched a game to tells it apart: its ids at the metadata providers RomM uses, its name when RomM identified it, and its title ID when the RomM server has the keys to read it.
+
+### Save sync
+
+Each profile can keep its save data on a server, such as a [RomM](https://github.com/rommapp/romm) server (5.0.0 or newer), the way Steam keeps it in the cloud: before a game starts, its save data is put in step with the server's, and after the game ended the new save data goes to the server. Played on another device in between (Eden on Android with [Argosy](https://github.com/rommapp/argosy-launcher), or another console), the newer save data comes to the console; changed on both sides, ProsperoEden asks which one stays. Save sync is set up for each profile and does not depend on the download sources: games copied to the console by hand sync too, as long as the server has the game.
+
+- **Set it up over FTP.** ProsperoEden writes `/data/prosperoeden/config/remote/save-sync.json` with an entry for every profile, and keeps it in step with the profiles: a new profile gets an empty entry, a removed one's entry goes, and a renamed one's `"__profile_name"` changes. Fill in the entry of each profile that should sync (over FTP, like the keys), with the server's `"type"`, `"url"` and sign-in (see [RomM](#romm-1) for a RomM server):
+
+  ```json
+  { "version": 1, "auto": true,
+    "profiles": [
+      { "profile": "1F1E1D1C1B1A19181716151413121110", "__profile_name": "Player 1",
+        "type": "romm", "url": "http://192.168.1.20:3000", "token": "rmm_..." },
+      { "profile": "AFAEADACABAAA9A8A7A6A5A4A3A2A1A0", "__profile_name": "Kids",
+        "type": "romm", "url": "http://192.168.1.20:3000", "token": "rmm_..." },
+      { "profile": "000102030405060708090A0B0C0D0E0F", "__profile_name": "Guest",
+        "type": "", "url": "", "token": "" }
+    ] }
+  ```
+
+  `"profile"` is the profile's ID, which tells the entries apart (a name can change, the ID does not); leave it as it is. Fields that start with `__` are only there to read: ProsperoEden writes them, and what you write into them changes nothing. An entry with an empty `"type"` does not sync. `"auto": false` turns the save sync off for every profile, also for the games still waiting to be synced after they were played. Everything else you write stays as it is, also fields of your own. A file that is not valid JSON is left alone, and no profile syncs until it is fixed (the log says so).
+- **One server user for each person.** Give each profile the sign-in of its own user on the server (in RomM: a client API token of that user): the server keeps each user's save data apart, so two people's save data of the same game stay two. Two profiles with the same user would share their save data.
+- **Before a game.** Starting a game opens a dialog while its save data is synced; the game starts when it is done. When the server's save data is newer, it replaces the console's. Circle goes back without the game (the sync stops, nothing more changes). When the server cannot be reached, the dialog says why: **Play anyway** (with the console's save data; it is synced after the game), **Try again** or **Back**.
+- **After a game.** Once the menu is back, the game's save data goes to the server, and a notice at the top right says so. When that fails (no network), it is tried again each time the menu opens, until it worked.
+- **Changed on both sides.** When the console and the server both have save data the other does not know (played on two devices without a sync between), a dialog asks which one stays: **Keep this console's** (it goes to the server), **Take the server's** (it replaces the console's) or **Change nothing** (you are asked again next time). It shows when each was saved, and on which device the server's was.
+- **Nothing is lost.** Save data replaced on the console is first moved to `/data/prosperoeden/backup/save-sync/<profile>/<title ID>/<time>/`; the last three of each game are kept. A RomM server keeps the last ten versions of each game's save data as well.
+- **What is synced.** A game's save data of the profile: its folder `user/nand/user/save/0000000000000000/<profile ID>/<title ID>/`, as one zip with that folder at its top, the way Argosy packs Eden's save data (so it goes between the two). Save data a game keeps for the whole console (not for a user) is not synced. The server must have the game: it is found as a download source's game is found on the console (by its file name, its title ID, or its name).
+
+#### RomM
+
+`"type": "romm"` keeps the save data on a [RomM](https://github.com/rommapp/romm) server with save sync, RomM 5.0.0 or newer (checked with 5.0.0 to 5.3.1). With an older server nothing is synced, and every sync says so in a dialog to confirm, with the server's version and the one it needs. Its entry in `save-sync.json` has the server's `"url"` and a `"token"` of the profile's own RomM user: in RomM, create a client API token (your profile, **Client API tokens**) with the scopes `platforms.read`, `roms.read`, `assets.read`, `assets.write`, `devices.read` and `devices.write` (and `me.read`, for the log to name the user); a scope that is missing is named when a sync fails. `"username"` and `"password"` work instead of `"token"`, and `"platform"` names the platform's slug when the server does not call it `switch`. The console is registered once as a device of that user, **ProsperoEden (PS5)**, and RomM knows from it which version of each game's save data the console last had. A game's save data is in its slot `autosave`, for the emulator `eden`, as Argosy keeps Eden's; the game's other slots and other emulators' save data are left alone. Which side changed is told by the save data itself, not by the times RomM compares: the console keeps what it last had in step (`config/remote/save-sync/<profile>/synced.json`). Save data deleted in RomM is uploaded again by the console that still has it.
 
 ### Performance settings
 
@@ -231,6 +266,8 @@ Resolution, the upscaling filter, the renderer and the refresh rate, which chang
 - **New profile** adds one. It starts with the settings of the profile that made it, and with no save data.
 - **Left and right** change a profile's name: the names of the PS5 users signed in, then "Player 1" to "Player 8".
 - **Square**, pressed twice, takes a profile off the list. Its save data stays on the console.
+
+Each profile can keep its save data on a server of its own; see [Save sync](#save-sync).
 
 The menu opens with the profile that the PS5 user in front chose last. If you used an earlier version, your saves, settings and recently played games are the first profile's, where they always were.
 

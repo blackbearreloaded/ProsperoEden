@@ -150,6 +150,27 @@ void Launcher::launch(const std::string &file, const std::string &title, const s
         cue(Cue::error);
         return;
     }
+    // Its save data first, when the profile keeps it on a server.
+    if (services_.save_sync_wanted(file))
+    {
+        sync_file_ = file;
+        sync_title_ = title;
+        sync_cover_ = cover;
+        sync_launch_ = true;
+        sync_started_ = false;
+        sync_time_ = 0.0f;
+        save_sync_wait_ = 1.0f; // looked at in this frame's update
+        modal_ = modal_shown_ = Modal::save_sync;
+        message_.clear();
+        cue(Cue::modal_open);
+        return;
+    }
+    start_game(file, title, cover);
+}
+
+void Launcher::start_game(const std::string &file, const std::string &title, const std::string &cover)
+{
+    services_.will_play(file);
     selected_game_ = services_.game_path(file);
     launch_title_ = title;
     launch_cover_ = cover;
@@ -180,6 +201,8 @@ void Launcher::press(Key key)
         return press_choice(key);
     if (modal_ == Modal::sources)
         return press_sources(key);
+    if (modal_ == Modal::save_sync)
+        return press_save_sync(key);
     if (modal_ != Modal::none)
         return press_dialog(key);
     switch (screen_)
@@ -210,6 +233,7 @@ void Launcher::update(float dt)
     textures_.pump(dt);
     finish_scan(false);
     poll_sources(dt);
+    poll_save_sync(dt);
     update_controllers(dt);
     transition_.update(dt);
     press_ = std::max(0.0f, press_ - dt / 0.18f);
@@ -239,6 +263,7 @@ void Launcher::update(float dt)
     profile_rows_.update(dt);
     source_rows_.update(dt);
     choice_rows_.update(dt);
+    sync_rows_.update(dt);
     mode_.target = selected_docked_ ? 0.0f : 1.0f;
     mode_.update(dt, 22.0f);
     const bool mods_on = library_.selected >= 0 && library_.selected < static_cast<int>(games_.size()) &&
@@ -469,6 +494,8 @@ void Launcher::draw(gfx::DrawList &list)
             draw_download(c, opened);
         else if (modal_shown_ == Modal::source)
             draw_choice(c, opened);
+        else if (modal_shown_ == Modal::save_sync)
+            draw_save_sync(c, opened);
         else if (modal_shown_ == Modal::sources)
             draw_sources(c, opened);
         else
@@ -476,6 +503,7 @@ void Launcher::draw(gfx::DrawList &list)
     }
     list.pop_transform();
     draw_update_notice(c);
+    draw_save_sync_notice(c);
     if (launching)
         draw_launch(c);
     // Closing for the update: the screen goes dark over the last moments.

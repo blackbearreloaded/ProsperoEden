@@ -691,6 +691,68 @@ void pictures(Stage &s)
              Key::cross});
     s.wait(0.8f);
     s.shoot("93-downloads-not-set-up");
+
+    // Save sync: before a game starts its save data is put in step with the server's.
+    s.services.save_sync_on = true;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::cross});
+    s.wait(0.6f);
+    s.shoot("A0-save-sync-working");
+    // Both changed: the player chooses.
+    s.services.save_sync_conflict = true;
+    s.wait(2.0f);
+    s.shoot("A1-save-sync-conflict");
+    s.press({Key::down});
+    s.wait(0.4f);
+    s.shoot("A2-save-sync-conflict-server");
+    s.press({Key::cross});
+    for (int frame = 0; frame < 600 && s.launcher->selected_game().empty(); ++frame)
+        s.frame();
+    if (s.launcher->selected_game().empty())
+    {
+        std::fprintf(stderr, "error: the game did not start after its save data was synced\n");
+        s.ok = false;
+    }
+    // The server cannot be reached: play anyway, try again, or not.
+    s.services.save_sync_fails = true;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::cross});
+    s.wait(3.0f);
+    s.shoot("A3-save-sync-failed");
+    s.press({Key::down, Key::down, Key::cross});
+    s.wait(0.8f);
+    s.services.save_sync_fails = false;
+    // After a game, once the menu is back: its save data goes up, with a notice.
+    s.services.played("Starfall Odyssey");
+    s.restart(false);
+    s.wait(2.4f);
+    s.shoot("A4-save-sync-backed-up");
+    // A server too old for the save sync: before a game, play anyway or not; after one, confirmed.
+    s.services.save_sync_too_old = true;
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::cross});
+    s.wait(1.2f);
+    s.press({Key::cross});
+    s.wait(3.0f);
+    s.shoot("A5-save-sync-too-old");
+    s.press({Key::circle});
+    s.wait(0.8f);
+    s.services.played("Starfall Odyssey");
+    s.restart(false);
+    s.wait(3.0f);
+    s.shoot("A6-save-sync-too-old-after");
+    s.press({Key::cross});
+    s.wait(0.8f);
+    s.shoot("A7-save-sync-too-old-confirmed");
+    s.services.save_sync_too_old = false;
+    s.services.save_sync_on = false;
 }
 
 // A walk through the launcher, one frame per call of frame().

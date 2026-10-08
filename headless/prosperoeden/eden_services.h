@@ -6,8 +6,12 @@
 #include "pe/ui/services.hpp"
 #include "remote/remote.h"
 
+#include <atomic>
+#include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <string>
+#include <thread>
 #include <vector>
 
 class EdenServices final : public pe::ui::Services {
@@ -80,6 +84,14 @@ public:
     std::vector<pe::ui::Download> downloads() override;
     bool delete_game(const pe::ui::Game& game, std::string* message) override;
 
+    bool save_sync_wanted(const std::string& file) override;
+    void start_save_sync(const std::string& file, bool before) override;
+    pe::ui::SaveSync save_sync() override;
+    void choose_save_data(pe::ui::SaveChoice choice) override;
+    void end_save_sync() override;
+    void stop_save_sync() override;
+    void will_play(const std::string& file) override;
+
     bool load_image(const std::string& path, pe::gfx::Image* image) override;
 
 private:
@@ -96,4 +108,18 @@ private:
     std::mutex titles_lock_;
     std::vector<Eden::Remote::Title> titles_;
     std::uint64_t titles_generation_ = 0;
+
+    // The save sync (remote/save_sync.h): one at a time, on a thread of its own. Before a game
+    // starts it syncs that game; after one ended, every game still waiting for that (pending.json).
+    struct SyncJob {
+        std::string profile; // its ID
+        std::string file;    // the game's file in roms/
+    };
+    void StartSync(std::vector<SyncJob> jobs, bool before);
+    std::thread sync_thread_;
+    std::mutex sync_lock_;
+    std::condition_variable sync_changed_;
+    pe::ui::SaveSync sync_;
+    std::optional<pe::ui::SaveChoice> sync_choice_;
+    std::atomic<bool> sync_stop_{false};
 };

@@ -75,25 +75,6 @@ std::string percent_of(const Download &download)
     return fill(tr("{0}%"), {std::to_string(static_cast<int>(share(download) * 100.0f))});
 }
 
-// An arc from `start` (radians, 0 at the right, clockwise on screen) over `sweep`.
-void arc(gfx::DrawList &list, float cx, float cy, float radius, float width, float start, float sweep, Color color)
-{
-    if (sweep <= 0.001f)
-        return;
-    const int steps = std::max(2, static_cast<int>(sweep / (kPi / 60.0f)));
-    float x = cx + radius * std::cos(start);
-    float y = cy + radius * std::sin(start);
-    for (int i = 1; i <= steps; ++i)
-    {
-        const float a = start + sweep * static_cast<float>(i) / static_cast<float>(steps);
-        const float nx = cx + radius * std::cos(a);
-        const float ny = cy + radius * std::sin(a);
-        list.line(x, y, nx, ny, width, color);
-        x = nx;
-        y = ny;
-    }
-}
-
 void progress_bar(gfx::DrawList &list, const Rect &bar, float amount, Color color)
 {
     list.rounded_rect(bar, bar.h * 0.5f, theme::kPanelEdge.with_alpha(0.22f));

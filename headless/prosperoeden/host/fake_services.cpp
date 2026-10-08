@@ -531,4 +531,74 @@ std::vector<ui::Download> FakeServices::downloads()
     return queue_;
 }
 
+// ---- save sync ----
+
+void FakeServices::start_save_sync(const std::string &file, bool before)
+{
+    sync_ = {};
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_.before = before;
+    sync_.profile = "Player 1";
+    for (const ui::Game &game : games_)
+        if (game.file == file)
+            sync_.game = game.name;
+    sync_looks_ = 0;
+}
+
+ui::SaveSync FakeServices::save_sync()
+{
+    // A few looks while it works, then what came of it.
+    if (sync_.stage == ui::SaveSyncStage::working && ++sync_looks_ >= 8)
+    {
+        if (save_sync_too_old)
+        {
+            sync_.stage = ui::SaveSyncStage::failed;
+            sync_.error = "RomM 4.9.2 is older than the save sync takes: it needs RomM 5.0.0 or newer";
+            sync_.too_old = true;
+            sync_.server_version = "4.9.2";
+            sync_.needed_version = "5.0.0";
+        }
+        else if (save_sync_fails)
+        {
+            sync_.stage = ui::SaveSyncStage::failed;
+            sync_.error = "The server did not answer";
+        }
+        else if (save_sync_conflict)
+        {
+            sync_.stage = ui::SaveSyncStage::conflict;
+            sync_.console_time = 1791457200; // 2026-10-08, 11:00 UTC
+            sync_.server_time = 1791468000;  // and 14:00
+            sync_.server_device = "Pixel 8";
+            save_sync_conflict = false;
+        }
+        else
+        {
+            sync_.stage = ui::SaveSyncStage::done;
+            sync_.outcome = sync_.before ? ui::SaveSyncOutcome::same : ui::SaveSyncOutcome::uploaded;
+        }
+    }
+    return sync_;
+}
+
+void FakeServices::choose_save_data(ui::SaveChoice choice)
+{
+    if (sync_.stage != ui::SaveSyncStage::conflict)
+        return;
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_looks_ = 0;
+    sync_.outcome = choice == ui::SaveChoice::console ? ui::SaveSyncOutcome::uploaded :
+                    choice == ui::SaveChoice::server  ? ui::SaveSyncOutcome::downloaded :
+                                                        ui::SaveSyncOutcome::kept;
+}
+
+void FakeServices::played(const std::string &name)
+{
+    sync_ = {};
+    sync_.stage = ui::SaveSyncStage::working;
+    sync_.before = false;
+    sync_.game = name;
+    sync_.profile = "Player 1";
+    sync_looks_ = 0;
+}
+
 } // namespace pe::host

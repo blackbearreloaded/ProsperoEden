@@ -118,6 +118,9 @@ void plate_focus(Canvas &c, const Plate &style, const Rect &r, float amount);
 
 // A cover (or the app icon while it loads or when there is none), with rounded corners.
 void cover(Canvas &c, const std::string &path, const Rect &r, float radius, float shadow = 0.0f);
+// An arc from `start` (radians, 0 at the right, clockwise on screen) over `sweep`: a ring that
+// fills, or a part of one that turns while something works.
+void arc(gfx::DrawList &list, float cx, float cy, float radius, float width, float start, float sweep, Color color);
 
 // A controller r.w wide (r.h is 25/36 of that): a faint outline at lit 0, white with its light
 // bar glowing at lit 1.

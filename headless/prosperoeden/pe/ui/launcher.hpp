@@ -86,6 +86,7 @@ class Launcher
         download,     // a game from a download source, started once it is downloaded (remote.cpp)
         source,       // which source a game is downloaded from, when several have it (remote.cpp)
         sources,      // Settings > Downloads: the download sources and the queue (remote.cpp)
+        save_sync,    // a game's save data synced before it starts, or a conflict after (save_sync.cpp)
     };
     // The update dialog's steps: the offer, installing, stopping it, closing for the helper to
     // finish, and a failure.
@@ -108,7 +109,10 @@ class Launcher
     void open_modal(Modal modal);
     void close_modal();
     void say(const std::string &text, bool warning = false);
+    // Starts a game: its save data is synced first when the profile syncs it (save_sync.cpp).
     void launch(const std::string &file, const std::string &title, const std::string &cover);
+    // Starts it now.
+    void start_game(const std::string &file, const std::string &title, const std::string &cover);
     void draw_screen(Canvas &c, Screen screen);
     void draw_frame(Canvas &c, const char *title, const char *copy);
     void draw_footer(Canvas &c, const Hint *hints, int count);
@@ -232,6 +236,14 @@ class Launcher
     void open_sources();
     void press_sources(Key key);
     void draw_sources(Canvas &c, float open);
+
+    // ---- save sync (save_sync.cpp) ----
+    // Looks at the sync a few times a second: the game starts once its save data is in step, a
+    // conflict opens the dialog, and the end of a sync after a game shows at the top right.
+    void poll_save_sync(float dt);
+    void press_save_sync(Key key);
+    void draw_save_sync(Canvas &c, float open);
+    void draw_save_sync_notice(Canvas &c);
 
     // ---- game files, language, about (browse.cpp) ----
     void enter_files();
@@ -397,6 +409,20 @@ class Launcher
     tween::Spring download_fraction_;
     float download_time_ = 0.0f;
     ListView source_rows_; // Settings > Downloads: the sources, then the downloads
+
+    // save sync
+    SaveSync save_sync_;            // as last looked at
+    float save_sync_wait_ = 0.0f;
+    std::string sync_file_;         // the game that starts once its save data is in step
+    std::string sync_title_;
+    std::string sync_cover_;
+    bool sync_launch_ = false;      // the dialog is for a game about to start
+    bool sync_started_ = false;     // its sync was asked for (after the one before it ended)
+    ListView sync_rows_;            // the answers to a conflict or a failure
+    float sync_time_ = 0.0f;
+    SaveSync sync_notice_;          // what the notice at the top right says
+    float sync_notice_left_ = 0.0f; // seconds it still shows
+    tween::Spring sync_notice_in_;
 };
 
 } // namespace pe::ui

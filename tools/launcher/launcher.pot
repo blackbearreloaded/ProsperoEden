@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr ""
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr ""
@@ -132,8 +136,12 @@ msgid "Australia"
 msgstr ""
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
 msgstr ""
 
 #. An upscaling filter.
@@ -193,6 +201,10 @@ msgstr ""
 msgid "Change mode. Saved per game."
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr ""
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -224,7 +236,7 @@ msgid "Chinese (Traditional)"
 msgstr ""
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr ""
 
@@ -733,6 +745,18 @@ msgstr ""
 msgid "IN USE"
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr ""
+
 #: settings_store.h
 msgid "Italian"
 msgstr ""
@@ -748,6 +772,10 @@ msgstr ""
 #. keys, firmware and roms are folder names (unchanged). TRIANGLE is the controller's triangle button, in capitals.
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -1051,12 +1079,20 @@ msgstr ""
 msgid "PERFORMANCE"
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr ""
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr ""
 
 #: pe/ui/library.cpp
 msgid "Play when downloaded"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
 msgstr ""
 
 #: pe/ui/profiles.cpp
@@ -1120,6 +1156,10 @@ msgstr ""
 
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
 msgstr ""
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
@@ -1284,6 +1324,30 @@ msgstr ""
 msgid "Save data"
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr ""
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
@@ -1291,6 +1355,14 @@ msgstr ""
 
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
 msgstr ""
 
 #. Shown after choosing 120 Hz.
@@ -1312,7 +1384,7 @@ msgid "Scroll"
 msgstr ""
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr ""
 
@@ -1336,6 +1408,10 @@ msgstr ""
 #. Why a game did not start (the file is gone).
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
 msgstr ""
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
@@ -1444,8 +1520,20 @@ msgstr ""
 msgid "Supply your own files"
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr ""
+
 #: eden_services.cpp
 msgid "Taiwan"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
 msgstr ""
 
 #: pe/ui/profiles.cpp
@@ -1473,6 +1561,10 @@ msgstr ""
 msgid "The folder that holds your keys, firmware and games."
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr ""
+
 #: pe/ui/remote.cpp
 msgid "The game list of {0} could not be read."
 msgstr ""
@@ -1488,6 +1580,10 @@ msgstr ""
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
 msgstr ""
 
 #: pe/ui/remote.cpp
@@ -1507,12 +1603,24 @@ msgstr ""
 msgid "The rest is on the app's page on homebrew.page."
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr ""
+
 #: pe/ui/remote.cpp
 msgid "The source no longer has this game."
 msgstr ""
 
 #: pe/ui/update.cpp
 msgid "The update could not finish"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
 msgstr ""
 
 #: pe/ui/browse.cpp
@@ -1551,7 +1659,7 @@ msgstr ""
 msgid "Triangle"
 msgstr ""
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr ""
 
@@ -1566,6 +1674,10 @@ msgstr ""
 
 #: pe/ui/library.cpp
 msgid "Unavailable"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
 msgstr ""
 
 #. Update dialog headline while the downloaded release is extracted.
@@ -1695,6 +1807,22 @@ msgstr ""
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr ""
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr ""
@@ -1707,6 +1835,10 @@ msgstr ""
 #. Headline when no game has been played yet.
 #: pe/ui/home.cpp
 msgid "Your next adventure"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
 msgstr ""
 
 #. How many settings of a kind this game has of its own; {0} is a number.
@@ -1788,8 +1920,16 @@ msgstr ""
 msgid "{0} of {1} on"
 msgstr ""
 
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr ""
+
 #: pe/ui/remote.cpp, pe/ui/settings.cpp
 msgid "{0} sources"
+msgstr ""
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
 msgstr ""
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.

@@ -2306,6 +2306,7 @@ endif()
                 "${launcher_dir}/pe/ui/game_options.cpp"
                 "${launcher_dir}/pe/ui/profiles.cpp"
                 "${launcher_dir}/pe/ui/remote.cpp"
+                "${launcher_dir}/pe/ui/save_sync.cpp"
                 "${launcher_dir}/pe/ui/update.cpp"
                 "${launcher_dir}/pe/ui/home.cpp"
                 "${launcher_dir}/pe/ui/launcher.cpp"

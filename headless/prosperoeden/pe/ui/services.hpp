@@ -109,6 +109,52 @@ struct Sources
     int ftp_port = 2121; // the console's FTP server, which writes the downloads; it has to run
 };
 
+// The sync of a game's save data with the profile's save store (save-sync.json): before the game
+// starts, and once the menu is back after it ended.
+enum class SaveSyncStage : std::uint8_t
+{
+    idle,
+    working,
+    conflict, // both changed since they were last the same: the player chooses (choose_save_data)
+    done,
+    failed,
+};
+enum class SaveSyncOutcome : std::uint8_t
+{
+    same,       // nothing to do
+    uploaded,   // the console's save data went to the server
+    downloaded, // the server's replaced the console's (the console's is in the backups)
+    kept,       // a conflict left as it is
+    no_game,    // the server does not have the game, so it cannot keep its save data
+};
+struct SaveSync
+{
+    SaveSyncStage stage = SaveSyncStage::idle;
+    bool before = true;      // before the game starts; false: after it ended
+    std::string game;        // its name
+    std::string profile;     // the profile's name
+    std::string server;      // where it syncs to: "mario on http://nas:3000"
+    SaveSyncOutcome outcome = SaveSyncOutcome::same; // done: what happened
+    std::string error;       // failed: why (English, technical)
+    // Failed because the server is older than the save sync takes (shown until the player confirms
+    // it): its version and the oldest one taken.
+    bool too_old = false;
+    std::string server_version;
+    std::string needed_version;
+    // A conflict: when each was last changed (seconds since 1970, 0: not known), and the device
+    // that changed the server's.
+    std::int64_t console_time = 0;
+    std::int64_t server_time = 0;
+    std::string server_device;
+};
+// What the player chose in a conflict.
+enum class SaveChoice : std::uint8_t
+{
+    console, // the console's goes to the server
+    server,  // the server's replaces the console's
+    neither, // both stay as they are
+};
+
 // A game in the download queue.
 enum class DownloadState : std::uint8_t
 {
@@ -461,6 +507,39 @@ class Services
     virtual bool delete_game(const Game &, std::string *)
     {
         return false;
+    }
+
+    // ---- save sync: a game's save data in step with the profile's save store ----
+    // Whether the profile playing syncs the game's save data before it starts and after it ended.
+    virtual bool save_sync_wanted(const std::string &)
+    {
+        return false;
+    }
+    // Syncs a game's save data (its file in roms/), on a thread of its own; save_sync() tells how
+    // it goes. before: the game is about to start (else: it ended, the menu is back).
+    virtual void start_save_sync(const std::string &, bool)
+    {
+    }
+    virtual SaveSync save_sync()
+    {
+        return {};
+    }
+    // The player's choice in a conflict.
+    virtual void choose_save_data(SaveChoice)
+    {
+    }
+    // What the last sync came to was shown: save_sync() is idle again.
+    virtual void end_save_sync()
+    {
+    }
+    // The player does not wait for the sync before a game: it stops, changing nothing more.
+    virtual void stop_save_sync()
+    {
+    }
+    // A game starts: once the menu is back, its save data is synced after it (start_save_sync,
+    // not before), and on later starts until that worked.
+    virtual void will_play(const std::string &)
+    {
     }
 
     // ---- images ----
