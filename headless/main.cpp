@@ -38,6 +38,7 @@
 #include "mods.h"
 #include "controller_applet.h"
 #include "error_applet.h"
+#include "keyboard_applet.h"
 #include "preferences.h"
 #include "metadata_bridge.h"
 #ifdef EDEN_PS5_OPENGL
@@ -1115,6 +1116,8 @@ int main(int argc, char** argv) {
                     if (pad) applets.controller = std::make_unique<Eden::PadControllerApplet>(system.HIDCore(), *pad);
                     // A game's error dialog: logged and closed, so the game carries on.
                     applets.error = std::make_unique<Eden::LoggedErrorApplet>();
+                    // A game's text entry: the PS5's own on-screen keyboard.
+                    applets.software_keyboard = std::make_unique<Eden::SystemKeyboardApplet>(Eden::AskSystemKeyboard);
                     system.GetFrontendAppletHolder().SetFrontendAppletSet(std::move(applets));
                 }
                 Service::AM::FrontendAppletParameters params{

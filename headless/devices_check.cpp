@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "devices.h"
 #include "controller_applet.h"
+#include "keyboard_applet.h"
+#include <condition_variable>
+#include <mutex>
 #include "mock_devices.h"
 #include <algorithm>
 #include <cmath>
@@ -112,6 +115,110 @@ void CheckControllerStyle() {
     allowed.allow_pro_controller = true;
     CHECK(Eden::ControllerStyle(allowed, 3) == NpadStyleIndex::Fullkey);
     std::puts("Controller applet styles: pro, pair, single Joy-Cons, handheld in either mode, and a Pro Controller when none is named PASS");
+}
+
+// A game's text entry (keyboard_applet.h) with a keyboard that answers as told.
+void CheckKeyboard() {
+    using Eden::TextOutcome;
+    using Result = Service::AM::Frontend::SwkbdResult;
+    using Reply = Service::AM::Frontend::SwkbdReplyType;
+    std::mutex mutex;
+    std::condition_variable changed;
+    int answers_given = 0;
+    Result result{};
+    std::u16string text;
+    bool confirmed = false;
+    std::vector<Reply> replies;
+    const auto wait = [&](int count) {
+        std::unique_lock lock(mutex);
+        CHECK(changed.wait_for(lock, 5s, [&] { return answers_given >= count; }));
+    };
+    const auto normal = [&](Result result_, std::u16string text_, bool confirmed_) {
+        const std::lock_guard lock(mutex);
+        result = result_; text = std::move(text_); confirmed = confirmed_;
+        ++answers_given;
+        changed.notify_all();
+    };
+    std::vector<Eden::TextAnswer> script;
+    std::atomic<int> asked{0};
+    std::atomic<bool> hold{false};
+    Eden::TextRequest last;
+    Eden::SystemKeyboardApplet applet([&](const Eden::TextRequest& request, const std::atomic<bool>& stop) {
+        last = request;
+        while (hold && !stop) std::this_thread::sleep_for(5ms);
+        if (hold) return Eden::TextAnswer{TextOutcome::cancelled, {}};
+        return script[std::min<std::size_t>(asked++, script.size() - 1)];
+    });
+    Core::Frontend::KeyboardInitializeParameters wanted{};
+    wanted.header_text = u"Name"; wanted.initial_text = u"Alex"; wanted.max_text_length = 8; wanted.min_text_length = 2;
+    const auto ask = [&](std::vector<Eden::TextAnswer> answers) {
+        script = std::move(answers); asked = 0;
+        applet.InitializeKeyboard(false, wanted, normal, {});
+        applet.ShowNormalKeyboard();
+    };
+    // What the player enters is the game's to check.
+    ask({{TextOutcome::accepted, u"Robin"}}); wait(1);
+    CHECK(result == Result::Ok && text == u"Robin" && !confirmed);
+    CHECK(last.title == u"Name" && last.initial == u"Alex" && last.max_length == 8 && !last.numbers && !last.password);
+    // A text shorter than the game asks for is asked for again, from what was entered.
+    ask({{TextOutcome::accepted, u"R"}, {TextOutcome::accepted, u"Ro"}}); wait(2);
+    CHECK(result == Result::Ok && text == u"Ro" && asked == 2 && last.initial == u"R");
+    // Closing the keyboard cancels the entry.
+    ask({{TextOutcome::cancelled, {}}}); wait(3);
+    CHECK(result == Result::Cancel && asked == 1);
+    // A game without a cancel button is asked again, then gets the text it started from.
+    wanted.disable_cancel_button = true;
+    ask({{TextOutcome::cancelled, {}}}); wait(4);
+    CHECK(result == Result::Ok && text == u"Alex" && confirmed && asked == Eden::SystemKeyboardApplet::kAttempts);
+    wanted.disable_cancel_button = false;
+    // No keyboard: the starting text, or "Eden" in the lengths the game asks for.
+    ask({{TextOutcome::unavailable, {}}}); wait(5);
+    CHECK(result == Result::Ok && text == u"Alex" && confirmed);
+    wanted.initial_text.clear(); wanted.max_text_length = 3;
+    ask({{TextOutcome::unavailable, {}}}); wait(6);
+    CHECK(result == Result::Ok && text == u"Ede" && confirmed);
+    wanted.max_text_length = 8; wanted.min_text_length = 6;
+    ask({{TextOutcome::unavailable, {}}}); wait(7);
+    CHECK(text == u"Eden00");
+    wanted.min_text_length = 2;
+    // The game refuses a text: asked again; and again: the entry is cancelled.
+    ask({{TextOutcome::accepted, u"Robin"}}); wait(8);
+    applet.ShowTextCheckDialog(Service::AM::Frontend::SwkbdTextCheckResult::Failure, u"Not this one"); wait(9);
+    CHECK(result == Result::Ok && last.initial == u"Robin");
+    applet.ShowTextCheckDialog(Service::AM::Frontend::SwkbdTextCheckResult::Failure, u"Not this one"); wait(10);
+    applet.ShowTextCheckDialog(Service::AM::Frontend::SwkbdTextCheckResult::Failure, u"Not this one"); wait(11);
+    CHECK(result == Result::Cancel && confirmed);
+    // A text the game wants confirmed is confirmed.
+    ask({{TextOutcome::accepted, u"Robin"}}); wait(12);
+    applet.ShowTextCheckDialog(Service::AM::Frontend::SwkbdTextCheckResult::Confirm, u"Sure?"); wait(13);
+    CHECK(result == Result::Ok && text == u"Robin" && confirmed);
+    // A request closed while its keyboard is open: the keyboard is told to close, no answer comes.
+    hold = true;
+    applet.InitializeKeyboard(false, wanted, normal, {});
+    applet.ShowNormalKeyboard();
+    std::this_thread::sleep_for(50ms);
+    applet.ExitKeyboard();
+    std::this_thread::sleep_for(200ms);
+    hold = false;
+    { const std::lock_guard lock(mutex); CHECK(answers_given == 13); }
+    // A keyboard inside the game's own screen: the text, then the decision.
+    std::u16string inline_text;
+    const auto inline_reply = [&](Reply reply, std::u16string text_, s32) {
+        const std::lock_guard lock(mutex);
+        replies.push_back(reply); inline_text = std::move(text_);
+        ++answers_given;
+        changed.notify_all();
+    };
+    script = {{TextOutcome::accepted, u"Hi"}}; asked = 0;
+    applet.InitializeKeyboard(true, wanted, {}, inline_reply);
+    applet.ShowInlineKeyboard({});
+    wait(15);
+    CHECK(replies.size() == 2 && replies[0] == Reply::ChangedString && replies[1] == Reply::DecidedEnter && inline_text == u"Hi");
+    script = {{TextOutcome::cancelled, {}}}; asked = 0;
+    applet.ShowInlineKeyboard({});
+    wait(16);
+    CHECK(replies.back() == Reply::DecidedCancel && inline_text == u"Hi");
+    std::puts("Text entry: entered, too short, cancelled, no cancel button, no keyboard, refused, confirmed, closed while open, inline PASS");
 }
 
 void CheckPad() {
@@ -582,7 +689,7 @@ void CheckResampling() {
 int main() {
     Common::FS::CreateEdenPaths(); Common::Log::Initialize(); Common::Log::Start();
     int status = 0;
-    try { CheckResampling(); CheckVoiceFlags(); CheckControllerStyle(); CheckPad(); CheckAudio(); }
+    try { CheckResampling(); CheckVoiceFlags(); CheckControllerStyle(); CheckKeyboard(); CheckPad(); CheckAudio(); }
     catch (const std::exception& error) { std::fprintf(stderr, "%s\n", error.what()); status = 1; }
     Common::Log::Stop();
     return status;
