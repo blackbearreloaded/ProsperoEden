@@ -579,7 +579,19 @@ void pictures(Stage &s)
     s.press({Key::cross});
     s.wait(0.6f);
     s.shoot("83-download-waiting");
-    s.wait(10.0f);
+    // Its turn: it goes on from where it was, what it had read first for the check of its contents.
+    for (int frame = 0; frame < 1200; ++frame)
+    {
+        bool checking = false;
+        for (const pe::ui::Download &download : s.services.downloads_now())
+            checking = checking || download.state == pe::ui::DownloadState::verifying;
+        if (checking)
+            break;
+        s.frame();
+    }
+    s.wait(0.3f);
+    s.shoot("83b-download-checking");
+    s.wait(4.0f);
     s.shoot("84-download-running");
     // Done: the dialog closes and the game starts.
     for (int frame = 0; frame < 900 && s.launcher->selected_game().empty(); ++frame)

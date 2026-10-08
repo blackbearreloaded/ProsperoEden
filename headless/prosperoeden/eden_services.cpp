@@ -1027,6 +1027,8 @@ std::vector<pe::ui::Download> EdenServices::downloads() {
     const std::map<std::string, std::string> names = SourceNames();
     for (const Eden::Remote::Download& entry : queue) {
         pe::ui::Download download;
+        static_assert(static_cast<int>(pe::ui::DownloadState::verifying) == static_cast<int>(Eden::Remote::State::verifying) &&
+                      static_cast<int>(pe::ui::DownloadState::failed) == static_cast<int>(Eden::Remote::State::failed));
         download.state = static_cast<pe::ui::DownloadState>(entry.state); // the same order
         download.done = entry.done;
         download.total = entry.total;

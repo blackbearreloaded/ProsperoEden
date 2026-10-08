@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Host check of the download sources (remote/remote.h) with their RomM backend
-// (remote/romm/, remote/backends.h) against tools/romm-mock-server.py: the backend's reading of RomM's
-// answers, then sources.json with one and two sources, the game lists, downloads (written through
-// tools/ftp-mock-server.py as through the console's FTP server; going on after a stop, with a spoilt
-// end, from a server that cannot resume, of a game in several files, and failing without an FTP
-// server), a cancel, the cleaning of .remote-downloads/ and the kept queue. tools/check-remote.py
-// runs it.
+// (remote/romm/, remote/backends.h): the backend's reading of RomM's answers, the check of a
+// download's contents (stream_check.h) fed in every way a download feeds it, then, against
+// tools/romm-mock-server.py, sources.json with one and two sources, the game lists, downloads
+// (written through tools/ftp-mock-server.py as through the console's FTP server; going on after a
+// stop, with a spoilt end, from a server that cannot resume, of a game in several files, and
+// failing without an FTP server), a cancel, the cleaning of .remote-downloads/ and the kept queue.
+// tools/check-remote.py runs it.
 //
 //   remote_check <server address> <empty folder> <FTP server's port>
 #include "remote/backends.h"
@@ -13,6 +14,9 @@
 #include "remote/http.h"
 #include "remote/remote.h"
 #include "remote/romm/romm_client.h"
+#include "remote/stream_check.h"
+
+#include <openssl/evp.h>
 
 #include <chrono>
 #include <cstdio>
@@ -21,6 +25,8 @@
 #include <map>
 #include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
 namespace fs = std::filesystem;
 using namespace Eden::Remote;
@@ -488,11 +494,141 @@ void Sources(const std::string& url, const fs::path& root, const std::string& ft
            "the queue is kept");
     Expect(Cancel("home", "13"), "and cancelled again");
 }
+
+// ---- the check of a download's contents ----
+
+void Put(std::string& to, std::size_t at, std::uint64_t value, int bytes) {
+    for (int i = 0; i < bytes; ++i) to[at + static_cast<std::size_t>(i)] = static_cast<char>(value >> (8 * i) & 0xFF);
+}
+
+// A partition as NSPs (PFS0, entries of 0x18 bytes) and XCIs (HFS0, 0x40) have them: its header,
+// then its files.
+std::string Partition(const char* magic, std::size_t entry_size, const std::vector<std::pair<std::string, std::string>>& files) {
+    std::string names;
+    for (const auto& file : files) names += file.first + '\0';
+    names.resize((names.size() + 0x1F) & ~std::size_t{0x1F}, '\0');
+    std::string out(0x10 + files.size() * entry_size, '\0');
+    out.replace(0, 4, magic);
+    Put(out, 4, files.size(), 4);
+    Put(out, 8, names.size(), 4);
+    std::uint64_t offset = 0;
+    std::size_t name_at = 0;
+    for (std::size_t i = 0; i < files.size(); ++i) {
+        const std::size_t entry = 0x10 + i * entry_size;
+        Put(out, entry, offset, 8);
+        Put(out, entry + 8, files[i].second.size(), 8);
+        Put(out, entry + 16, name_at, 4);
+        offset += files[i].second.size();
+        name_at += files[i].first.size() + 1;
+    }
+    out += names;
+    for (const auto& file : files) out += file.second;
+    return out;
+}
+
+// An NCA, named after its SHA-256 as Nintendo's are; the contents list's name is not.
+std::pair<std::string, std::string> Nca(int id, std::size_t size) {
+    const std::string data = Pattern(id, size);
+    unsigned char digest[EVP_MAX_MD_SIZE];
+    unsigned int length = 0;
+    EVP_Digest(data.data(), data.size(), digest, &length, EVP_sha256(), nullptr);
+    char name[33];
+    for (int i = 0; i < 16; ++i) std::snprintf(name + 2 * i, 3, "%02x", digest[i]);
+    return {std::string(name) + ".nca", data};
+}
+std::pair<std::string, std::string> Cnmt() { return {"0123456789abcdef0123456789abcdef.cnmt.nca", Pattern(9, 3000)}; }
+
+std::string Nsp(const std::vector<std::pair<std::string, std::string>>& files) { return Partition("PFS0", 0x18, files); }
+
+// An XCI: its header (the root partition's place at 0x130), the root partition with the secure one
+// in it, which has the NCAs.
+std::string Xci(const std::vector<std::pair<std::string, std::string>>& files) {
+    std::string header(0x200, '\0');
+    header.replace(0x100, 4, "HEAD");
+    Put(header, 0x130, 0x200, 8);
+    return header + Partition("HFS0", 0x40,
+                              {{"update", Partition("HFS0", 0x40, {})},
+                               {"normal", Partition("HFS0", 0x40, {})},
+                               {"secure", Partition("HFS0", 0x40, files)}});
+}
+
+// Fed as a download feeds it: in pieces of `piece` bytes from `from` (a download that goes on).
+Verified Fed(const std::string& name, const std::string& file, std::size_t piece, std::size_t from = 0,
+             std::size_t* contents = nullptr) {
+    StreamCheck check(name);
+    for (std::size_t at = from; at < file.size(); at += piece)
+        check.Feed(at, file.data() + at, std::min(piece, file.size() - at));
+    if (contents != nullptr) *contents = check.Contents();
+    return check.Result();
+}
+
+void StreamChecks() {
+    const std::string nsp = Nsp({Nca(1, 3000000), Cnmt(), Nca(2, 70000)});
+    std::size_t contents = 0;
+    Expect(Fed("Game.nsp", nsp, nsp.size(), 0, &contents) == Verified::intact && contents == 2,
+           "an NSP at once: its NCAs as named (the contents list is not checked)");
+    Expect(Fed("Game.NSP", nsp, 7) == Verified::intact && Fed("Game.nsp", nsp, 65536) == Verified::intact,
+           "in pieces of any size");
+    std::string spoilt = nsp;
+    spoilt[nsp.size() - 1000] ^= 1;
+    Expect(Fed("Game.nsp", spoilt, 4096) == Verified::damaged, "a byte of an NCA other than it should be: damaged");
+
+    const std::string xci = Xci({Nca(3, 2500000), Cnmt(), Nca(4, 1000)});
+    Expect(Fed("Game.xci", xci, 4096, 0, &contents) == Verified::intact && contents == 2, "an XCI's secure partition");
+    spoilt = xci;
+    spoilt[xci.size() - 2000000] ^= 0x40;
+    Expect(Fed("Game.xci", spoilt, 1 << 20) == Verified::damaged, "an XCI with a byte spoilt");
+
+    // A download that goes on: what the file had, read from the drive, then the rest from a little
+    // before where it was (its last bytes come again).
+    {
+        StreamCheck check("Game.nsp");
+        check.Feed(0, nsp.data(), 2000000);
+        check.Feed(1500000, nsp.data() + 1500000, nsp.size() - 1500000);
+        Expect(check.Next() == nsp.size() && check.Result() == Verified::intact, "fed again over what it had: intact");
+    }
+    // The server sends the whole file after all: checked from the start again.
+    {
+        StreamCheck check("Game.nsp");
+        check.Feed(0, spoilt.data(), 1000000);
+        check.Restart();
+        check.Feed(0, nsp.data(), nsp.size());
+        Expect(check.Result() == Verified::intact, "from the start again: what came before does not count");
+    }
+    // Bytes it never got: unchecked, not damaged.
+    {
+        StreamCheck check("Game.nsp");
+        check.Feed(0, nsp.data(), 1000);
+        check.Feed(2000, nsp.data() + 2000, nsp.size() - 2000);
+        Expect(check.Result() == Verified::unknown, "a gap leaves it unchecked");
+    }
+    Expect(Fed("Game.nsp", nsp, 4096, 100) == Verified::unknown, "a file not fed from its start: unchecked");
+    Expect(Fed("Game.nsp", nsp.substr(0, nsp.size() - 5), 4096) == Verified::unknown, "a file that ends early: unchecked");
+    Expect(Fed("Game.nsz", nsp, 4096) == Verified::unknown && Fed("Game.nsp", Pattern(5, 100000), 4096) == Verified::unknown &&
+               Fed("Game.xci", Pattern(5, 100000), 4096) == Verified::unknown && Fed("Game.nsp", "", 1) == Verified::unknown,
+           "no NSP or XCI: unchecked");
+    Expect(Fed("Game.nsp", Nsp({Cnmt()}), 4096) == Verified::unknown, "an NSP without NCAs named after their contents: unchecked");
+    // A header that says more entries than there can be is no header.
+    std::string huge = nsp;
+    Put(huge, 4, 0xFFFFFFFF, 4);
+    Expect(Fed("Game.nsp", huge, 4096) == Verified::unknown, "a header of absurd size: unchecked");
+    // An NCA of a size or at a place no file has (the sums would wrap round): unchecked, no crash.
+    for (const std::uint64_t value : {~std::uint64_t{0}, ~std::uint64_t{0} - 0x100}) {
+        std::string wrapped = nsp;
+        Put(wrapped, 0x10 + 8, value, 8); // the first entry's size
+        std::string far = nsp;
+        Put(far, 0x10, value, 8); // the first entry's place
+        Expect(Fed("Game.nsp", wrapped, 4096) == Verified::unknown && Fed("Game.nsp", far, 4096) == Verified::unknown,
+               "an entry past any file's end: unchecked");
+    }
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
     Identity();
     RommBackend();
+    StreamChecks();
     if (argc >= 4) Sources(argv[1], argv[2], argv[3]);
     if (failures == 0) std::printf("remote check: PASS\n");
     return failures == 0 ? 0 : 1;

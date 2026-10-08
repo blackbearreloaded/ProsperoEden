@@ -114,6 +114,8 @@ enum class DownloadState : std::uint8_t
 {
     queued,
     downloading,
+    verifying, // one that goes on from where it was: what its files have is read first, for the check
+               // of their contents (done goes up to where it goes on)
     failed,
 };
 struct Download

@@ -203,6 +203,14 @@ msgstr ""
 msgid "Cheats"
 msgstr ""
 
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr ""
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr ""
+
 #: eden_services.cpp
 msgid "China"
 msgstr ""

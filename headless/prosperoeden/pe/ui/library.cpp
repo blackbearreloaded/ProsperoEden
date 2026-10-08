@@ -450,7 +450,9 @@ void Launcher::draw_library(Canvas &c)
                 text_fit(c, game.name, r.x + 86.0f, baseline(r.y, kRowHeight, theme::kText24), theme::kText24,
                          Color::rgb(0xf3f5e9).with_alpha(0.78f), 644.0f - taken - 20.0f);
                 const Download *download = download_of(game.key);
-                if (download != nullptr && download->state == DownloadState::downloading && download->total > 0)
+                if (download != nullptr &&
+                    (download->state == DownloadState::downloading || download->state == DownloadState::verifying) &&
+                    download->total > 0)
                 {
                     const float done = std::clamp(static_cast<float>(static_cast<double>(download->done) /
                                                                      static_cast<double>(download->total)),

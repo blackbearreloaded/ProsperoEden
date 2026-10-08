@@ -1798,3 +1798,13 @@ msgstr "{0}/ (NSP/XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (ein Ordner je Titel-ID)"
+
+#. {0} is how far a check of a downloaded game's files is ("45%").
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Prüfung {0}"
+
+#. {0} is how far the check is ("45%").
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Spieldateien werden geprüft {0}"

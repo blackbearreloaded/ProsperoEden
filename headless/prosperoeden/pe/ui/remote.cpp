@@ -155,6 +155,9 @@ std::string Launcher::remote_state(const Game &game, Color *color) const
     case DownloadState::downloading:
         *color = theme::kLimePale;
         return percent_of(*download);
+    case DownloadState::verifying:
+        *color = theme::kLimePale;
+        return fill(tr("Checking {0}"), {percent_of(*download)});
     case DownloadState::failed:
         break;
     }
@@ -422,7 +425,8 @@ void Launcher::draw_download(Canvas &c, float open)
     const float hints = kPanel.y + kPanel.h - 54.0f;
     const Download *download = download_of(download_game_.key);
     const bool failed = download != nullptr && download->state == DownloadState::failed;
-    const bool running = download != nullptr && download->state == DownloadState::downloading;
+    const bool checking = download != nullptr && download->state == DownloadState::verifying;
+    const bool running = download != nullptr && (download->state == DownloadState::downloading || checking);
     const Color accent = failed ? theme::kWarning : theme::kLime;
     const auto centred = [&](std::string_view value, float top, float line, float size, Color color)
     { text_shrink(c, value, kCenterX, baseline(top, line, size), size, color, kPanel.w - 96.0f, Align::center); };
@@ -443,6 +447,8 @@ void Launcher::draw_download(Canvas &c, float open)
     std::string state;
     if (failed)
         state = tr("The download stopped");
+    else if (checking)
+        state = fill(tr("Checking the game files {0}"), {percent_of(*download)});
     else if (running)
         state = fill(tr("Downloading {0}"), {percent_of(*download)});
     else if (download != nullptr)
@@ -450,7 +456,7 @@ void Launcher::draw_download(Canvas &c, float open)
         // Another game is downloading first.
         std::string other;
         for (const Download &before : downloads_)
-            if (before.state == DownloadState::downloading)
+            if (before.state == DownloadState::downloading || before.state == DownloadState::verifying)
                 other = before.name;
         state = other.empty() ? std::string{tr("Waiting to download")} : fill(tr("Waiting for {0}"), {other});
     }
@@ -467,9 +473,9 @@ void Launcher::draw_download(Canvas &c, float open)
     else if (download != nullptr && download->total > 0)
     {
         std::string line = bytes_label(download->done) + "  /  " + bytes_label(download->total);
-        if (running && download->rate > 0)
+        if (running && !checking && download->rate > 0)
             line += "  ·  " + rate_label(download->rate);
-        if (running && download->rate > 0 && download->total > download->done)
+        if (running && !checking && download->rate > 0 && download->total > download->done)
         {
             const int whole = std::max(1, static_cast<int>(std::ceil(static_cast<double>(download->total - download->done) /
                                                                      static_cast<double>(download->rate))));
@@ -685,19 +691,25 @@ void Launcher::draw_sources(Canvas &c, float open)
                 detail += "  ·  " + rate_label(download.rate);
             tone = theme::kLimePale;
             break;
+        case DownloadState::verifying:
+            tone = theme::kLimePale;
+            break;
         case DownloadState::failed:
             detail = download.error;
             tone = theme::kWarning;
             break;
         }
+        const bool moving = download.state == DownloadState::downloading || download.state == DownloadState::verifying;
         const float right =
-            download.state == DownloadState::downloading ?
-                text(c, percent_of(download), 1292.0f, baseline(top + 14.0f, 38.0f, theme::kText24), theme::kText24,
-                     theme::kLimePale, Align::right) :
-                0.0f;
+            moving ? text(c,
+                          download.state == DownloadState::verifying ? fill(tr("Checking {0}"), {percent_of(download)}) :
+                                                                       percent_of(download),
+                          1292.0f, baseline(top + 14.0f, 38.0f, theme::kText24), theme::kText24, theme::kLimePale,
+                          Align::right) :
+                     0.0f;
         text_fit(c, download.name, 628.0f, baseline(top + 14.0f, 38.0f, theme::kText24), theme::kText24, theme::kValue,
                  664.0f - right - 28.0f);
-        if (download.state == DownloadState::downloading)
+        if (moving)
             progress_bar(list, {628.0f, top + 62.0f, 664.0f, 6.0f}, share(download), theme::kLime);
         else
             notice(c, detail, 628.0f, baseline(top + 52.0f, 28.0f, theme::kSmall), theme::kSmall, tone, 664.0f,

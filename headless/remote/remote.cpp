@@ -5,6 +5,7 @@
 
 #include "backends.h"
 #include "ftp.h"
+#include "stream_check.h"
 
 #include <algorithm>
 #include <atomic>
@@ -441,22 +442,25 @@ std::string FinalPath(const Paths& paths, const Part& part) {
 }
 
 // The bytes of a download, to its file in .remote-downloads/ through the console's FTP server
-// (ftp.h): the app does not write it itself.
+// (ftp.h): the app does not write it itself. Its contents are checked as they go by (StreamCheck).
 
 class FileReceiver final : public Receiver {
   public:
-    FileReceiver(FtpUpload& upload, const FtpServer& server, std::string path, std::uint64_t base, std::uint64_t start)
-        : upload_(upload), server_(server), path_(std::move(path)), base_(base), start_(start) {}
+    FileReceiver(FtpUpload& upload, const FtpServer& server, std::string path, std::uint64_t base, std::uint64_t start,
+                 StreamCheck& check)
+        : upload_(upload), server_(server), path_(std::move(path)), base_(base), start_(start), check_(check) {}
 
     bool begin(bool from_start) override {
         // The whole file, although a part was asked for: it is written again from its start.
         if (from_start && start_ > 0) {
             start_ = 0;
+            check_.Restart();
             if (!upload_.Open(server_, path_, 0, &error_)) return false;
         }
         return true;
     }
     bool take(const void* data, std::size_t size) override {
+        check_.Feed(start_ + written_, data, size);
         if (!upload_.Send(data, size)) {
             // Its reason, a full drive above all, is on the control connection.
             const std::string reason = upload_.Reason();
@@ -490,6 +494,7 @@ class FileReceiver final : public Receiver {
     std::string path_;
     std::uint64_t base_;  // the game's bytes before this file
     std::uint64_t start_; // where in the file the transfer began
+    StreamCheck& check_;
     std::uint64_t written_ = 0;
     std::string error_;
     Clock::time_point sampled_ = Clock::now(); // when the speed was last measured
@@ -497,6 +502,41 @@ class FileReceiver final : public Receiver {
 };
 
 enum class Outcome { done, stopped, failed };
+
+// The queue entry being downloaded shows the step it is in.
+void ShowState(State state) {
+    Shared& s = State_();
+    const std::lock_guard lock(s.lock);
+    for (Entry& entry : s.queue)
+        if (entry.serial == s.current.load()) entry.state = state;
+}
+
+// A download that goes on from where it was: what its file has before `start`, read from the drive
+// for the check of its contents (the queue shows it as verifying meanwhile). False when it was
+// asked to stop; a file that cannot be read is left unchecked (the check sees the gap).
+bool FeedFromDrive(StreamCheck& check, const std::string& path, std::uint64_t base, std::uint64_t start) {
+    Shared& s = State_();
+    std::FILE* file = std::fopen(path.c_str(), "rb");
+    if (file == nullptr) return true;
+    ShowState(State::verifying);
+    std::vector<char> buffer(1u << 20);
+    bool stopped = false;
+    for (std::uint64_t done = 0; done < start;) {
+        if (s.halt.load() || (s.cancel.load() != 0 && s.cancel.load() == s.current.load())) {
+            stopped = true;
+            break;
+        }
+        const std::size_t want = static_cast<std::size_t>(std::min<std::uint64_t>(buffer.size(), start - done));
+        const std::size_t got = std::fread(buffer.data(), 1, want, file);
+        if (got == 0) break;
+        check.Feed(done, buffer.data(), got);
+        done += got;
+        s.current_done.store(base + done);
+    }
+    std::fclose(file);
+    ShowState(State::downloading);
+    return !stopped;
+}
 
 Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, const Game& game, const Part& part,
                      std::uint64_t base, std::string* error) {
@@ -520,10 +560,12 @@ Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, c
         return Outcome::failed;
     }
     // Going on: written over from `start` (the rewound bytes come again), else a new file.
+    StreamCheck check(part.name);
+    if (start > 0 && !FeedFromDrive(check, staged, base, start)) return Outcome::stopped;
     FtpUpload upload;
     if (!upload.Open(ftp, staged, start, error)) return Outcome::failed;
     State_().current_done.store(base + start);
-    FileReceiver receiver(upload, ftp, staged, base, start);
+    FileReceiver receiver(upload, ftp, staged, base, start, check);
     const bool fetched = source.fetch(AsSourceGame(game), {part.id, part.name, part.size, part.update ? FileKind::update : FileKind::game},
                                       start, receiver, error);
     // Stopped or failed: what the server has of the file stays, to go on from.
@@ -539,6 +581,18 @@ Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, c
         *error = "The download is incomplete (" + Size(static_cast<std::uint64_t>(std::max<std::int64_t>(have, 0))) +
                  " of " + Size(part.size) + ")";
         return Outcome::failed;
+    }
+    // A damaged file is deleted, so that trying again downloads it again.
+    switch (check.Result()) {
+    case Verified::damaged:
+        (void)std::remove(staged.c_str());
+        *error = "The downloaded file " + part.name + " is damaged; trying again downloads it again";
+        return Outcome::failed;
+    case Verified::intact:
+        Log("download of " + game.name + ": " + part.name + " checked (" + std::to_string(check.Contents()) + " contents)");
+        break;
+    default:
+        Log("download of " + game.name + ": " + part.name + " could not be checked");
     }
     return Outcome::done;
 }
@@ -895,7 +949,8 @@ void Start(const Paths& paths, CoverWriter writer, FolderLister lister) {
     for (Entry& entry : s.queue)
         // One whose download did not end before the menu was away; not the one still in a transfer
         // (Stop does not wait for ever).
-        if (entry.state == State::downloading && !(s.transferring && entry.serial == s.current.load()))
+        if ((entry.state == State::downloading || entry.state == State::verifying) &&
+            !(s.transferring && entry.serial == s.current.load()))
             entry.state = State::queued;
     for (const auto& state : s.sources)
         if (state->source && (!state->listed_once || Clock::now() - state->listed_at > kRefreshAge))
@@ -1012,7 +1067,8 @@ std::vector<Download> Downloads() {
         download.source = entry.source;
         download.id = entry.id;
         download.state = entry.state;
-        download.done = entry.state == State::downloading ? s.current_done.load() : entry.done;
+        const bool running = entry.state == State::downloading || entry.state == State::verifying;
+        download.done = running ? s.current_done.load() : entry.done;
         download.rate = entry.state == State::downloading ? s.current_rate.load() : 0;
         download.total = entry.total;
         if (download.total == 0)
@@ -1054,7 +1110,9 @@ bool Enqueue(const std::string& source, const std::string& id, bool first) {
             Entry entry = *at;
             s.queue.erase(at);
             const auto after = std::find_if(s.queue.begin(), s.queue.end(),
-                                            [](const Entry& e) { return e.state != State::downloading; });
+                                            [](const Entry& e) {
+                                                return e.state != State::downloading && e.state != State::verifying;
+                                            });
             s.queue.insert(after, entry);
         }
     }
@@ -1069,7 +1127,7 @@ bool Cancel(const std::string& source, const std::string& id) {
     const auto at = std::find_if(s.queue.begin(), s.queue.end(),
                                  [&](const Entry& entry) { return entry.source == source && entry.id == id; });
     if (at == s.queue.end()) return false;
-    if (at->state == State::downloading) {
+    if (at->state == State::downloading || at->state == State::verifying) {
         s.cancel.store(at->serial); // the download thread removes it and its files
         return true;
     }

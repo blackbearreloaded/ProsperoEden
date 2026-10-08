@@ -115,6 +115,9 @@ constexpr Sample kServerSamples[] = {
     {"Orbit Postman", "NSP", "780.4 MB", "", 0, "English (US)", "", 0x14051f, 0x6a4c93, 0x8ac926},
 };
 constexpr std::uint64_t kServerSizes[] = {3435973837ull, 12455405158ull, 818311987ull};
+// What of them is in .remote-downloads/ already (in percent), from a download stopped before:
+// Orbit Postman's goes on, read from the drive first for the check of its contents.
+constexpr std::uint64_t kServerHad[] = {0, 0, 40};
 // Which sources have them: Rune Gardens is on both.
 const std::vector<std::string> kServerSources[] = {{"Home"}, {"Home", "Office"}, {"Office"}};
 
@@ -441,12 +444,16 @@ bool FakeServices::download(const ui::Game &game, int source, bool first)
     download.cover = found->cover;
     for (std::size_t i = 0; i < std::size(kServerSamples); ++i)
         if (found->name == kServerSamples[i].name)
+        {
             download.total = kServerSizes[i];
+            download.done = kServerSizes[i] * kServerHad[i] / 100;
+        }
     if (first)
     {
         // After the one downloading.
         auto at = queue_.begin();
-        while (at != queue_.end() && at->state == ui::DownloadState::downloading)
+        while (at != queue_.end() &&
+               (at->state == ui::DownloadState::downloading || at->state == ui::DownloadState::verifying))
             ++at;
         queue_.insert(at, download);
     }
@@ -462,6 +469,8 @@ bool FakeServices::cancel_download(const std::string &key)
     const auto at = std::find_if(queue_.begin(), queue_.end(), [&](const ui::Download &d) { return d.key == key; });
     if (at == queue_.end())
         return false;
+    going_on_.erase(std::remove_if(going_on_.begin(), going_on_.end(), [&](const auto &g) { return g.first == key; }),
+                    going_on_.end());
     queue_.erase(at);
     return true;
 }
@@ -473,6 +482,24 @@ std::vector<ui::Download> FakeServices::downloads()
     {
         if (download.state == ui::DownloadState::failed)
             continue;
+        // One that goes on: what it had is read first, for the check of its contents, a step of 10%
+        // a look, up to where it was (verifying), then it downloads from there.
+        auto going_on = std::find_if(going_on_.begin(), going_on_.end(), [&](const auto &g) { return g.first == download.key; });
+        if (download.state == ui::DownloadState::queued && download.done > 0 && going_on == going_on_.end())
+        {
+            going_on_.emplace_back(download.key, download.done);
+            download.state = ui::DownloadState::verifying;
+            download.done = 0;
+            download.rate = 0;
+            break;
+        }
+        if (download.state == ui::DownloadState::verifying)
+        {
+            download.done = std::min(going_on->second, download.done + download.total / 10);
+            if (download.done >= going_on->second)
+                download.state = ui::DownloadState::downloading;
+            break;
+        }
         download.state = ui::DownloadState::downloading;
         download.done = std::min(download.total, download.done + download.total / 40);
         download.rate = 48ull << 20;

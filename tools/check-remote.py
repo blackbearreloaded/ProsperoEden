@@ -5,10 +5,11 @@
 """check-remote.py
 
 Builds headless/remote_check.cpp (the download sources with their RomM backend) with the host's
-C++ compiler and libcurl and runs it against tools/romm-mock-server.py, with tools/ftp-mock-server.py
-writing the downloads as the console's FTP server does. Needs libcurl's headers (libcurl4-openssl-dev) and nlohmann/json's
-(nlohmann-json3-dev, or the copy Eden's build fetched); CURL_INCLUDE, JSON_INCLUDE and
-CURL_LIBRARY name other places for them. Without libcurl's headers it says so and is skipped.
+C++ compiler, libcurl and OpenSSL's libcrypto and runs it against tools/romm-mock-server.py, with
+tools/ftp-mock-server.py writing the downloads as the console's FTP server does. Needs libcurl's
+headers (libcurl4-openssl-dev), OpenSSL's (libssl-dev) and nlohmann/json's (nlohmann-json3-dev,
+or the copy Eden's build fetched); CURL_INCLUDE, JSON_INCLUDE and CURL_LIBRARY name other places
+for them. Without the headers it says so and is skipped.
 """
 
 import os
@@ -54,6 +55,9 @@ def main():
     if not can_build(compiler, includes, "#include <curl/curl.h>\n"):
         print("check-remote: SKIPPED (no libcurl headers: install libcurl4-openssl-dev or set CURL_INCLUDE)")
         return 0
+    if not can_build(compiler, includes, "#include <openssl/evp.h>\n"):
+        print("check-remote: SKIPPED (no OpenSSL headers: install libssl-dev)")
+        return 0
     if not can_build(compiler, includes, "#include <nlohmann/json.hpp>\n"):
         print("check-remote: SKIPPED (no nlohmann/json.hpp: install nlohmann-json3-dev or set JSON_INCLUDE)")
         return 0
@@ -67,9 +71,10 @@ def main():
         subprocess.run([compiler, "-std=c++20", *flags, "-fno-rtti", *includes,
                         str(HEADLESS / "remote_check.cpp"), str(HEADLESS / "remote/remote.cpp"),
                         str(HEADLESS / "remote/backends.cpp"), str(HEADLESS / "remote/ftp.cpp"),
+                        str(HEADLESS / "remote/stream_check.cpp"),
                         str(HEADLESS / "remote/romm/romm_client.cpp"), str(HEADLESS / "remote/romm/romm_source.cpp"),
                         str(http),
-                        library, "-pthread", "-o", str(binary)], check=True)
+                        library, "-lcrypto", "-pthread", "-o", str(binary)], check=True)
         port_file = work / "port"
         ftp_port_file = work / "ftp-port"
         server = subprocess.Popen([sys.executable, str(ROOT / "tools/romm-mock-server.py"), str(port_file)])

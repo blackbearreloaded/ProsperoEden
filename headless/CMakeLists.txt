@@ -2317,8 +2317,14 @@ endif()
                 "${EDEN_PORT_DIR}/remote/remote.cpp"
                 "${EDEN_PORT_DIR}/remote/backends.cpp"
                 "${EDEN_PORT_DIR}/remote/ftp.cpp"
+                "${EDEN_PORT_DIR}/remote/stream_check.cpp"
                 "${EDEN_PORT_DIR}/remote/romm/romm_client.cpp"
                 "${EDEN_PORT_DIR}/remote/romm/romm_source.cpp")
+            # The SHA-256 a download's contents are checked with (remote/stream_check.h) is
+            # OpenSSL's (linked below for the update check). Its include folder, for this file
+            # only: the prefix it is in has older FFmpeg headers as well.
+            set_source_files_properties("${EDEN_PORT_DIR}/remote/stream_check.cpp"
+                PROPERTIES INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
             # The update check (update_notice.h). Its network side is the boilerplate's
             # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew
             # prefix that already supplies OpenSSL and zlib (zstd is Eden's own). They are linked

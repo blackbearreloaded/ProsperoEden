@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace pe::host
@@ -310,11 +311,18 @@ class FakeServices final : public ui::Services
     bool download(const ui::Game &game, int source, bool first) override;
     bool cancel_download(const std::string &key) override;
     std::vector<ui::Download> downloads() override;
+    // The queue as it is, without moving it on (for the preview to look at).
+    const std::vector<ui::Download> &downloads_now() const
+    {
+        return queue_;
+    }
     bool delete_game(const ui::Game &game, std::string *message) override;
 
   private:
     std::vector<ui::Game> remote_; // the sources' games not on the console
     std::vector<ui::Download> queue_;
+    // Where a download that goes on was (verifying reads up to there first), by its key.
+    std::vector<std::pair<std::string, std::uint64_t>> going_on_;
     std::uint64_t generation_ = 1;
     std::vector<ui::Game> games_;
     std::vector<std::uint64_t> handheld_;

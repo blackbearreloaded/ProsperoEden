@@ -15,8 +15,9 @@
 // on after the app was closed) and <source>/catalog.json (each source's game list, so the Library
 // shows it at once and without a network); the covers go with the others (covers/remote-...tga).
 //
-// A download is written to the game files folder's .remote-downloads/<source>/<game>/ and, once
-// all of the game's files are complete, moved to their places: the game's file to roms/, its
+// A download is written to the game files folder's .remote-downloads/<source>/<game>/, its
+// contents checked as they come (stream_check.h; a damaged file is deleted), and, once all of the
+// game's files are complete, moved to their places: the game's file to roms/, its
 // updates and DLC to updates/, so those only ever hold whole files of whole games. One that stopped (the app closed, a game started, the network went
 // away) goes on from where it was, its last 4 MB fetched again in case of a power cut;
 // .remote-downloads/ keeps nothing else (a cancel deletes a game's folder, the next start whatever
@@ -95,7 +96,9 @@ std::string NormalName(const std::string& name);
 // file name ("title:0100...", "screenscraper:195863", "name:...", "file:...").
 std::string TitleKey(const Game& game);
 
-enum class State : std::uint8_t { queued, downloading, failed };
+// verifying: a download that goes on from where it was reads what its file has so far first, for
+// the check of its contents (stream_check.h); done goes up to where the download goes on.
+enum class State : std::uint8_t { queued, downloading, verifying, failed };
 struct Download {
     std::string source;
     std::string id;
