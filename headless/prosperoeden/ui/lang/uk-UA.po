@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d.%m.%Y %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (швидше, менш чітко)"
@@ -34,6 +38,10 @@ msgstr "4x (найповільніше)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "Не вдалося прочитати один із файлів NCA прошивки. Установіть дамп прошивки заново."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Сполучення вже триває."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "ДОПОВНЕННЯ"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Доповнення: {0}  /  Мова: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Додано до завантажень. Чергу показано в меню Налаштування, Завантаження."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Додано. Хрестик — грати цим профілем; ліворуч і праворуч змінюють назву."
@@ -106,6 +118,10 @@ msgstr "Інша мова"
 msgid "As usual"
 msgstr "Як зазвичай"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Запит коду в сервера..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "ЗВУК"
 msgid "Australia"
 msgstr "Австралія"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Автоматично"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Назад"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Резервне копіювання збережених даних"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Призначення кнопок"
 msgid "BUTTON MAPPING"
 msgstr "ПРИЗНАЧЕННЯ КНОПОК"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Скасувати"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Скасувати завантаження"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Змінити"
 msgid "Change mode. Saved per game."
 msgstr "Зміна режиму. Зберігається для кожної гри."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Нічого не змінювати"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Змінено"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Чити"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Перевірте, що там показано саме цей код, і підтвердьте."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Перевірка файлів гри {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Перевірка {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Китайська (традиційна)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Вибрати"
 
@@ -258,6 +302,10 @@ msgstr "ПРОДОВЖИТИ ГРУ"
 msgid "Controller shortcuts and supported features."
 msgstr "Комбінації кнопок контролера та доступні функції."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Тип контролера"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "КОНТРОЛЕРИ"
@@ -270,9 +318,25 @@ msgstr "Керування"
 msgid "CONTROLS"
 msgstr "КЕРУВАННЯ"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Не вдалося скасувати завантаження."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Не вдалося змінити save-sync.json."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "Не вдалося створити папку. Переконайтеся, що папка з файлами ігор доступна для запису."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Не вдалося видалити гру."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Не вдалося видалити {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Типова папка"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Типову папку збережено. Перезапустіть ProsperoEden, щоб використовувати її."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Видалити"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Видалити з консолі"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "Видалено 1 файл ({0}). Збережені дані й налаштування залишаються."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "Видалено файлів: {1} ({0}). Збережені дані й налаштування залишаються."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Докладний журнал"
@@ -361,14 +441,62 @@ msgstr "ДІАГНОСТИКА"
 msgid "Docked"
 msgstr "ТБ"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Готово"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Завантажити"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Завантажити і грати"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Завантаження скасовано."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "Не вдалося завантажити"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Завантажити з"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Завантажувати у фоні"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Розмір завантаження: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Завантажте гру, щоб змінити її налаштування."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Завантаження"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Завантаження {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Завантаження"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "ЗАВАНТАЖЕННЯ"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "Для завантажень потрібен FTP-сервер, запущений на консолі, на порту {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Малює ефект, коли його шейдер готовий, н
 msgid "Draws the menu's small text larger."
 msgstr "Збільшує дрібний текст меню."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Два Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Нідерландська"
@@ -385,6 +517,14 @@ msgstr "Нідерландська"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Кожен профіль має власні збереження, налаштування й нещодавні ігри."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Кожен профіль зберігає свої дані на сервері як окремий користувач. Сполучіть Хрестиком: нічого не треба вводити, вхід виконується з телефона."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Збережені дані кожного профілю на власному сервері, синхронізуються до і після гри."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Французька"
 msgid "French (Canada)"
 msgstr "Французька (Канада)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "З {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "FTP-СЕРВЕР"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "Гучність ігор і звуки цього меню."
 msgid "GAMES"
 msgstr "ІГРИ"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "Ігри з вашої мережі, що завантажуються, коли ви в них граєте."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "Ігри використовують цю мову, якщо вона в них є, а інакше — свою типову. Застосовується під час запуску гри."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "Помилка ініціалізації рендерера. Спробуйте інший рендерер у меню «Налаштування»; відомості про драйвер — у stderr.log та eden_log.txt."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Портатив"
 
@@ -633,6 +785,22 @@ msgstr "Імпортовано. Для попереднього збережен
 msgid "IN USE"
 msgstr "ПОТОЧНА"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Їх буде надіслано на сервер."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Спроба повториться, коли меню відкриється наступного разу."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Вони замінять дані консолі."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "На сервері відхилено."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Італійська"
@@ -649,6 +817,10 @@ msgstr "Японська"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Тримайте папки keys, firmware і roms разом. ТРИКУТНИК вибирає показану папку."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Залишити дані консолі"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Остання запущена гра"
 msgid "Launch game"
 msgstr "Запустити гру"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Лівий Joy-Con"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Бібліотека"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "БІБЛІОТЕКА"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Прив'язано"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Навігація"
 msgid "Nearest"
 msgstr "Найближчий"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Потребує уваги"
 
@@ -804,6 +984,14 @@ msgstr "ПІСЛЯ ПЕРЕЗАПУСКУ"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Немає обкладинки"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Джерело завантажень не налаштовано. Збережіть файл із назвою {0} з переліком ваших джерел, як у цьому прикладі із сервером RomM, і відкрийте це меню знову. Для завантажень потрібен FTP-сервер, запущений на консолі, на порту {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Немає завантажень. У Бібліотеці Квадрат ставить гру з джерела в чергу."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "ROM не вибрано"
 msgid "No roms folder"
 msgstr "Немає папки roms"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Немає сервера для сполучення: додайте сервер RomM до sources.json або налаштуйте save-sync.json через FTP."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Ніхто не підтвердив код вчасно."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Немає"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Ще не підключено"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Не прив'язано"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Не прив'язано: збережені дані лишаються на консолі"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Немає на консолі"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Ще немає на консолі. Завантажте гру, щоб грати й змінювати її налаштування."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Не сполучено"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Недоступно"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Не читається"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Не налаштовано"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Нічого імпортувати"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Вимк."
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Не в мережі"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Роздільність виводу"
 msgid "Page"
 msgstr "Сторінка"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Сполучити"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Сполучити знову"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "Сполучити {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "Сполучити {0} з"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Сполучено"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Сполучено. Збережені дані профілю відтепер синхронізуються."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Батьківська папка"
@@ -919,9 +1179,25 @@ msgstr "Продуктивність"
 msgid "PERFORMANCE"
 msgstr "ПРОДУКТИВНІСТЬ"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Усе одно грати"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Грати як"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Грати після завантаження"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Грати з даними консолі; наступного разу запит повториться."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "грає"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Грає {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Польська"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Порт {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "ПАРАМЕТРИ"
 msgid "Preparing"
 msgstr "Підготовка"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Натисніть ще раз, щоб видалити з консолі гру, її оновлення та DLC. Збережені дані й налаштування залишаються."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Натисніть ще раз, щоб замінити збереження цієї гри. Для поточного буде створено резервну копію."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "prod.keys знайдено"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "prod.keys не знайдено"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Профіль {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "ВЕРСІЯ ДЛЯ PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "ВЕРСІЯ ДЛЯ PS5  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "У черзі"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "У черзі, з {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Реактивне скидання"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "РЕАКТИВНЕ СКИДАННЯ"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Прочитати списки знову"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Читання списків ігор..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Читання..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "РОЗДІЛЬНІСТЬ"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Правий Joy-Con"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Натискання правого стика"
 
@@ -1120,14 +1436,66 @@ msgstr "Пісочниця (код {0}): лише папка програми"
 msgid "Save data"
 msgstr "Збережені дані"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Резервну копію збережених даних створено"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Збережені дані змінено з обох боків"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Збережені дані з сервера"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Збережені дані залишено без змін"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Резервну копію збережених даних не створено"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Збережені дані не синхронізовано"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Знайдено папку зі збереженням"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Синхронізація збережень"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "СИНХРОНІЗАЦІЯ ЗБЕРЕЖЕНЬ"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "Не вдається прочитати save-sync.json ({0}). Доки його не виправлено через FTP, нічого не синхронізується."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "Не вдається прочитати save-sync.json: спершу виправте його через FTP."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Збережено для цієї гри. Діятиме з наступного запуску."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Збережено {0}. Їх буде надіслано на сервер."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Збережено {0}. Вони замінять дані консолі."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Збережено. Застосується під час запуск�
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Збережено. Перезапустіть ProsperoEden, щоб використовувати цю папку."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Відскануйте код телефоном або відкрийте адресу нижче."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Прокрутка"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Вибрати"
 
@@ -1173,6 +1545,10 @@ msgstr "ВИДІЛЕНО"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "Вибраний ROM більше недоступний"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Сервер застарий для синхронізації"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Стан налаштування та докладний журнал."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Перевірку налаштування не пройдено. Переконайтеся, що файли прошивки та ключів читаються й коректні."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Збережені дані можуть зберігати кілька серверів. Який із них використовувати цьому профілю?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Ця гра є в кількох джерелах. З якого її взяти?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Показати або приховати лічильник FPS"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Увійдіть на {0} як користувач, якому належать збережені дані цього профілю."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Пропускає частину перевірок, коли гра з
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Непрозорі панелі, яскравіший текст і виділення рамкою."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "ДЖЕРЕЛО"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "ДЖЕРЕЛА"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Іспанська"
@@ -1246,6 +1642,10 @@ msgstr "Квадрат"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "Квадрат ще раз прибере {0} зі списку. Збереження лишаться на консолі."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Квадрат ще раз відв'яже {0}. Збережені дані лишаться на консолі й на сервері."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Перед імпортом збереження запустіть бу
 msgid "STARTING"
 msgstr "ЗАПУСК"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "СТАН"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Вимикає рух фону та ковзання екранів — тут і на екрані завантаження."
@@ -1264,9 +1668,25 @@ msgstr "Вимикає рух фону та ковзання екранів — 
 msgid "Supply your own files"
 msgstr "Додайте власні файли"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "СИНХРОНІЗАЦІЯ"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Синхронізувати збережені дані ще раз."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Синхронізація збережених даних"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Тайвань"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Узяти дані сервера"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "ПОДЯКИ"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Дякуємо всій homebrew-спільноті PS5 і кожному розробнику, чиї драйвери, інструменти та бібліотеки зробили ProsperoEden можливим."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "Завантаження зупинилося"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "Папка з вашими ключами, прошивкою та іграми."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Гра не запуститься."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Не вдалося прочитати список ігор із {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Списки ігор прочитано: {0} гра."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Списки ігор прочитано, ігор: {0}."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "Грі не вистачило відеопам’яті. Зменште роздільність у меню «Налаштування» > «Відео» (або в «Налаштуваннях гри») і запустіть її знову."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Гра запуститься, коли збережені дані буде синхронізовано."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "Гра запуститься, коли завантаження завершиться."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "Мова ігор, якщо гра її підтримує."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Профілю або сервера вже немає."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Профіль, що грає, лишається. Спершу виберіть інший."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "Збережені дані профілю відтепер синхронізуються як {0}."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "Збережені дані профілю відтепер синхронізуються із сервером."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "Решта — на сторінці застосунку на homebrew.page."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "На сервері немає {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "На сервері працює RomM {0}; для синхронізації потрібен RomM {1} або новіший. Оновіть сервер: доти збережені дані з ним не синхронізуються."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "У джерелі вже немає цієї гри."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "Не вдалося завершити оновлення"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "І на цій консолі, і на сервері є збережені дані, невідомі іншій стороні. Які залишити? Для інших буде створено резервну копію."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Сенсорна панель"
 msgid "Triangle"
 msgstr "Трикутник"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Повторити"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Повторна спроба."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Увімкнути або вимкнути"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Недоступно"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Зрозуміло"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Відв'язати"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Відв'язано. Збережені дані більше не синхронізуються."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "УСІ ІГРИ"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (рекомендовано)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Очікування підтвердження  ·  код діє ще {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "Очікування {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "Очікує завантаження"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "Що нового у версії {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Хто грає. Кожен профіль має власні збереження й налаштування."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Зі збереженими даними консолі; їх не буде синхронізовано."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Зі збереженими даними консолі; їх буде синхронізовано після гри."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "з {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Наступного разу запит повториться."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Під час наступної синхронізації повідомлення з'явиться знову."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Ваші ігри"
@@ -1492,6 +2016,10 @@ msgstr "Ваші ігри, збереження та налаштування з
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "Ваша наступна пригода"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "Ваші збережені дані звіряються з даними на сервері."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "Ігор: {0}"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "Установлено ігор: {0}"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "Не вдалося прочитати списків ігор: {0}."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "Увімкнено модів: {0} з {1}"
 msgid "{0} of {1} on"
 msgstr "Увімкнено: {0} з {1}"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "Профілів: {0} із {1}"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} на {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "Джерел: {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Профіль {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP, XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (тека на кожен ID гри)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Тип контролера"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Автоматично"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Два Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Лівий Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Правий Joy-Con"

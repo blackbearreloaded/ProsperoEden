@@ -379,10 +379,18 @@ bool PairStart(const nlohmann::json& settings, const std::string& folder, Pairin
     }
     start->device_code = Text(made, "device_code");
     start->user_code = Text(made, "user_code");
-    start->address = client->url() + Text(made, "verification_path_complete");
-    // RomM's default when a server does not say (ten minutes).
-    start->expires_in = Number(made, "expires_in") > 0 ? static_cast<int>(Number(made, "expires_in")) : 600;
-    start->interval = std::max(1, static_cast<int>(Number(made, "interval")));
+    // The page to approve the code on is one of this server's: a path, never another address.
+    const std::string page = Text(made, "verification_path_complete");
+    if (page.empty() || page.front() != '/' || page.starts_with("//")) {
+        *error = "The server's answer names no page to approve the code on";
+        return false;
+    }
+    start->address = client->url() + page;
+    // RomM's defaults when a server does not say (ten minutes, asked every five seconds), and
+    // bounds on what it does say: not asked more than once a second, nor for longer than an hour.
+    const std::int64_t expires = Number(made, "expires_in"), interval = Number(made, "interval");
+    start->expires_in = expires > 0 ? static_cast<int>(std::min<std::int64_t>(expires, 3600)) : 600;
+    start->interval = interval > 0 ? static_cast<int>(std::clamp<std::int64_t>(interval, 1, 60)) : 5;
     return true;
 }
 

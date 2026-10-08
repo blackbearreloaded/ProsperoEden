@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y/%m/%d %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0.5x（較快，較柔和）"
@@ -34,6 +38,10 @@ msgstr "4x（最慢）"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "無法讀取韌體 NCA。請重新安裝韌體。"
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "已有配對正在進行。"
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "附加內容"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "附加內容：{0}  /  語言：{1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "已加入下載。可在「設定」的「下載」中查看佇列。"
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "已新增。叉鍵以此檔案遊玩；左右變更名稱。"
@@ -106,6 +118,10 @@ msgstr "其他語言"
 msgid "As usual"
 msgstr "照常"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "正在向伺服器要求代碼..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "音訊"
 msgid "Australia"
 msgstr "澳洲"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "自動"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "返回"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "正在備份存檔資料"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "按鍵配置"
 msgid "BUTTON MAPPING"
 msgstr "按鍵配置"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "取消"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "取消下載"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "變更"
 msgid "Change mode. Saved per game."
 msgstr "變更模式。依遊戲分別儲存。"
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "不做變更"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "已變更"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "金手指"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "確認那裡顯示的代碼與此相同，然後核准。"
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "正在檢查遊戲檔案 {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "正在檢查 {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "中文（繁體）"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "選擇"
 
@@ -258,6 +302,10 @@ msgstr "繼續遊玩"
 msgid "Controller shortcuts and supported features."
 msgstr "控制器快速鍵與支援的功能。"
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "控制器類型"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "控制器"
@@ -270,9 +318,25 @@ msgstr "操作"
 msgid "CONTROLS"
 msgstr "操作"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "無法取消下載。"
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "無法變更 save-sync.json。"
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "無法建立資料夾。請確認遊戲檔案的資料夾可以寫入。"
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "無法刪除遊戲。"
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "無法刪除 {0}。"
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "預設資料夾"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "預設資料夾已儲存。重新開啟 ProsperoEden 後生效。"
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "刪除"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "從主機刪除"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "已刪除 1 個檔案（{0}）。存檔資料和設定會保留。"
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "已刪除 {1} 個檔案（{0}）。存檔資料和設定會保留。"
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "詳細記錄"
@@ -361,14 +441,62 @@ msgstr "診斷"
 msgid "Docked"
 msgstr "TV模式"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "完成"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "下載"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "下載並遊玩"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "下載已取消。"
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "下載失敗"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "下載來源"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "在背景下載"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "下載大小：{0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "下載遊戲後才能變更其設定。"
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "正在下載"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "正在下載 {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "下載"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "下載"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "下載需要主機上執行 FTP 伺服器，連接埠為 {0}。"
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "著色器準備好後才繪製效果，而不暫停遊戲。部分內容
 msgid "Draws the menu's small text larger."
 msgstr "將選單中的小字放大顯示。"
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "雙 Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "荷蘭文"
@@ -385,6 +517,14 @@ msgstr "荷蘭文"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "每個檔案都有自己的存檔、設定和最近遊戲。"
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "每個玩家檔案以各自的使用者身分將存檔資料保存在伺服器上。按叉鍵配對：無須輸入，由手機完成登入。"
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "每個玩家檔案的存檔資料保存在各自的伺服器上，遊戲前後同步。"
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "法文"
 msgid "French (Canada)"
 msgstr "法文（加拿大）"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "來自 {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "FTP 伺服器"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "遊戲音量與此選單的音效。"
 msgid "GAMES"
 msgstr "遊戲"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "網路中的遊戲，遊玩時下載。"
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "遊戲支援此語言時會使用此語言，否則使用遊戲本身的預設語言。啟動遊戲時生效。"
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "圖形後端初始化失敗。請在設定中嘗試其他後端；驅動程式詳情請見 stderr.log 與 eden_log.txt。"
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "手提模式"
 
@@ -633,6 +785,22 @@ msgstr "已匯入。被取代的存檔已備份。"
 msgid "IN USE"
 msgstr "使用中"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "將上傳到伺服器。"
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "下次開啟選單時會重試。"
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "將取代此主機的。"
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "已在伺服器上遭拒絕。"
+
 #: settings_store.h
 msgid "Italian"
 msgstr "義大利文"
@@ -649,6 +817,10 @@ msgstr "日文"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "請將 keys、firmware 與 roms 資料夾放在一起。按△鍵使用目前顯示的資料夾。"
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "保留此主機的"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "上次開啟的遊戲"
 msgid "Launch game"
 msgstr "啟動遊戲"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "左 Joy-Con"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "遊戲庫"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "遊戲庫"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "已連結"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "移動"
 msgid "Nearest"
 msgstr "最近鄰"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "需要處理"
 
@@ -804,6 +984,14 @@ msgstr "下次啟動"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "沒有封面"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "尚未設定下載來源。請儲存一個名為 {0} 的檔案並列出你的來源（如此範例中的 RomM 伺服器），然後重新開啟此選單。下載需要主機上執行 FTP 伺服器，連接埠為 {1}。"
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "沒有下載。在遊戲庫中按方塊鍵可將來源中的遊戲加入佇列。"
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "未選擇 ROM"
 msgid "No roms folder"
 msgstr "沒有 roms 資料夾"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "沒有可配對的伺服器：請在 sources.json 中新增 RomM 伺服器，或透過 FTP 設定 save-sync.json。"
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "無人及時核准代碼。"
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "無"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "尚未連線"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "未連結"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "未連結：其存檔資料保留在主機上"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "不在主機上"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "尚未在主機上。下載後即可遊玩並變更其設定。"
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "未配對"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "無法連線"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "無法讀取"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "未設定"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "沒有可匯入的內容"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "關"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "離線"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "輸出解析度"
 msgid "Page"
 msgstr "翻頁"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "配對"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "重新配對"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "配對 {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "將 {0} 配對到"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "已配對"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "已配對。此玩家檔案的存檔資料今後將同步。"
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "上層資料夾"
@@ -919,9 +1179,25 @@ msgstr "效能"
 msgid "PERFORMANCE"
 msgstr "效能"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "仍要遊玩"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "以此遊玩"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "下載完成後遊玩"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "使用此主機的存檔遊玩；下次會再次詢問。"
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "遊玩中"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "以 {0} 遊玩"
 #: settings_store.h
 msgid "Polish"
 msgstr "波蘭文"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "連接埠 {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "偏好設定"
 msgid "Preparing"
 msgstr "正在準備"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "再按一次將從主機刪除遊戲及其更新和 DLC。存檔資料和設定會保留。"
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "再按一次將取代此遊戲的存檔。目前的存檔會先備份。"
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro 控制器"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "已找到 prod.keys"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "缺少 prod.keys"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "玩家檔案 {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "PS5 版"
 msgid "PS5 EDITION  /  {0}"
 msgstr "PS5 版  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "排隊中"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "排隊中，來自 {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "反應式刷新"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "反應式刷新"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "重新讀取清單"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "正在讀取遊戲清單..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "正在讀取..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "解析度"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "右 Joy-Con"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "按下右類比搖桿"
 
@@ -1120,14 +1436,66 @@ msgstr "沙盒（代碼 {0}）：僅限應用程式資料夾"
 msgid "Save data"
 msgstr "存檔資料"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "存檔資料已備份"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "兩邊的存檔資料都有變更"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "來自伺服器的存檔資料"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "存檔資料保持不變"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "存檔資料未備份"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "存檔資料未同步"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "已找到存檔資料夾"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "存檔同步"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "存檔同步"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "無法讀取 save-sync.json（{0}）。透過 FTP 修正前不會同步任何內容。"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "無法讀取 save-sync.json：請先透過 FTP 修正。"
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "已為此遊戲儲存。下次啟動時生效。"
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "儲存於 {0}。將上傳到伺服器。"
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "儲存於 {0}。將取代此主機的。"
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "已儲存。啟動遊戲時生效。"
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "已儲存。重新開啟 ProsperoEden 後使用此資料夾。"
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "用手機掃描此碼，或開啟下方的網址。"
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "捲動"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "確定"
 
@@ -1173,6 +1545,10 @@ msgstr "已選取"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "所選的 ROM 已不存在"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "伺服器版本過舊，無法同步存檔"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "設定狀態與詳細記錄。"
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "設定驗證失敗。請確認韌體與金鑰檔案可以讀取且有效。"
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "有多個伺服器可保存存檔資料。此玩家檔案應使用哪一個？"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "多個來源都有此遊戲。要從哪一個下載？"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "顯示或隱藏 FPS"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "以擁有此玩家檔案存檔資料的使用者身分登入 {0}。"
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "遊戲修改 GPU 使用的記憶體時略過部分檢查：更快，但�
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "不透明的面板、更亮的文字與帶外框的反白。"
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "來源"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "來源"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "西班牙文"
@@ -1246,6 +1642,10 @@ msgstr "方塊鍵"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "再按方塊鍵會將 {0} 移出清單。其存檔仍保留在主機上。"
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "再按方塊鍵會解除 {0} 的連結。其存檔資料仍保留在主機和伺服器上。"
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "匯入存檔前，請先啟動任一款遊戲一次。"
 msgid "STARTING"
 msgstr "啟動中"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "狀態"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "停止背景飄移與畫面滑動，載入畫面也適用。"
@@ -1264,9 +1668,25 @@ msgstr "停止背景飄移與畫面滑動，載入畫面也適用。"
 msgid "Supply your own files"
 msgstr "請自備檔案"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "同步"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "再次同步存檔資料。"
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "正在同步存檔資料"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "台灣"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "採用伺服器的"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "致謝"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "感謝整個 PS5 自製軟體社群，以及讓 ProsperoEden 得以實現的驅動程式、工具與程式庫的每一位開發者。"
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "下載已中斷"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "存放金鑰、韌體和遊戲的資料夾。"
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "遊戲不會啟動。"
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "無法讀取 {0} 的遊戲清單。"
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "已讀取遊戲清單：{0} 個遊戲。"
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "已讀取遊戲清單：{0} 個遊戲。"
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "遊戲的圖形記憶體已用盡。請在「設定」的「視訊」（或遊戲本身的設定）中降低解析度，然後重新啟動。"
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "存檔資料同步後遊戲即會啟動。"
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "下載完成後遊戲即會啟動。"
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "遊戲支援時使用的語言。"
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "玩家檔案或伺服器已不存在。"
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "正在遊玩的檔案會保留。請先選擇其他檔案。"
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "此玩家檔案的存檔資料今後將以 {0} 的身分同步。"
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "此玩家檔案的存檔資料今後將與伺服器同步。"
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "其餘內容請見 homebrew.page 上的應用程式頁面。"
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "伺服器上沒有 {0}。"
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "伺服器執行的是 RomM {0}；存檔同步需要 RomM {1} 或更新版本。請更新伺服器：在此之前不會與其同步存檔資料。"
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "來源已沒有此遊戲。"
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "無法完成更新"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "此主機和伺服器上都有對方沒有的存檔資料。要保留哪一個？另一個會保留為備份。"
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "觸控板"
 msgid "Triangle"
 msgstr "三角鍵"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "重試"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "正在重試。"
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "開啟或關閉"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "無法使用"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "知道了"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "解除連結"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "已解除連結。其存檔資料不再同步。"
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "查看所有遊戲"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan（建議）"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "正在等待核准  ·  代碼有效時間還剩 {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "正在等待 {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "等待下載"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "版本 {0} 的新功能"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "誰在玩。每個檔案都有自己的存檔和設定。"
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "使用此主機的存檔資料；不會同步。"
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "使用此主機的存檔資料；遊戲結束後同步。"
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "與 {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "下次會再次詢問。"
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "下次同步時會再次提示。"
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "你的遊戲"
@@ -1492,6 +2016,10 @@ msgstr "你的遊戲、存檔和設定都會保留。"
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "你的下一場冒險"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "正在將你的存檔資料與伺服器上的進行核對。"
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} 款遊戲"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "已安裝 {0} 款遊戲"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "有 {0} 個遊戲清單無法讀取。"
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "已開啟 {0}/{1} 個模組"
 msgid "{0} of {1} on"
 msgstr "已開啟 {0}/{1}"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0}/{1} 個玩家檔案"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{1} 上的 {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} 個來源"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · 玩家檔案 {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/（NSP 或 XCI）"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/（每個遊戲 ID 一個資料夾）"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "控制器類型"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "自動"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro 控制器"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "雙 Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "左 Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "右 Joy-Con"

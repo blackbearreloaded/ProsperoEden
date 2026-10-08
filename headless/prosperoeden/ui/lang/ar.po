@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y/%m/%d %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0.5x (أسرع، أنعم)"
@@ -34,6 +38,10 @@ msgstr "4x (الأبطأ)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "تعذّرت قراءة أحد ملفات NCA للبرنامج الثابت. أعد تثبيت البرنامج الثابت."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "هناك اقتران جارٍ بالفعل."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "الإضافات"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "الإضافات: {0}  /  اللغة: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "أُضيفت إلى التنزيلات. قائمة الانتظار في الإعدادات، التنزيلات."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "تمت الإضافة. زر إكس للّعب بهذا الملف؛ يسار ويمين لتغيير اسمه."
@@ -106,6 +118,10 @@ msgstr "لغة أخرى"
 msgid "As usual"
 msgstr "كالمعتاد"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "جارٍ طلب رمز من الخادم..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "الصوت"
 msgid "Australia"
 msgstr "أستراليا"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "تلقائي"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "رجوع"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "جارٍ النسخ الاحتياطي لبيانات الحفظ"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "تعيين الأزرار"
 msgid "BUTTON MAPPING"
 msgstr "تعيين الأزرار"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "إلغاء"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "إلغاء التنزيل"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "تغيير"
 msgid "Change mode. Saved per game."
 msgstr "غيّر الوضع. يُحفظ لكل لعبة."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "عدم تغيير شيء"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "مُعدَّل"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "شفرات غش"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "تأكد أن الرمز هناك هو هذا الرمز، ثم وافق."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "جارٍ التحقق من ملفات اللعبة {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "جارٍ التحقق {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "الصينية (التقليدية)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "اختيار"
 
@@ -258,6 +302,10 @@ msgstr "متابعة اللعب"
 msgid "Controller shortcuts and supported features."
 msgstr "اختصارات يد التحكم والميزات المدعومة."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "نوع وحدة التحكم"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "أيدي التحكم"
@@ -270,9 +318,25 @@ msgstr "التحكم"
 msgid "CONTROLS"
 msgstr "التحكم"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "تعذّر إلغاء التنزيل."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "تعذّر تعديل save-sync.json."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "تعذّر إنشاء المجلد. تأكد من إمكانية الكتابة في مجلد ملفات الألعاب."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "تعذّر حذف اللعبة."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "تعذّر حذف {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "المجلد الافتراضي"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "تم حفظ المجلد الافتراضي. أعد فتح ProsperoEden لاستخدامه."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "حذف"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "حذف من الجهاز"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "تم حذف ملف واحد ({0}). بيانات الحفظ والإعدادات باقية."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "عدد الملفات المحذوفة: {1} ({0}). بيانات الحفظ والإعدادات باقية."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "السجلات المفصّلة"
@@ -361,14 +441,62 @@ msgstr "التشخيص"
 msgid "Docked"
 msgstr "تلفاز"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "تم"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "تنزيل"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "تنزيل ولعب"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "أُلغي التنزيل."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "فشل التنزيل"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "التنزيل من"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "التنزيل في الخلفية"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "حجم التنزيل: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "نزّل اللعبة لتغيير إعداداتها."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "جارٍ التنزيل"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "جارٍ التنزيل {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "التنزيلات"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "التنزيلات"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "التنزيلات تحتاج إلى خادم FTP يعمل على الجهاز، على المنفذ {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "يرسم المؤثر عندما يصبح مظلله جاهزًا بدل
 msgid "Draws the menu's small text larger."
 msgstr "يعرض النص الصغير في القائمة بحجم أكبر."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Joy-Con مزدوج"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "الهولندية"
@@ -385,6 +517,14 @@ msgstr "الهولندية"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "لكل ملف شخصي بيانات حفظه وإعداداته وألعابه الأخيرة."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "كل ملف شخصي يحتفظ ببيانات حفظه على خادم كمستخدم خاص به هناك. اقرن أحدها بزر إكس: بلا كتابة، هاتفك يتولى تسجيل الدخول."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "بيانات حفظ كل ملف شخصي على خادم خاص به، تُزامَن قبل اللعبة وبعدها."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "الفرنسية"
 msgid "French (Canada)"
 msgstr "الفرنسية (كندا)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "من {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "خادم FTP"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "مستوى صوت اللعبة وأصوات هذه القائمة."
 msgid "GAMES"
 msgstr "الألعاب"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "ألعاب على شبكتك، تُنزَّل عندما تلعبها."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "تستخدم الألعاب هذه اللغة إن توفّرت فيها، وإلا فلغتها الافتراضية. يُطبَّق ذلك عند بدء اللعبة."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "فشلت تهيئة نظام الرسومات. جرّب نظامًا آخر من الإعدادات؛ راجع stderr.log و eden_log.txt لتفاصيل برنامج التشغيل."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "محمول"
 
@@ -633,6 +785,22 @@ msgstr "تم الاستيراد. حُفظت نسخة احتياطية من بي�
 msgid "IN USE"
 msgstr "قيد الاستخدام"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "تُرسَل إلى الخادم."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "ستُعاد المحاولة عند فتح القائمة في المرة القادمة."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "تحلّ محل بيانات هذا الجهاز."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "رُفض الطلب على الخادم."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "الإيطالية"
@@ -649,6 +817,10 @@ msgstr "اليابانية"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "أبقِ مجلدات keys و firmware و roms معًا. زر المثلث يستخدم المجلد المعروض."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "إبقاء بيانات هذا الجهاز"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "آخر لعبة فُتحت"
 msgid "Launch game"
 msgstr "تشغيل اللعبة"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Joy-Con الأيسر"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "المكتبة"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "المكتبة"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "مرتبط"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "تنقّل"
 msgid "Nearest"
 msgstr "الأقرب"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "يحتاج إلى انتباه"
 
@@ -804,6 +984,14 @@ msgstr "التشغيل التالي"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "لا توجد صورة غلاف"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "لم يُعَدّ أي مصدر تنزيل. احفظ ملفًا باسم {0} يسرد مصادرك، كما يفعل هذا الملف مع خادم RomM، ثم افتح هذه القائمة مجددًا. التنزيلات تحتاج إلى خادم FTP يعمل على الجهاز، على المنفذ {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "لا تنزيلات. في المكتبة، زر مربع يضع لعبة من مصدر في قائمة الانتظار."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "لم يُختر ROM"
 msgid "No roms folder"
 msgstr "لا يوجد مجلد roms"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "لا خادم للاقتران به: أضف خادم RomM إلى sources.json أو أعدّ save-sync.json عبر FTP."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "لم يوافق أحد على الرمز في الوقت المحدد."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "لا شيء"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "غير متصل بعد"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "غير مرتبط"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "غير مرتبط: بيانات حفظه تبقى على الجهاز"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "ليست على الجهاز"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "ليست على الجهاز بعد. نزّلها للّعب ولتغيير إعداداتها."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "لم يتم الاقتران"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "تعذّر الوصول"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "غير قابل للقراءة"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "غير مُعَدّ"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "لا شيء للاستيراد"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "إيقاف"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "غير متصل"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "دقة الإخراج"
 msgid "Page"
 msgstr "صفحة"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "اقتران"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "اقتران من جديد"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "اقتران {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "اقتران {0} مع"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "تم الاقتران"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "تم الاقتران. بيانات حفظ الملف الشخصي تُزامَن من الآن."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "المجلد الأعلى"
@@ -919,9 +1179,25 @@ msgstr "الأداء"
 msgid "PERFORMANCE"
 msgstr "الأداء"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "اللعب على أي حال"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "اللعب باسم"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "اللعب بعد التنزيل"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "العب ببيانات هذا الجهاز؛ ستُسأل مجددًا في المرة القادمة."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "يلعب"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "اللعب باسم {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "البولندية"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "المنفذ {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "التفضيلات"
 msgid "Preparing"
 msgstr "جارٍ التحضير"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "اضغط مرة أخرى لحذف اللعبة وتحديثاتها و DLC من الجهاز. بيانات الحفظ والإعدادات باقية."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "اضغط مرة أخرى لاستبدال بيانات حفظ هذه اللعبة. تُحفظ نسخة احتياطية من البيانات الحالية."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "تم العثور على prod.keys"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "الملف prod.keys مفقود"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "الملف الشخصي {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "إصدار PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "إصدار PS5  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "في قائمة الانتظار"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "في قائمة الانتظار، من {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "التفريغ التفاعلي"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "التفريغ التفاعلي"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "قراءة القوائم مجددًا"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "جارٍ قراءة قوائم الألعاب..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "جارٍ القراءة..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "الدقة"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Joy-Con الأيمن"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "ضغط العصا اليمنى"
 
@@ -1120,14 +1436,66 @@ msgstr "وضع معزول (الرمز {0}): مجلد التطبيق فقط"
 msgid "Save data"
 msgstr "بيانات الحفظ"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "تم النسخ الاحتياطي لبيانات الحفظ"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "تغيّرت بيانات الحفظ في الجهتين"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "بيانات الحفظ من الخادم"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "بقيت بيانات الحفظ كما هي"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "لم تُنسَخ بيانات الحفظ احتياطيًا"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "لم تُزامَن بيانات الحفظ"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "عُثر على مجلد حفظ"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "مزامنة الحفظ"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "مزامنة الحفظ"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "تعذّرت قراءة save-sync.json ({0}). لن تتم أي مزامنة حتى يُصحَّح عبر FTP."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "تعذّرت قراءة save-sync.json: صحّحه عبر FTP أولًا."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "تم الحفظ لهذه اللعبة. يُطبَّق عند التشغيل التالي."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "حُفظت في {0}. تُرسَل إلى الخادم."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "حُفظت في {0}. تحلّ محل بيانات هذا الجهاز."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "تم الحفظ. يُطبَّق عند بدء اللعبة."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "تم الحفظ. أعد فتح ProsperoEden لاستخدام هذا المجلد."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "امسح الرمز بهاتفك أو افتح العنوان أدناه."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "تمرير"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "اختيار"
 
@@ -1173,6 +1545,10 @@ msgstr "المحدَّدة"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "ملف ROM المحدَّد لم يعد متوفرًا"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "الخادم أقدم من أن يدعم مزامنة الحفظ"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "حالة الإعداد والسجلات المفصّلة."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "فشل التحقق من الإعداد. تأكد من أن ملفات البرنامج الثابت والمفاتيح مقروءة وصالحة."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "يمكن لعدة خوادم الاحتفاظ ببيانات الحفظ. أيّها يستخدم هذا الملف الشخصي؟"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "هذه اللعبة متوفرة في عدة مصادر. من أيّها تُنزَّل؟"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "إظهار عدّاد FPS أو إخفاؤه"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "سجّل الدخول إلى {0} بالمستخدم الذي تعود إليه بيانات حفظ هذا الملف الشخصي."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "يتخطى بعض الفحوص عندما تغيّر اللعبة ذاك
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "لوحات معتمة ونص أكثر سطوعًا وتمييز بإطار."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "المصدر"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "المصادر"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "الإسبانية"
@@ -1246,6 +1642,10 @@ msgstr "مربع"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "اضغط مربع مرة أخرى لإزالة {0} من القائمة. بيانات حفظه تبقى على الجهاز."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "اضغط مربع مرة أخرى لإلغاء ربط {0}. بيانات حفظه تبقى على الجهاز وعلى الخادم."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "شغّل أي لعبة مرة واحدة قبل استيراد بيان�
 msgid "STARTING"
 msgstr "جارٍ التشغيل"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "الحالة"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "يوقف انجراف الخلفية وانزلاق الشاشات، هنا وفي شاشة التحميل."
@@ -1264,9 +1668,25 @@ msgstr "يوقف انجراف الخلفية وانزلاق الشاشات، ه�
 msgid "Supply your own files"
 msgstr "استخدم ملفاتك الخاصة"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "المزامنة"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "مزامنة بيانات الحفظ مرة أخرى."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "جارٍ مزامنة بيانات الحفظ"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "تايوان"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "أخذ بيانات الخادم"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "شكر"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "شكرًا لمجتمع برامج PS5 المنزلية كله ولكل مطوّر جعلت برامج تشغيله وأدواته ومكتباته ProsperoEden ممكنًا."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "توقف التنزيل"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "المجلد الذي يحتوي على المفاتيح والبرنامج الثابت والألعاب."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "لن تبدأ اللعبة."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "تعذّرت قراءة قائمة ألعاب {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "تمت قراءة قوائم الألعاب. عدد الألعاب: {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "تمت قراءة قوائم الألعاب. عدد الألعاب: {0}."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "نفدت ذاكرة الرسومات لدى اللعبة. اخفض الدقة من الإعدادات ثم الفيديو (أو من إعدادات اللعبة نفسها) وشغّلها من جديد."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "تبدأ اللعبة عند اكتمال مزامنة بيانات حفظها."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "تبدأ اللعبة عند اكتمال التنزيل."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "اللغة التي تستخدمها الألعاب إن توفّرت فيها."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "الملف الشخصي أو الخادم لم يعد موجودًا."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "الملف الذي يلعب الآن يبقى. اختر ملفًا آخر أولًا."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "بيانات حفظ الملف الشخصي تُزامَن باسم {0} من الآن."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "بيانات حفظ الملف الشخصي تُزامَن مع الخادم من الآن."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "بقية الملاحظات في صفحة التطبيق على homebrew.page."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "{0} غير موجود على الخادم."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "الخادم يعمل بإصدار RomM {0}؛ مزامنة الحفظ تحتاج إلى RomM {1} أو أحدث. حدّث الخادم: حتى ذلك الحين لن تُزامَن معه أي بيانات حفظ."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "هذه اللعبة لم تعد متوفرة في المصدر."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "تعذر إكمال التحديث"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "لدى هذا الجهاز والخادم بيانات حفظ لا يعرفها الطرف الآخر. أيّها يبقى؟ تُحفَظ الأخرى كنسخة احتياطية."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "لوحة اللمس"
 msgid "Triangle"
 msgstr "مثلث"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "إعادة المحاولة"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "جارٍ إعادة المحاولة."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "تشغيل أو إيقاف"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "غير متوفر"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "مفهوم"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "إلغاء الربط"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "أُلغي الربط. لم تعد بيانات حفظه تُزامَن."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "عرض كل الألعاب"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (موصى به)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "في انتظار الموافقة  ·  الرمز صالح لمدة {0} أخرى"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "في انتظار {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "في انتظار التنزيل"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "ما الجديد في الإصدار {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "من يلعب. لكل ملف شخصي بيانات حفظه وإعداداته."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "ببيانات حفظ هذا الجهاز؛ لن تُزامَن."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "ببيانات حفظ هذا الجهاز؛ تُزامَن بعد اللعبة."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "مع {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "ستُسأل مجددًا في المرة القادمة."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "ستُبلَّغ مجددًا عند المزامنة التالية."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "ألعابك"
@@ -1492,6 +2016,10 @@ msgstr "تبقى ألعابك وحفظاتك وإعداداتك كما هي."
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "مغامرتك القادمة"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "تُقارَن بيانات حفظك ببيانات الخادم."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "الألعاب: {0}"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "الألعاب المثبّتة: {0}"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "قوائم ألعاب تعذّرت قراءتها: {0}."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "التعديلات المفعّلة: {0} من {1}"
 msgid "{0} of {1} on"
 msgstr "{0} من {1} مفعّلة"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0} من {1} ملفات شخصية"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} على {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "عدد المصادر: {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · الملف الشخصي {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/‎ (NSP أو XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/‎ (مجلد لكل معرّف لعبة)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "نوع وحدة التحكم"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "تلقائي"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Joy-Con مزدوج"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Joy-Con الأيسر"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Joy-Con الأيمن"

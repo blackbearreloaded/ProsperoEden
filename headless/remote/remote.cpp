@@ -450,6 +450,10 @@ class FileReceiver final : public Receiver {
                  StreamCheck& check)
         : upload_(upload), server_(server), path_(std::move(path)), base_(base), start_(start), check_(check) {}
 
+    // The file's size as its source gave it (0: not known): a server that sends more is stopped,
+    // rather than left to fill the drive.
+    void limit(std::uint64_t size) { limit_ = size; }
+
     bool begin(bool from_start) override {
         // The whole file, although a part was asked for: it is written again from its start.
         if (from_start && start_ > 0) {
@@ -460,6 +464,10 @@ class FileReceiver final : public Receiver {
         return true;
     }
     bool take(const void* data, std::size_t size) override {
+        if (limit_ > 0 && start_ + written_ + size > limit_) {
+            error_ = "The server sent more than the file's size";
+            return false;
+        }
         check_.Feed(start_ + written_, data, size);
         if (!upload_.Send(data, size)) {
             // Its reason, a full drive above all, is on the control connection.
@@ -496,6 +504,7 @@ class FileReceiver final : public Receiver {
     std::uint64_t start_; // where in the file the transfer began
     StreamCheck& check_;
     std::uint64_t written_ = 0;
+    std::uint64_t limit_ = 0;
     std::string error_;
     Clock::time_point sampled_ = Clock::now(); // when the speed was last measured
     std::uint64_t sampled_bytes_ = 0;          // written_ then
@@ -543,8 +552,14 @@ Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, c
     const std::string folder = part.update ? paths.updates : paths.roms;
     MakeFolders(folder);
     const std::string final_path = FinalPath(paths, part);
+    // A file of that name is on the console already: it stays as it is, whatever its size (one
+    // the player copied there, or an earlier download), and nothing is downloaded over it.
     const std::int64_t present = FileSize(final_path);
-    if (present >= 0 && (part.size == 0 || static_cast<std::uint64_t>(present) == part.size)) return Outcome::done;
+    if (present >= 0) {
+        if (part.size > 0 && static_cast<std::uint64_t>(present) != part.size)
+            Log("download of " + game.name + ": " + part.name + " is on the console with another size; it is kept");
+        return Outcome::done;
+    }
     MakeFolders(StagedFolder(paths, game.source, game.id));
     const std::string staged = StagedPath(paths, game, part);
     std::int64_t existing = FileSize(staged);
@@ -566,6 +581,7 @@ Outcome DownloadPart(Source& source, const Paths& paths, const FtpServer& ftp, c
     if (!upload.Open(ftp, staged, start, error)) return Outcome::failed;
     State_().current_done.store(base + start);
     FileReceiver receiver(upload, ftp, staged, base, start, check);
+    receiver.limit(part.size);
     const bool fetched = source.fetch(AsSourceGame(game), {part.id, part.name, part.size, part.update ? FileKind::update : FileKind::game},
                                       start, receiver, error);
     // Stopped or failed: what the server has of the file stays, to go on from.
@@ -605,6 +621,12 @@ bool PlaceParts(const Paths& paths, const Game& game, std::string* error) {
     for (const Part& part : parts) {
         const std::string staged = StagedPath(paths, game, part);
         if (FileSize(staged) < 0) continue;
+        // rename() would replace a file that appeared there since the download began.
+        if (FileSize(FinalPath(paths, part)) >= 0) {
+            Log("download of " + game.name + ": " + part.name + " is on the console already; it is kept");
+            (void)std::remove(staged.c_str());
+            continue;
+        }
         if (std::rename(staged.c_str(), FinalPath(paths, part).c_str()) != 0) {
             *error = "Cannot move the download into " + std::string{part.update ? paths.updates : paths.roms};
             return false;
@@ -811,13 +833,20 @@ void DownloadThread() {
         std::stable_sort(parts.begin(), parts.end(), [](const Part& a, const Part& b) { return a.update && !b.update; });
         Outcome outcome = Outcome::done;
         std::string error;
-        for (const Part& part : parts) {
-            // What the game's other files have on the console, for the progress.
-            const std::uint64_t base = Present(paths, game) - PresentOf(paths, game, part);
-            outcome = DownloadPart(*source, paths, ftp, game, part, base, &error);
-            if (outcome != Outcome::done) break;
+        try {
+            for (const Part& part : parts) {
+                // What the game's other files have on the console, for the progress.
+                const std::uint64_t base = Present(paths, game) - PresentOf(paths, game, part);
+                outcome = DownloadPart(*source, paths, ftp, game, part, base, &error);
+                if (outcome != Outcome::done) break;
+            }
+            if (outcome == Outcome::done && !PlaceParts(paths, game, &error)) outcome = Outcome::failed;
+        } catch (const std::exception& problem) {
+            // Nothing a server sends ends the app: the download fails, and stays out of the way
+            // until the player tries it again.
+            outcome = Outcome::failed;
+            error = std::string("The download stopped: ") + problem.what();
         }
-        if (outcome == Outcome::done && !PlaceParts(paths, game, &error)) outcome = Outcome::failed;
 
         lock.lock();
         s.transferring = false;

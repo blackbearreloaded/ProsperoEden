@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d/%m/%Y %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (più veloce, meno nitida)"
@@ -34,6 +38,10 @@ msgstr "4x (la più lenta)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "Impossibile leggere un NCA del firmware. Reinstalla il dump del firmware."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Un'associazione è già in corso."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "EXTRA"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Extra: {0}  /  Lingua: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Aggiunto ai download. Impostazioni, Download mostra la coda."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Aggiunto. Croce gioca con questo profilo; sinistra e destra ne cambiano il nome."
@@ -106,6 +118,10 @@ msgstr "Altra lingua"
 msgid "As usual"
 msgstr "Come al solito"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Richiesta di un codice al server..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "AUDIO"
 msgid "Australia"
 msgstr "Australia"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Automatico"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Indietro"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Backup dei salvataggi"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Assegnazione tasti"
 msgid "BUTTON MAPPING"
 msgstr "ASSEGNAZIONE TASTI"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Annulla"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Annulla download"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Cambia"
 msgid "Change mode. Saved per game."
 msgstr "Cambia modalità. Salvata per ogni gioco."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Non cambiare nulla"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Modificata"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Trucchi"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Controlla che il codice lì sia questo, poi approva."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Verifica dei file di gioco {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Verifica {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Cinese (tradizionale)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Scegli"
 
@@ -258,6 +302,10 @@ msgstr "CONTINUA A GIOCARE"
 msgid "Controller shortcuts and supported features."
 msgstr "Scorciatoie del controller e funzionalità supportate."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Tipo di controller"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "CONTROLLER"
@@ -270,9 +318,25 @@ msgstr "Comandi"
 msgid "CONTROLS"
 msgstr "COMANDI"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Impossibile annullare il download."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Impossibile modificare save-sync.json."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "Impossibile creare la cartella. Verifica che la cartella dei file di gioco sia scrivibile."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Impossibile eliminare il gioco."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Impossibile eliminare {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Cartella predefinita"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Cartella predefinita salvata. Riapri ProsperoEden per usarla."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Elimina"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Elimina dalla console"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "1 file eliminato ({0}). Salvataggi e impostazioni vengono conservati."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "{1} file eliminati ({0}). Salvataggi e impostazioni vengono conservati."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Log dettagliati"
@@ -361,14 +441,62 @@ msgstr "DIAGNOSTICA"
 msgid "Docked"
 msgstr "TV"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Fine"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Scarica"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Scarica e gioca"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Download annullato."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "Download non riuscito"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Scarica da"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Scarica in background"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Dimensione del download: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Scarica il gioco per modificarne le impostazioni."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Download"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Download in corso {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Download"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "DOWNLOAD"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "I download richiedono un server FTP in esecuzione sulla console, sulla porta {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Disegna un effetto quando il suo shader è pronto invece di mettere in p
 msgid "Draws the menu's small text larger."
 msgstr "Ingrandisce il testo piccolo del menu."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Due Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Olandese"
@@ -385,6 +517,14 @@ msgstr "Olandese"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Ogni profilo ha i propri salvataggi, impostazioni e giochi recenti."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Ogni profilo conserva i salvataggi su un server, come utente a sé. Associane uno con Croce: niente da digitare, l'accesso lo fa il telefono."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "I salvataggi di ogni profilo su un server proprio, sincronizzati prima e dopo il gioco."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Francese"
 msgid "French (Canada)"
 msgstr "Francese (Canada)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "Da {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "SERVER FTP"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "Volume dei giochi e suoni di questo menu."
 msgid "GAMES"
 msgstr "GIOCHI"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "I giochi sulla tua rete, scaricati quando ci giochi."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "I giochi usano questa lingua quando è disponibile, altrimenti la propria lingua predefinita. Si applica all'avvio di un gioco."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "Inizializzazione del renderer non riuscita. Prova un altro renderer nelle Impostazioni; consulta stderr.log ed eden_log.txt per i dettagli sul driver."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Portatile"
 
@@ -633,6 +785,22 @@ msgstr "Importato. È stato creato un backup del salvataggio sostituito."
 msgid "IN USE"
 msgstr "IN USO"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Vanno sul server."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "Nuovo tentativo alla prossima apertura del menu."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Sostituiscono quelli della console."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "La richiesta è stata rifiutata sul server."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Italiano"
@@ -649,6 +817,10 @@ msgstr "Giapponese"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Tieni insieme le cartelle keys, firmware e roms. TRIANGOLO usa la cartella mostrata."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "Tieni quelli della console"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Ultimo gioco aperto"
 msgid "Launch game"
 msgstr "Avvia gioco"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Joy-Con sinistro"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Raccolta"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "RACCOLTA"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Associato"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Naviga"
 msgid "Nearest"
 msgstr "Più vicino"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Richiede attenzione"
 
@@ -804,6 +984,14 @@ msgstr "PROSSIMO AVVIO"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Nessuna copertina"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Nessuna sorgente di download configurata. Salva un file di nome {0} che elenca le tue sorgenti, come fa questo con un server RomM, poi riapri questo menu. I download richiedono un server FTP in esecuzione sulla console, sulla porta {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Nessun download. Nella Raccolta, Quadrato mette in coda un gioco da una sorgente."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "Nessuna ROM selezionata"
 msgid "No roms folder"
 msgstr "Nessuna cartella roms"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Nessun server da associare: aggiungi un server RomM a sources.json oppure configura save-sync.json via FTP."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Nessuno ha approvato il codice in tempo."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Nessuno"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Non ancora connesso"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Non associato"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Non associato: i suoi salvataggi restano sulla console"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Non sulla console"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Non ancora sulla console. Scaricalo per giocarci e modificarne le impostazioni."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Non associato"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Non raggiungibile"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Non leggibile"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Non configurato"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Niente da importare"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Non attivo"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Offline"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Risoluzione di uscita"
 msgid "Page"
 msgstr "Pagina"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Associa"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Associa di nuovo"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "Associa {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "Associa {0} con"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Associato"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Associato. D'ora in poi i salvataggi del profilo vengono sincronizzati."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Cartella superiore"
@@ -919,9 +1179,25 @@ msgstr "Prestazioni"
 msgid "PERFORMANCE"
 msgstr "PRESTAZIONI"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Gioca comunque"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Gioca come"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Gioca a download completato"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Gioca con quelli della console; la prossima volta ti verrà richiesto."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "in gioco"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Gioca {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Polacco"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Porta {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "PREFERENZE"
 msgid "Preparing"
 msgstr "Preparazione"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Premi di nuovo per eliminare dalla console il gioco con aggiornamenti e DLC. Salvataggi e impostazioni vengono conservati."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Premi di nuovo per sostituire il salvataggio di questo gioco. Viene creato un backup di quello attuale."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "prod.keys trovato"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "prod.keys mancante"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Profilo {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "EDIZIONE PS5"
 msgid "PS5 EDITION  /  {0}"
 msgstr "EDIZIONE PS5  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "In coda"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "In coda, da {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Flushing reattivo"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "FLUSHING REATTIVO"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Rileggi gli elenchi"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Lettura degli elenchi dei giochi..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Lettura..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "RISOLUZIONE"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Joy-Con destro"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Pressione levetta destra"
 
@@ -1120,14 +1436,66 @@ msgstr "Limitato (codice {0}): solo la cartella dell'app"
 msgid "Save data"
 msgstr "Dati salvati"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "Backup dei salvataggi eseguito"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "Salvataggi modificati su entrambi i lati"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Salvataggi presi dal server"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "Salvataggi lasciati invariati"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "Backup dei salvataggi non eseguito"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "Salvataggi non sincronizzati"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Cartella salvataggi trovata"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Sincronizzazione salvataggi"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "SINCRONIZZAZIONE SALVATAGGI"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "save-sync.json non è leggibile ({0}). Nulla viene sincronizzato finché non lo correggi via FTP."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "save-sync.json non è leggibile: correggilo prima via FTP."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Salvato per questo gioco. Si applica al prossimo avvio."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Salvati: {0}. Vanno sul server."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Salvati: {0}. Sostituiscono quelli della console."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Salvato. Si applica all'avvio di un gioco."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Salvato. Riapri ProsperoEden per usare questa cartella."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Scansiona il codice con il telefono oppure apri l'indirizzo qui sotto."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Scorri"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Seleziona"
 
@@ -1173,6 +1545,10 @@ msgstr "SELEZIONATA"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "La ROM selezionata non è più disponibile."
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "Server troppo vecchio per la sincronizzazione"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Stato della configurazione e log dettagliati."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Convalida della configurazione non riuscita. Verifica che i file del firmware e delle chiavi siano leggibili e validi."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Più server possono conservare i salvataggi. Quale deve usare questo profilo?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Più sorgenti hanno questo gioco. Da quale scaricarlo?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "Mostra o nasconde il contatore FPS"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Accedi a {0} come l'utente a cui appartengono i salvataggi di questo profilo."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Salta alcuni controlli quando un gioco modifica la memoria usata dalla G
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Pannelli opachi, testo più luminoso ed evidenziazione con contorno."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "SORGENTE"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "SORGENTI"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Spagnolo"
@@ -1246,6 +1642,10 @@ msgstr "Quadrato"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "Quadrato di nuovo toglie {0} dall'elenco. I suoi salvataggi restano sulla console."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Quadrato di nuovo dissocia {0}. I suoi salvataggi restano sulla console e sul server."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Avvia un gioco qualsiasi una volta prima di importare un salvataggio."
 msgid "STARTING"
 msgstr "AVVIO IN CORSO"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "STATO"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Ferma il movimento dello sfondo e lo scorrimento delle schermate, qui e nella schermata di caricamento."
@@ -1264,9 +1668,25 @@ msgstr "Ferma il movimento dello sfondo e lo scorrimento delle schermate, qui e 
 msgid "Supply your own files"
 msgstr "Fornisci i tuoi file"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "SINCRONIZZAZIONE"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "Sincronizza i salvataggi ancora una volta."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Sincronizzazione dei salvataggi"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Taiwan"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "Prendi quelli del server"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "RINGRAZIAMENTI"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Grazie a tutta la community homebrew di PS5 e a tutti gli sviluppatori i cui driver, strumenti e librerie rendono possibile ProsperoEden."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "Il download si è interrotto"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "La cartella con le tue chiavi, il firmware e i giochi."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "Il gioco non si avvia."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Impossibile leggere l'elenco dei giochi di {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "Elenchi dei giochi letti: {0} gioco."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "Elenchi dei giochi letti: {0} giochi."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "Il gioco ha esaurito la memoria grafica. Riduci la risoluzione in Impostazioni, Video (o nelle impostazioni del gioco stesso) e riavvialo."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "Il gioco si avvia quando i salvataggi sono allineati."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "Il gioco si avvia al termine del download."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "La lingua usata dai giochi, quando disponibile."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Il profilo o il server non esiste più."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "Il profilo in gioco resta. Scegline prima un altro."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "D'ora in poi i salvataggi del profilo vengono sincronizzati come {0}."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "D'ora in poi i salvataggi del profilo vengono sincronizzati con il server."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "Il resto è nella pagina dell'app su homebrew.page."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "Il server non ha {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "Sul server è in esecuzione RomM {0}; la sincronizzazione richiede RomM {1} o successivo. Aggiorna il server: fino ad allora nessun salvataggio viene sincronizzato con esso."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "La sorgente non ha più questo gioco."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "Impossibile completare l'aggiornamento"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "Questa console e il server hanno entrambi salvataggi che l'altro non conosce. Quali tenere? Gli altri vengono conservati come backup."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Touchpad"
 msgid "Triangle"
 msgstr "Triangolo"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Riprova"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Nuovo tentativo."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Attiva o disattiva"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Non disponibile"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Ho capito"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Dissocia"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Dissociato. I suoi salvataggi non vengono più sincronizzati."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "VEDI TUTTI I GIOCHI"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (consigliato)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "In attesa dell'approvazione  ·  il codice vale ancora {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "In attesa di {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "In attesa del download"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "Novità della versione {0}"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Chi sta giocando. Ogni profilo ha i propri salvataggi e impostazioni."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "Con i salvataggi della console; non vengono sincronizzati."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "Con i salvataggi della console; vengono sincronizzati dopo il gioco."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "con {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "La prossima volta ti verrà richiesto."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "Verrai avvisato di nuovo alla prossima sincronizzazione."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "I tuoi giochi"
@@ -1492,6 +2016,10 @@ msgstr "Giochi, salvataggi e impostazioni vengono mantenuti."
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "La tua prossima avventura"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "I tuoi salvataggi vengono confrontati con quelli del server."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} gioco"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "{0} gioco installato"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "Impossibile leggere {0} elenchi dei giochi."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "{0} su {1} mod attive"
 msgid "{0} of {1} on"
 msgstr "{0} su {1} attive"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0} profili su {1}"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} su {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} sorgenti"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Profilo {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP o XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (una cartella per ID titolo)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Tipo di controller"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Automatico"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Due Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Joy-Con sinistro"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Joy-Con destro"

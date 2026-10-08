@@ -52,11 +52,12 @@ already exists: the dependencies, this checkout's build cache in
 
 `JOBS=<n>` sets the number of parallel compile jobs (default: all cores).
 
-The download sources and the save sync are checked by `make test` against real RomM servers and
-ftpsrv, the console's FTP server, in Docker (`tools/check-romm.py [version ...]`; `ROMM_CHECK=0`
-skips it): for each version (default: the oldest the save sync takes, `kMinimumVersion` in
+The download sources and the save sync can be checked against real RomM servers and
+ftpsrv, the console's FTP server, in Docker (`ROMM_CHECK=1 tools/check-romm.py`, or `ROMM_CHECK=1 make
+test`; it is not part of a plain `make test`, since it pulls several server images and, while it
+runs, an FTP server without a sign-in listens on the computer's network): for each version (default: the oldest the save sync takes, `kMinimumVersion` in
 `headless/remote/romm/romm_saves.h`, the newest it was checked with, and one older than the oldest,
-which has to be refused) it starts a RomM with fake Switch games (`tools/romm-test/`), scans them,
+which has to be refused) it starts a RomM with fake games (`tools/romm-test/`), scans them,
 downloads them as a download source (a game of 400 MB stopped part way and gone on with, compared
 byte for byte; updates and DLC, a cancel, two sources, the queue kept), plays a second console and
 a phone against its save sync, and takes it down again. It needs Docker with Compose (without it,

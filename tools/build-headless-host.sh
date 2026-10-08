@@ -78,7 +78,7 @@ python3 -B "$root/headless/check_audio_shutdown.py" "$scratch/build/headless/cor
 "$scratch/build/bin/eden-mods-check"
 "$scratch/build/bin/eden-settings-check"
 python3 -B "$root/tools/check-remote.py"
-# The same against real RomM servers in Docker (skipped without Docker, or with ROMM_CHECK=0).
+# The same against real RomM servers in Docker (only with ROMM_CHECK=1, and Docker).
 python3 -B "$root/tools/check-romm.py"
 bash tools/check-headless-devices.sh
 cp "$scratch/build/bin/eden-headless" build/headless-host/eden-headless

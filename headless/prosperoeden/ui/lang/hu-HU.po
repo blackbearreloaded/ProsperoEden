@@ -3,6 +3,10 @@
 # keep UPPERCASE labels uppercase, and keep names (ProsperoEden, Eden, PS5, Vulkan, OpenGL,
 # AMD FSR, DLC, NSP, XCI, prod.keys, Ryujinx) unchanged.
 
+#: pe/ui/save_sync.cpp
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y. %m. %d. %H:%M"
+
 #: settings_store.h
 msgid "0.5x (faster, softer)"
 msgstr "0,5x (gyorsabb, lágyabb)"
@@ -34,6 +38,10 @@ msgstr "4x (leglassabb)"
 #: eden_services.cpp
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr "A firmware egyik NCA-fájlja nem olvasható. Telepítsd újra a firmware-dumpot."
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Már folyamatban van egy párosítás."
 
 #: pe/ui/home.cpp
 msgid "About"
@@ -81,6 +89,10 @@ msgstr "BŐVÍTMÉNYEK"
 msgid "Add-ons: {0}  /  Language: {1}"
 msgstr "Bővítmények: {0}  /  Nyelv: {1}"
 
+#: pe/ui/remote.cpp
+msgid "Added to the downloads. Settings, Downloads shows the queue."
+msgstr "Hozzáadva a letöltésekhez. A sor a Beállítások, Letöltések alatt látható."
+
 #: pe/ui/profiles.cpp
 msgid "Added. Cross plays as this profile; left and right change its name."
 msgstr "Hozzáadva. A Kereszt ezzel a profillal játszik; a bal és a jobb a nevét váltja."
@@ -106,6 +118,10 @@ msgstr "Másik nyelv"
 msgid "As usual"
 msgstr "Szokásos"
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Kód kérése a szervertől..."
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -127,10 +143,18 @@ msgstr "HANG"
 msgid "Australia"
 msgstr "Ausztrália"
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "Automatikus"
+
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "Vissza"
+
+#: pe/ui/save_sync.cpp
+msgid "Backing up save data"
+msgstr "Biztonsági másolat készül a mentésekről"
 
 #. An upscaling filter.
 #: settings_store.h
@@ -164,9 +188,13 @@ msgstr "Gombkiosztás"
 msgid "BUTTON MAPPING"
 msgstr "GOMBKIOSZTÁS"
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr "Mégse"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Cancel download"
+msgstr "Letöltés megszakítása"
 
 #: pe/ui/update.cpp
 msgid "Cancelling"
@@ -185,6 +213,10 @@ msgstr "Módosítás"
 msgid "Change mode. Saved per game."
 msgstr "Mód váltása. Játékonként mentve."
 
+#: pe/ui/save_sync.cpp
+msgid "Change nothing"
+msgstr "Ne változzon semmi"
+
 #. The button mapping has been changed.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Changed"
@@ -194,6 +226,18 @@ msgstr "Módosítva"
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
 msgstr "Csalások"
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Ellenőrizd, hogy ott ugyanez a kód látható, és hagyd jóvá."
+
+#: pe/ui/remote.cpp
+msgid "Checking the game files {0}"
+msgstr "Játékfájlok ellenőrzése: {0}"
+
+#: pe/ui/remote.cpp
+msgid "Checking {0}"
+msgstr "Ellenőrzés: {0}"
 
 #: eden_services.cpp
 msgid "China"
@@ -208,7 +252,7 @@ msgid "Chinese (Traditional)"
 msgstr "Kínai (hagyományos)"
 
 #. Button hint: choose the highlighted language.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/save_sync.cpp
 msgid "Choose"
 msgstr "Kiválasztás"
 
@@ -258,6 +302,10 @@ msgstr "JÁTÉK FOLYTATÁSA"
 msgid "Controller shortcuts and supported features."
 msgstr "A vezérlő gombkombinációi és támogatott funkciói."
 
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "Kontroller típusa"
+
 #: pe/ui/home.cpp
 msgid "CONTROLLERS"
 msgstr "VEZÉRLŐK"
@@ -270,9 +318,25 @@ msgstr "Irányítás"
 msgid "CONTROLS"
 msgstr "IRÁNYÍTÁS"
 
+#: pe/ui/remote.cpp
+msgid "Could not cancel the download."
+msgstr "Nem sikerült megszakítani a letöltést."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "Nem sikerült módosítani a save-sync.json fájlt."
+
 #: pe/ui/library.cpp
 msgid "Could not create the folder. Check that the game files folder can be written."
 msgstr "A mappát nem sikerült létrehozni. Ellenőrizd, hogy írható-e a játékfájlok mappája."
+
+#: pe/ui/library.cpp
+msgid "Could not delete the game."
+msgstr "Nem sikerült törölni a játékot."
+
+#: eden_services.cpp
+msgid "Could not delete {0}."
+msgstr "Nem sikerült törölni: {0}."
 
 #: pe/ui/library.cpp
 msgid "Could not save console mode. Please try again."
@@ -327,6 +391,22 @@ msgstr "Alapértelmezett mappa"
 msgid "Default folder saved. Reopen ProsperoEden to use it."
 msgstr "Alapértelmezett mappa mentve. A ProsperoEden újraindítása után lép életbe."
 
+#: pe/ui/library.cpp
+msgid "Delete"
+msgstr "Törlés"
+
+#: pe/ui/library.cpp
+msgid "Delete from console"
+msgstr "Törlés a konzolról"
+
+#: eden_services.cpp
+msgid "Deleted 1 file ({0}). Save data and settings are kept."
+msgstr "1 fájl törölve ({0}). A mentések és a beállítások megmaradnak."
+
+#: eden_services.cpp, host/fake_services.cpp
+msgid "Deleted {1} files ({0}). Save data and settings are kept."
+msgstr "{1} fájl törölve ({0}). A mentések és a beállítások megmaradnak."
+
 #: pe/ui/settings.cpp
 msgid "Detailed logging"
 msgstr "Részletes naplózás"
@@ -361,14 +441,62 @@ msgstr "DIAGNOSZTIKA"
 msgid "Docked"
 msgstr "Dokkolt"
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Kész"
+
+#: pe/ui/library.cpp, pe/ui/remote.cpp
+msgid "Download"
+msgstr "Letöltés"
+
+#: pe/ui/library.cpp
+msgid "Download and play"
+msgstr "Letöltés és játék"
+
+#: pe/ui/remote.cpp
+msgid "Download cancelled."
+msgstr "Letöltés megszakítva."
+
+#: pe/ui/remote.cpp
+msgid "Download failed"
+msgstr "A letöltés sikertelen"
+
+#: pe/ui/remote.cpp
+msgid "Download from"
+msgstr "Letöltés innen"
+
+#: pe/ui/remote.cpp
+msgid "Download in the background"
+msgstr "Letöltés a háttérben"
+
 #. {0} is a size such as 36.4 MB.
 #: pe/ui/update.cpp
 msgid "Download size: {0}"
 msgstr "Letöltési méret: {0}"
 
+#: pe/ui/library.cpp
+msgid "Download the game to change its settings."
+msgstr "Töltsd le a játékot a beállításai módosításához."
+
 #: pe/ui/update.cpp
 msgid "Downloading"
 msgstr "Letöltés"
+
+#: pe/ui/remote.cpp
+msgid "Downloading {0}"
+msgstr "Letöltés: {0}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Downloads"
+msgstr "Letöltések"
+
+#: pe/ui/settings.cpp
+msgid "DOWNLOADS"
+msgstr "LETÖLTÉSEK"
+
+#: pe/ui/remote.cpp
+msgid "Downloads need an FTP server running on the console, on port {0}."
+msgstr "A letöltésekhez FTP-szervernek kell futnia a konzolon, ezen a porton: {0}."
 
 #: pe/ui/settings.cpp
 msgid "Draws an effect once its shader is ready instead of pausing. Things can be missing for a moment."
@@ -378,6 +506,10 @@ msgstr "Az effektet akkor rajzolja ki, amikor a shadere elkészült, szünetelte
 msgid "Draws the menu's small text larger."
 msgstr "Megnöveli a menü apró szövegeit."
 
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "Két Joy-Con"
+
 #: settings_store.h
 msgid "Dutch"
 msgstr "Holland"
@@ -385,6 +517,14 @@ msgstr "Holland"
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
 msgstr "Minden profilnak saját mentései, beállításai és legutóbbi játékai vannak."
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Minden profil egy szerveren tartja a mentéseit, saját felhasználóként. Párosíts egyet a Kereszttel: nem kell gépelni, a bejelentkezést a telefonod intézi."
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Minden profil mentései saját szerveren, játék előtt és után szinkronizálva."
 
 #: pe/ui/home.cpp
 msgid "Eden emulator for PlayStation 5"
@@ -519,6 +659,14 @@ msgstr "Francia"
 msgid "French (Canada)"
 msgstr "Francia (Kanada)"
 
+#: pe/ui/remote.cpp
+msgid "From {0}"
+msgstr "Innen: {0}"
+
+#: pe/ui/settings.cpp
+msgid "FTP SERVER"
+msgstr "FTP-SZERVER"
+
 #. The app can read every folder of the console.
 #: pe/ui/browse.cpp
 msgid "Full filesystem"
@@ -569,6 +717,10 @@ msgstr "A játékok hangereje és a menü hangjai."
 msgid "GAMES"
 msgstr "JÁTÉKOK"
 
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Games on your network, downloaded when you play them."
+msgstr "Játékok a hálózatodról, letöltve, amikor játszol velük."
+
 #: pe/ui/browse.cpp
 msgid "Games use this language when they offer it, and their own default otherwise. It applies when a game starts."
 msgstr "A játékok ezt a nyelvet használják, ha elérhető bennük, egyébként a saját alapértelmezett nyelvüket. A játék indításakor lép érvénybe."
@@ -594,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr "A renderelő inicializálása sikertelen. Próbálj ki egy másik renderelőt a Beállításokban; az illesztőprogram részleteit lásd az stderr.log és az eden_log.txt fájlban."
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr "Kézi"
 
@@ -633,6 +785,22 @@ msgstr "Importálva. A lecserélt mentésről biztonsági másolat készült."
 msgid "IN USE"
 msgstr "HASZNÁLATBAN"
 
+#: pe/ui/save_sync.cpp
+msgid "It goes to the server."
+msgstr "Felkerül a szerverre."
+
+#: pe/ui/save_sync.cpp
+msgid "It is tried again when the menu opens next."
+msgstr "A menü következő megnyitásakor újrapróbáljuk."
+
+#: pe/ui/save_sync.cpp
+msgid "It replaces this console's."
+msgstr "Lecseréli a konzolét."
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "A szerveren elutasították."
+
 #: settings_store.h
 msgid "Italian"
 msgstr "Olasz"
@@ -649,6 +817,10 @@ msgstr "Japán"
 #: pe/ui/browse.cpp
 msgid "Keep keys, firmware and roms folders together. TRIANGLE uses the folder shown."
 msgstr "Tartsd egy helyen a keys, firmware és roms mappát. A HÁROMSZÖG a megjelenített mappát használja."
+
+#: pe/ui/save_sync.cpp
+msgid "Keep this console's"
+msgstr "A konzolé maradjon"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -701,6 +873,10 @@ msgstr "Legutóbb megnyitott játék"
 msgid "Launch game"
 msgstr "Játék indítása"
 
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "Bal Joy-Con"
+
 #. Pressing the left stick down like a button.
 #: pe/ui/game_options.cpp
 msgid "Left stick press"
@@ -721,6 +897,10 @@ msgstr "Játéktár"
 #: pe/ui/library.cpp
 msgid "LIBRARY"
 msgstr "JÁTÉKTÁR"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr "Párosítva"
 
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
@@ -783,7 +963,7 @@ msgstr "Navigálás"
 msgid "Nearest"
 msgstr "Legközelebbi"
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr "Figyelmet igényel"
 
@@ -804,6 +984,14 @@ msgstr "KÖVETKEZŐ INDÍTÁS"
 #: pe/ui/library.cpp
 msgid "No cover art"
 msgstr "Nincs borító"
+
+#: pe/ui/remote.cpp
+msgid "No download source is set up. Save a file named {0} that lists your sources, as this one does with a RomM server, then open this menu again. Downloads need an FTP server running on the console, on port {1}."
+msgstr "Nincs beállítva letöltési forrás. Ments el egy {0} nevű fájlt, amely felsorolja a forrásaidat, ahogy ez teszi egy RomM-szerverrel, majd nyisd meg újra ezt a menüt. A letöltésekhez FTP-szervernek kell futnia a konzolon, ezen a porton: {1}."
+
+#: pe/ui/remote.cpp
+msgid "No downloads. In the Library, Square puts a game from a source in the queue."
+msgstr "Nincs letöltés. A Játéktárban a Négyzet sorba állít egy játékot egy forrásból."
 
 #: pe/ui/browse.cpp
 msgid "No firmware folder"
@@ -839,10 +1027,54 @@ msgstr "Nincs kiválasztott ROM"
 msgid "No roms folder"
 msgstr "Nincs roms mappa"
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Nincs párosítható szerver: adj hozzá egy RomM-szervert a sources.json fájlhoz, vagy állítsd be a save-sync.json fájlt FTP-n."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Senki sem hagyta jóvá időben a kódot."
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
 msgstr "Nincs"
+
+#: pe/ui/remote.cpp
+msgid "Not connected yet"
+msgstr "Még nincs kapcsolat"
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr "Nincs párosítva"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Nincs párosítva: a mentései a konzolon maradnak"
+
+#: pe/ui/library.cpp
+msgid "Not on the console"
+msgstr "Nincs a konzolon"
+
+#: pe/ui/library.cpp
+msgid "Not on the console yet. Download it to play and to change its settings."
+msgstr "Még nincs a konzolon. Töltsd le, hogy játszhass vele és módosíthasd a beállításait."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Nincs párosítva"
+
+#: pe/ui/remote.cpp
+msgid "Not reachable"
+msgstr "Nem érhető el"
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
+msgstr "Nem olvasható"
+
+#: pe/ui/settings.cpp
+msgid "Not set up"
+msgstr "Nincs beállítva"
 
 #. Short status at the right of the Save data row.
 #: pe/ui/library.cpp
@@ -853,6 +1085,10 @@ msgstr "Nincs mit importálni"
 #: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Off"
 msgstr "Ki"
+
+#: pe/ui/settings.cpp
+msgid "Offline"
+msgstr "Offline"
 
 #. A setting that is switched on.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -901,6 +1137,30 @@ msgstr "Kimeneti felbontás"
 msgid "Page"
 msgstr "Lapozás"
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Párosítás"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Párosítás újra"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "{0} párosítása"
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "{0} párosítása ezzel"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Párosítva"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Párosítva. A profil mentései mostantól szinkronizálódnak."
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr "Szülőmappa"
@@ -919,9 +1179,25 @@ msgstr "Teljesítmény"
 msgid "PERFORMANCE"
 msgstr "TELJESÍTMÉNY"
 
+#: pe/ui/save_sync.cpp
+msgid "Play anyway"
+msgstr "Játék mindenképp"
+
 #: pe/ui/profiles.cpp
 msgid "Play as"
 msgstr "Játék ezzel"
+
+#: pe/ui/library.cpp
+msgid "Play when downloaded"
+msgstr "Játék a letöltés után"
+
+#: pe/ui/save_sync.cpp
+msgid "Play with this console's; you are asked again next time."
+msgstr "Játék a konzol mentéseivel; legközelebb újra megkérdezzük."
+
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "játszik"
 
 #: pe/ui/profiles.cpp
 msgid "Playing"
@@ -938,6 +1214,10 @@ msgstr "Játszik: {0}"
 #: settings_store.h
 msgid "Polish"
 msgstr "Lengyel"
+
+#: pe/ui/settings.cpp
+msgid "Port {0}"
+msgstr "Port: {0}"
 
 #: settings_store.h
 msgid "Portuguese"
@@ -961,10 +1241,18 @@ msgstr "TESTRESZABÁS"
 msgid "Preparing"
 msgstr "Előkészítés"
 
+#: pe/ui/library.cpp
+msgid "Press again to delete the game and its updates and DLC from the console. Save data and settings are kept."
+msgstr "Nyomd meg újra a játék, a frissítései és a DLC-i törléséhez a konzolról. A mentések és a beállítások megmaradnak."
+
 #. Asked before a save is imported over the one in use.
 #: pe/ui/library.cpp
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr "Nyomd meg újra a játék mentésének lecseréléséhez. A mostaniról biztonsági másolat készül."
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro Controller"
 
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
@@ -977,6 +1265,10 @@ msgstr "prod.keys megvan"
 #: pe/ui/browse.cpp
 msgid "prod.keys missing"
 msgstr "prod.keys hiányzik"
+
+#: pe/ui/save_sync.cpp
+msgid "Profile {0}"
+msgstr "Profil: {0}"
 
 #: pe/ui/profiles.cpp, pe/ui/settings.cpp
 msgid "Profiles"
@@ -1025,6 +1317,14 @@ msgstr "PS5-KIADÁS"
 msgid "PS5 EDITION  /  {0}"
 msgstr "PS5-KIADÁS  /  {0}"
 
+#: pe/ui/remote.cpp
+msgid "Queued"
+msgstr "Sorban áll"
+
+#: pe/ui/remote.cpp
+msgid "Queued, from {0}"
+msgstr "Sorban áll, innen: {0}"
+
 #. A switch, on by default: what a game reads back from the graphics processor is kept exact. Keep the term the language's emulator players use, or translate it plainly.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Reactive flushing"
@@ -1033,6 +1333,18 @@ msgstr "Reaktív ürítés"
 #: pe/ui/settings.cpp
 msgid "REACTIVE FLUSHING"
 msgstr "REAKTÍV ÜRÍTÉS"
+
+#: pe/ui/remote.cpp
+msgid "Read the lists again"
+msgstr "Listák újraolvasása"
+
+#: pe/ui/remote.cpp
+msgid "Reading the game lists..."
+msgstr "Játéklisták beolvasása..."
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "Reading..."
+msgstr "Beolvasás..."
 
 #: pe/ui/settings.cpp
 msgid "Ready"
@@ -1094,6 +1406,10 @@ msgid "RESOLUTION"
 msgstr "FELBONTÁS"
 
 #: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "Jobb Joy-Con"
+
+#: pe/ui/game_options.cpp
 msgid "Right stick press"
 msgstr "Jobb kar lenyomása"
 
@@ -1120,14 +1436,66 @@ msgstr "Korlátozott (kód: {0}): csak a saját mappa"
 msgid "Save data"
 msgstr "Mentett adatok"
 
+#: pe/ui/save_sync.cpp
+msgid "Save data backed up"
+msgstr "A mentésekről biztonsági másolat készült"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data changed on both sides"
+msgstr "A mentések mindkét oldalon változtak"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data from the server"
+msgstr "Mentések a szerverről"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data left as it was"
+msgstr "A mentések változatlanul maradtak"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not backed up"
+msgstr "A mentésekről nem készült biztonsági másolat"
+
+#: pe/ui/save_sync.cpp
+msgid "Save data not synced"
+msgstr "A mentések nincsenek szinkronizálva"
+
 #. Short status at the right of the Save data row: a folder with a save to import.
 #: pe/ui/library.cpp
 msgid "Save folder found"
 msgstr "Mentési mappa megvan"
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr "Mentések szinkronizálása"
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr "MENTÉSEK SZINKRONIZÁLÁSA"
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "A save-sync.json nem olvasható ({0}). Semmi sem szinkronizálódik, amíg ki nem javítod FTP-n."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "A save-sync.json nem olvasható: előbb javítsd ki FTP-n."
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr "Mentve ehhez a játékhoz. A következő indítástól érvényes."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It goes to the server."
+msgstr "Mentve: {0}. Felkerül a szerverre."
+
+#: pe/ui/save_sync.cpp
+msgid "Saved {0}. It replaces this console's."
+msgstr "Mentve: {0}. Lecseréli a konzolét."
 
 #. Shown after choosing 120 Hz.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
@@ -1142,13 +1510,17 @@ msgstr "Mentve. A következő játékindítástól érvényes."
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr "Mentve. A ProsperoEden újraindítása után lép életbe."
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Olvasd be a kódot a telefonoddal, vagy nyisd meg az alábbi címet."
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr "Görgetés"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "Kiválasztás"
 
@@ -1173,6 +1545,10 @@ msgstr "KIJELÖLT"
 #: eden_services.cpp
 msgid "Selected ROM is no longer available"
 msgstr "A kiválasztott ROM már nem érhető el"
+
+#: pe/ui/save_sync.cpp
+msgid "Server too old for save sync"
+msgstr "A szerver túl régi a szinkronizáláshoz"
 
 #: pe/ui/home.cpp, pe/ui/settings.cpp
 msgid "Settings"
@@ -1199,9 +1575,21 @@ msgstr "Az előkészítés állapota és részletes naplók."
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr "Az előkészítés ellenőrzése sikertelen. Ellenőrizd, hogy a firmware- és a kulcsfájlok olvashatók és érvényesek-e."
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Több szerver is tárolhatja a mentéseket. Melyiket használja ez a profil?"
+
+#: pe/ui/remote.cpp
+msgid "Several sources have this game. Which one should it come from?"
+msgstr "Több forrásban is megvan ez a játék. Melyikből töltsük le?"
+
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
 msgstr "FPS-kijelző be- vagy kikapcsolása"
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Jelentkezz be ide: {0}, azzal a felhasználóval, akié a profil mentései."
 
 #: pe/ui/library.cpp
 msgid "SIZE"
@@ -1229,6 +1617,14 @@ msgstr "Kihagy néhány ellenőrzést, amikor a játék a GPU által használt m
 msgid "Solid panels, brighter text and an outlined highlight."
 msgstr "Átlátszatlan panelek, világosabb szöveg és körvonalas kiemelés."
 
+#: pe/ui/library.cpp
+msgid "SOURCE"
+msgstr "FORRÁS"
+
+#: pe/ui/library.cpp, pe/ui/settings.cpp
+msgid "SOURCES"
+msgstr "FORRÁSOK"
+
 #: settings_store.h
 msgid "Spanish"
 msgstr "Spanyol"
@@ -1246,6 +1642,10 @@ msgstr "Négyzet"
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr "A Négyzet újra leveszi a listáról: {0}. A mentései a konzolon maradnak."
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "A Négyzet újra leválasztja: {0}. A mentései a konzolon és a szerveren maradnak."
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1256,6 +1656,10 @@ msgstr "Mentés importálása előtt indíts el egyszer bármelyik játékot."
 msgid "STARTING"
 msgstr "INDÍTÁS"
 
+#: pe/ui/library.cpp
+msgid "STATE"
+msgstr "ÁLLAPOT"
+
 #: pe/ui/settings.cpp
 msgid "Stops the background drifting and the screens sliding, here and on the loading screen."
 msgstr "Leállítja a háttér sodródását és a képernyők csúszását, itt és a betöltőképernyőn is."
@@ -1264,9 +1668,25 @@ msgstr "Leállítja a háttér sodródását és a képernyők csúszását, itt
 msgid "Supply your own files"
 msgstr "Hozd a saját fájljaidat"
 
+#: pe/ui/settings.cpp
+msgid "SYNC"
+msgstr "SZINKRONIZÁLÁS"
+
+#: pe/ui/save_sync.cpp
+msgid "Sync the save data once more."
+msgstr "A mentések szinkronizálása még egyszer."
+
+#: pe/ui/save_sync.cpp
+msgid "Syncing save data"
+msgstr "Mentések szinkronizálása"
+
 #: eden_services.cpp
 msgid "Taiwan"
 msgstr "Tajvan"
+
+#: pe/ui/save_sync.cpp
+msgid "Take the server's"
+msgstr "A szerveré legyen"
 
 #: pe/ui/profiles.cpp
 msgid "Taken off the list. Its save data stays on the console."
@@ -1285,31 +1705,87 @@ msgstr "KÖSZÖNET"
 msgid "Thanks to the whole PS5 homebrew community and to every developer whose drivers, tools and libraries make ProsperoEden possible."
 msgstr "Köszönet a teljes PS5 homebrew közösségnek és minden fejlesztőnek, akinek az illesztőprogramjai, eszközei és könyvtárai nélkül nem létezne a ProsperoEden."
 
+#: pe/ui/remote.cpp
+msgid "The download stopped"
+msgstr "A letöltés leállt"
+
 #: pe/ui/settings.cpp
 msgid "The folder that holds your keys, firmware and games."
 msgstr "A kulcsokat, a firmware-t és a játékokat tartalmazó mappa."
+
+#: pe/ui/save_sync.cpp
+msgid "The game does not start."
+msgstr "A játék nem indul el."
+
+#: pe/ui/remote.cpp
+msgid "The game list of {0} could not be read."
+msgstr "Nem sikerült beolvasni a játéklistát: {0}."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} game."
+msgstr "A játéklisták beolvasva: {0} játék."
+
+#: pe/ui/remote.cpp
+msgid "The game lists are read: {0} games."
+msgstr "A játéklisták beolvasva: {0} játék."
 
 #. Why a game stopped. 'Settings, Video' is the menu path; 'the game's own settings' is the Game settings dialog of the Library.
 #: eden_services.cpp
 msgid "The game ran out of graphics memory. Lower the resolution in Settings, Video (or in the game's own settings) and start it again."
 msgstr "A játék kifogyott a grafikus memóriából. Csökkentsd a felbontást a Beállítások, Videó menüben (vagy a játék saját beállításaiban), majd indítsd el újra."
 
+#: pe/ui/save_sync.cpp
+msgid "The game starts when its save data is in step."
+msgstr "A játék elindul, amint a mentései naprakészek."
+
+#: pe/ui/remote.cpp
+msgid "The game starts when the download is done."
+msgstr "A játék a letöltés végén elindul."
+
 #: pe/ui/settings.cpp
 msgid "The language games use when they offer it."
 msgstr "A játékok nyelve, ha elérhető bennük."
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "A profil vagy a szerver már nem létezik."
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
 msgstr "A játszó profil marad. Előbb válassz másikat."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "A profil mentései mostantól {0} néven szinkronizálódnak."
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "A profil mentései mostantól szinkronizálódnak a szerverrel."
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
 #: pe/ui/update.cpp
 msgid "The rest is on the app's page on homebrew.page."
 msgstr "A többi az alkalmazás oldalán olvasható a homebrew.page-en."
 
+#: pe/ui/save_sync.cpp
+msgid "The server does not have {0}."
+msgstr "A szerveren nincs meg: {0}."
+
+#: pe/ui/save_sync.cpp
+msgid "The server runs RomM {0}; the save sync needs RomM {1} or newer. Update the server: until then no save data is synced with it."
+msgstr "A szerveren RomM {0} fut; a szinkronizáláshoz RomM {1} vagy újabb kell. Frissítsd a szervert: addig nem szinkronizálódnak vele mentések."
+
+#: pe/ui/remote.cpp
+msgid "The source no longer has this game."
+msgstr "A forrásban már nincs meg ez a játék."
+
 #: pe/ui/update.cpp
 msgid "The update could not finish"
 msgstr "A frissítést nem sikerült befejezni"
+
+#: pe/ui/save_sync.cpp
+msgid "This console and the server both have save data the other does not know. Which one should stay? The other is kept as a backup."
+msgstr "A konzolon és a szerveren is van olyan mentés, amelyről a másik nem tud. Melyik maradjon? A másik biztonsági másolatként megmarad."
 
 #: pe/ui/browse.cpp
 msgid "THIS FOLDER"
@@ -1347,9 +1823,13 @@ msgstr "Érintőpanel"
 msgid "Triangle"
 msgstr "Háromszög"
 
-#: pe/ui/remote.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "Újra"
+
+#: pe/ui/remote.cpp
+msgid "Trying again."
+msgstr "Újrapróbálkozás."
 
 #. Button hint: switch the highlighted mod on or off.
 #: pe/ui/library.cpp
@@ -1359,6 +1839,18 @@ msgstr "Be- vagy kikapcsolás"
 #: pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Nem érhető el"
+
+#: pe/ui/save_sync.cpp
+msgid "Understood"
+msgstr "Értem"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Leválasztás"
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Leválasztva. A mentései már nem szinkronizálódnak."
 
 #. Update dialog headline while the downloaded release is extracted.
 #: pe/ui/update.cpp
@@ -1465,6 +1957,18 @@ msgstr "ÖSSZES JÁTÉK"
 msgid "Vulkan (recommended)"
 msgstr "Vulkan (ajánlott)"
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Várakozás a jóváhagyásra  ·  a kód érvényessége: még {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting for {0}"
+msgstr "Várakozás: {0}"
+
+#: pe/ui/remote.cpp
+msgid "Waiting to download"
+msgstr "Letöltésre vár"
+
 #. Button on the update dialog: opens the new release's notes (what changes in it). Keep it short.
 #: pe/ui/update.cpp
 msgid "What's new"
@@ -1479,6 +1983,26 @@ msgstr "A(z) {0} verzió újdonságai"
 msgid "Who is playing. Each profile keeps its own save data and settings."
 msgstr "Ki játszik. Minden profilnak saját mentései és beállításai vannak."
 
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is not synced."
+msgstr "A konzol mentéseivel; nem szinkronizálódnak."
+
+#: pe/ui/save_sync.cpp
+msgid "With this console's save data; it is synced after the game."
+msgstr "A konzol mentéseivel; a játék után szinkronizálódnak."
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "ezzel: {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "You are asked again next time."
+msgstr "Legközelebb újra megkérdezzük."
+
+#: pe/ui/save_sync.cpp
+msgid "You are told again at the next sync."
+msgstr "A következő szinkronizáláskor újra szólunk."
+
 #: pe/ui/library.cpp
 msgid "Your games"
 msgstr "Játékaid"
@@ -1492,6 +2016,10 @@ msgstr "A játékaid, mentéseid és beállításaid megmaradnak."
 #: pe/ui/home.cpp
 msgid "Your next adventure"
 msgstr "A következő kalandod"
+
+#: pe/ui/save_sync.cpp
+msgid "Your save data is checked against the server's."
+msgstr "A mentéseidet összevetjük a szerveren lévőkkel."
 
 #. How many settings of a kind this game has of its own; {0} is a number.
 #: pe/ui/library.cpp
@@ -1512,6 +2040,10 @@ msgstr "{0} játék"
 #: eden_services.cpp
 msgid "{0} game installed"
 msgstr "{0} játék telepítve"
+
+#: pe/ui/remote.cpp
+msgid "{0} game lists could not be read."
+msgstr "{0} játéklistát nem sikerült beolvasni."
 
 #. Any number of games other than one (also 0). See '{0} game'.
 #: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
@@ -1568,6 +2100,22 @@ msgstr "{0} / {1} mod bekapcsolva"
 msgid "{0} of {1} on"
 msgstr "{0} / {1} bekapcsolva"
 
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
+msgstr "{1} profilból {0}"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} on {1}"
+msgstr "{0} itt: {1}"
+
+#: pe/ui/remote.cpp, pe/ui/settings.cpp
+msgid "{0} sources"
+msgstr "{0} forrás"
+
+#: pe/ui/save_sync.cpp
+msgid "{0} · Profile {1}"
+msgstr "{0} · Profil: {1}"
+
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
 #: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
@@ -1582,27 +2130,3 @@ msgstr "{0}/ (NSP vagy XCI)"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/ (játékazonosítónként egy mappa)"
-
-#: pe/ui/game_options.cpp
-msgid "Controller type"
-msgstr "Kontroller típusa"
-
-#: pe/ui/game_options.cpp
-msgid "Automatic"
-msgstr "Automatikus"
-
-#: pe/ui/game_options.cpp
-msgid "Pro Controller"
-msgstr "Pro Controller"
-
-#: pe/ui/game_options.cpp
-msgid "Dual Joy-Cons"
-msgstr "Két Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Left Joy-Con"
-msgstr "Bal Joy-Con"
-
-#: pe/ui/game_options.cpp
-msgid "Right Joy-Con"
-msgstr "Jobb Joy-Con"
