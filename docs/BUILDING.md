@@ -172,13 +172,14 @@ pull request starts from `main`'s caches and, when it builds, saves no ccache of
 `tools/ci/build-release.sh` still accepts `EDEN_DEV_CHECKOUT` (a development checkout whose
 dependencies are reused instead of fetched) for a build on your own machine.
 
-- **Push to `main`, pull request, manual run** (Actions > Release build > Run workflow): builds
-  the release files, checks the ZIP (intact, `eboot.bin` present, every entry stored as 0777) and
-  keeps `dist/` as a 7-day artifact. Nothing is published. The artifact is `ProsperoEden`; for a
-  pull request it is `ProsperoEden-PR<number>-<commit>`, with the first seven characters of the
-  pull request's own head commit. A newer push to the same branch or pull request cancels the
-  run in progress.
-- **Tag `vX.Y.Z`**: builds and checks them the same way, checks that the tag matches the package
+- **Pull request** (by itself, at every push to it) and **manual run** (Actions > Release build >
+  Run workflow): builds the release files, checks the ZIP (intact, `eboot.bin` present, every
+  entry stored as 0777) and keeps `dist/` as a 7-day artifact. Nothing is published. A push to
+  `main` builds nothing: a build of `main` is a manual run. The artifact is `ProsperoEden`; for
+  a pull request it is `ProsperoEden-PR<number>-<commit>`, with the first seven characters of
+  the pull request's own head commit. A newer push to a pull request, or a newer manual run on
+  the same branch, cancels the run in progress.
+- **Tag `vX.Y.Z`** (by itself, when the tag is pushed): builds and checks them the same way, checks that the tag matches the package
   version, and publishes a pre-release (a second job, outside the container). The release notes
   come from the README's "Changes in vX.Y.Z" section.
 - Every run also keeps `build/symbols/` as an artifact with `-symbols` after the name: 90 days

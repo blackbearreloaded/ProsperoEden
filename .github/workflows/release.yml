@@ -5,9 +5,9 @@ name: Release build
 # tools/ci/ubuntu-packages.txt: the distribution and the LLVM versions (18 and 21) the releases
 # are built with on a developer machine, so the linker is the same and no link flag differs.
 #
-# A push to main, a pull request and a manual run build the ZIP, check it (intact, eboot.bin,
-# every entry 0777) and keep it as a 7-day artifact; nothing is published. A v* tag also
-# publishes it as a pre-release.
+# A pull request and a v* tag build by themselves; a build on main is started by hand (Actions >
+# Release build > Run workflow). Every run builds the ZIP, checks it (intact, eboot.bin, every
+# entry 0777) and keeps it as a 7-day artifact; only a v* tag also publishes it, as a pre-release.
 #
 # Downloads, ccache and the RADV driver are cached between runs. A build with these caches takes
 # about a quarter of an hour; the first one compiles everything on four cores and takes hours.
@@ -15,8 +15,8 @@ name: Release build
 # again continues from there.
 # The actions are the Node 24 versions, pinned by commit.
 on:
+  # A build on main is started by hand (Run workflow): pushes to main build nothing.
   push:
-    branches: [main]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
@@ -24,8 +24,8 @@ on:
 permissions:
   contents: read
 
-# A newer push to the same branch or pull request replaces the run in progress; a tag's run is
-# never cancelled.
+# A newer push to a pull request, or a newer manual run on the same branch, replaces the run in
+# progress; a tag's run is never cancelled.
 concurrency:
   group: release-build-${{ github.ref }}
   cancel-in-progress: ${{ github.ref_type != 'tag' }}
