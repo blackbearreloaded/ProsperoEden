@@ -10,7 +10,7 @@
 
 **ProsperoEden is an unofficial PlayStation 5 port of [Eden](https://github.com/eden-emulator/mirror)** - an accurate, high-performance emulator. All credit for the emulator core belongs to the Eden project and its contributors. ProsperoEden is not affiliated with or endorsed by the Eden team or Sony.
 
-This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.080**.
+This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.090**.
 
 ## Source code
 
@@ -314,6 +314,17 @@ The launcher follows the language the PS5 is set to: Arabic, Chinese (simplified
 ### Upgrading from an earlier alpha
 
 Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That folder keeps working until you choose a game files folder, and settings are migrated automatically on first launch. To move to the new layout, move `assets/keys`, `assets/firmware` and `assets/roms` into any folder, then select it in **Settings > Game files**. The release ZIP contains no user files, so copy its app files over your installation without deleting your own data.
+
+## Changes in v1.000.090
+
+- **Download sources (new, early).** Games on a [RomM](https://github.com/rommapp/romm) server in your network appear in the Library and are downloaded to the console when you want to play them; see [Download sources](#download-sources). Contributed by [matschi95](https://github.com/matschi95).
+- **Save sync (new, early).** Each profile can keep its save data in step with a RomM server, synced before a game starts and after it ends, and paired by scanning a QR code; see [Save sync](#save-sync). Replaced save data is kept as a backup first. Contributed by [matschi95](https://github.com/matschi95).
+- **Controller type per game.** **Library > Game settings > Controls > Controller type** gives a game a Pro Controller, the Handheld controller, Dual Joy-Cons, a Left Joy-Con or a Right Joy-Con, for games that take a Pro Controller and then only work with another.
+- **Typing text.** When a game asks for text, the PS5's own on-screen keyboard opens, and what you enter goes to the game.
+- **Firmware 7.40 and 7.61: games no longer end at their first picture.** Contributed by [v0ltfault](https://github.com/v0ltfault).
+- **Game names without question marks.** A name with a look-alike character (a sequel's Roman numeral, full-width letters) is shown with plain letters, a name that is not text is skipped, and characters no font has are left out.
+- **System language in the start-up trace**, with the menu's language and the console fonts found, for reports from other consoles.
+- **Builds on GitHub.** Releases are now built by GitHub Actions from the tagged source.
 
 ## Changes in v1.000.080
 
