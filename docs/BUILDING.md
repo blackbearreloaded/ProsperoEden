@@ -52,6 +52,22 @@ already exists: the dependencies, this checkout's build cache in
 
 `JOBS=<n>` sets the number of parallel compile jobs (default: all cores).
 
+The download sources and the save sync are checked by `make test` against real RomM servers and
+ftpsrv, the console's FTP server, in Docker (`tools/check-romm.py [version ...]`; `ROMM_CHECK=0`
+skips it): for each version (default: the oldest the save sync takes, `kMinimumVersion` in
+`headless/remote/romm/romm_saves.h`, the newest it was checked with, and one older than the oldest,
+which has to be refused) it starts a RomM with fake Switch games (`tools/romm-test/`), scans them,
+downloads them as a download source (a game of 400 MB stopped part way and gone on with, compared
+byte for byte; updates and DLC, a cancel, two sources, the queue kept), plays a second console and
+a phone against its save sync, and takes it down again. It needs Docker with Compose (without it,
+it is skipped); the first run of a version downloads its image (about 1.2 GB on disk, MariaDB's
+0.5 GB once; ftpsrv's is built once). ftpsrv runs on the host's network while the check runs (its
+passive mode needs it). `tools/check-remote.py` has what needs no server, and against stand-ins
+(`tools/romm-mock-server.py`, `tools/ftp-mock-server.py`) only what a real RomM and ftpsrv do not
+show on demand: a server that caps its pages or cannot resume, games told apart by metadata ids
+and title IDs, another file name on a second source, and a full drive. Raise
+`kMinimumVersion` only to a version this check passes with.
+
 ## Dependencies
 
 Every input is pinned in `tools/deps.json` and fetched by `make deps` (`tools/deps.py`) only when

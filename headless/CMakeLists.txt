@@ -2160,6 +2160,10 @@ else()
     add_executable(eden-profiles-check "${EDEN_PORT_DIR}/profiles_check.cpp")
     target_link_libraries(eden-profiles-check PRIVATE core)
     target_compile_options(eden-profiles-check PRIVATE -UNDEBUG)
+    # save-sync.json kept in step with the profiles (save_sync_config.h).
+    add_executable(eden-save-sync-check "${EDEN_PORT_DIR}/save_sync_check.cpp")
+    target_link_libraries(eden-save-sync-check PRIVATE core)
+    target_compile_options(eden-save-sync-check PRIVATE -UNDEBUG)
     # The update check's decision, without its network side (update_notice.h).
     add_executable(eden-update-check
         "${EDEN_PORT_DIR}/update_check_check.cpp" "${EDEN_PORT_DIR}/update_check/update_check.c")
@@ -2301,6 +2305,10 @@ endif()
                 "${launcher_dir}/pe/ui/browse.cpp"
                 "${launcher_dir}/pe/ui/game_options.cpp"
                 "${launcher_dir}/pe/ui/profiles.cpp"
+                "${launcher_dir}/pe/ui/remote.cpp"
+                "${launcher_dir}/pe/ui/save_sync.cpp"
+                "${launcher_dir}/pe/ui/pairing.cpp"
+                "${launcher_dir}/pe/ui/qr_code.cpp"
                 "${launcher_dir}/pe/ui/update.cpp"
                 "${launcher_dir}/pe/ui/home.cpp"
                 "${launcher_dir}/pe/ui/launcher.cpp"
@@ -2309,6 +2317,34 @@ endif()
                 "${launcher_dir}/pe/ui/textures.cpp"
                 "${launcher_dir}/pe/ui/widgets.cpp")
             target_sources(eden-headless PRIVATE ${launcher_sources})
+            # Download sources and their queue (remote/remote.h), with their backends (remote/source.h,
+            # backends.h) and the console's FTP server that writes the files (remote/ftp.h); their
+            # HTTP (remote/http.c) is linked into the update check's object below, with its libcurl.
+            target_sources(eden-headless PRIVATE
+                "${EDEN_PORT_DIR}/remote/remote.cpp"
+                "${EDEN_PORT_DIR}/remote/backends.cpp"
+                "${EDEN_PORT_DIR}/remote/ftp.cpp"
+                "${EDEN_PORT_DIR}/remote/stream_check.cpp"
+                "${EDEN_PORT_DIR}/remote/save_archive.cpp"
+                "${EDEN_PORT_DIR}/remote/save_sync.cpp"
+                "${EDEN_PORT_DIR}/remote/romm/romm_client.cpp"
+                "${EDEN_PORT_DIR}/remote/romm/romm_saves.cpp"
+                "${EDEN_PORT_DIR}/remote/romm/romm_source.cpp")
+            # The save data's zips (remote/save_archive.h): miniz, as the self-update helper has it.
+            add_library(prosperoeden-miniz STATIC
+                "${PORT_ROOT}/third_party/miniz/miniz.c"
+                "${PORT_ROOT}/third_party/miniz/miniz_tdef.c"
+                "${PORT_ROOT}/third_party/miniz/miniz_tinfl.c"
+                "${PORT_ROOT}/third_party/miniz/miniz_zip.c")
+            target_include_directories(prosperoeden-miniz PUBLIC "${PORT_ROOT}/third_party/miniz")
+            target_compile_options(prosperoeden-miniz PRIVATE -w)
+            target_link_libraries(eden-headless PRIVATE prosperoeden-miniz)
+            # Their MD5 is OpenSSL's (linked below for the update check), as is the SHA-256 a
+            # download's contents are checked with (remote/stream_check.h). Its include folder, for
+            # these files only: the prefix it is in has older FFmpeg headers as well.
+            set_source_files_properties("${EDEN_PORT_DIR}/remote/save_archive.cpp"
+                "${EDEN_PORT_DIR}/remote/stream_check.cpp"
+                PROPERTIES INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}")
             # The update check (update_notice.h). Its network side is the boilerplate's
             # update_check.c and console_curl.c with libcurl and libpsl from the pinned PacBrew
             # prefix that already supplies OpenSSL and zlib (zstd is Eden's own). They are linked
@@ -2329,8 +2365,9 @@ endif()
                 "${EDEN_PORT_DIR}/update_check/console_curl.c"
                 "${EDEN_PORT_DIR}/update_check/self_update.c"
                 "${EDEN_PORT_DIR}/update_check/self_update_ps5.c"
-                "${EDEN_PORT_DIR}/update_check/self_update_sha256.c")
-            target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}")
+                "${EDEN_PORT_DIR}/update_check/self_update_sha256.c"
+                "${EDEN_PORT_DIR}/remote/http.c")
+            target_include_directories(update-check PRIVATE "${OPENSSL_INCLUDE_DIR}" "${EDEN_PORT_DIR}/update_check")
             # The kit's paths are the app's own: after elevation /app0 and /download0 are gone
             # (update_notice.cpp gives them).
             target_compile_definitions(update-check PRIVATE CURL_STATICLIB=1

@@ -44,12 +44,12 @@ msgid "About ProsperoEden"
 msgstr "حول ProsperoEden"
 
 #. Time left while downloading; {0} is a number of minutes. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} min left"
 msgstr "يتبقى نحو {0} د"
 
 #. Time left while downloading; {0} is a number of seconds. Keep it short.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "About {0} s left"
 msgstr "يتبقى نحو {0} ث"
 
@@ -128,7 +128,7 @@ msgid "Australia"
 msgstr "أستراليا"
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr "رجوع"
 
@@ -229,7 +229,7 @@ msgstr "اختر اللغة التي تستخدمها الألعاب"
 msgid "Circle"
 msgstr "دائرة"
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Close"
 msgstr "إغلاق"
 
@@ -403,7 +403,7 @@ msgstr "إنهاء اللعبة والعودة إلى هذه القائمة"
 msgid "English (UK)"
 msgstr "الإنجليزية (بريطانيا)"
 
-#: settings_store.h
+#: host/fake_services.cpp, settings_store.h
 msgid "English (US)"
 msgstr "الإنجليزية (أمريكا)"
 
@@ -957,7 +957,7 @@ msgid "PREFERENCES"
 msgstr "التفضيلات"
 
 #. Update dialog headline while the download starts.
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Preparing"
 msgstr "جارٍ التحضير"
 
@@ -1148,7 +1148,7 @@ msgid "Scroll"
 msgstr "تمرير"
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr "اختيار"
 
@@ -1347,7 +1347,7 @@ msgstr "لوحة اللمس"
 msgid "Triangle"
 msgstr "مثلث"
 
-#: pe/ui/update.cpp
+#: pe/ui/remote.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr "إعادة المحاولة"
 
@@ -1504,7 +1504,7 @@ msgid "{0} DLC"
 msgstr "عدد DLC: {0}"
 
 #. Exactly one game. In a language with more than two plural forms, word it so that it reads well with any number (Games: {0}).
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp
 msgid "{0} game"
 msgstr "الألعاب: {0}"
 
@@ -1514,7 +1514,7 @@ msgid "{0} game installed"
 msgstr "الألعاب المثبّتة: {0}"
 
 #. Any number of games other than one (also 0). See '{0} game'.
-#: pe/ui/browse.cpp
+#: pe/ui/browse.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp
 msgid "{0} games"
 msgstr "الألعاب: {0}"
 
@@ -1569,7 +1569,7 @@ msgid "{0} of {1} on"
 msgstr "{0} من {1} مفعّلة"
 
 #. A percentage (a volume): write it as the language does, for example with a space before the sign.
-#: pe/ui/game_options.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/remote.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "{0}%"
 msgstr "{0}%"
 

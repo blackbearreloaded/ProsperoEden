@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace pe::host
@@ -180,6 +181,18 @@ class FakeServices final : public ui::Services
         for (const ui::Game &game : games_)
             if (game_exists(game.file))
                 present.push_back(game);
+        if (has_server)
+            for (ui::Game game : remote_)
+            {
+                // With Office away, only Home's games are there.
+                if (server_fails)
+                    game.sources.erase(std::remove(game.sources.begin(), game.sources.end(), "Office"),
+                                       game.sources.end());
+                if (!game.sources.empty())
+                    present.push_back(game);
+            }
+        std::sort(present.begin(), present.end(),
+                  [](const ui::Game &a, const ui::Game &b) { return a.name < b.name; });
         return present;
     }
     std::string game_path(const std::string &file) override
@@ -283,7 +296,80 @@ class FakeServices final : public ui::Services
         return gfx::load_tga(path, image);
     }
 
+    // Two download sources, "Home" with three games and "Office" with two (one of them Home's
+    // too); a download moves a step each time the queue is looked at (the launcher looks four
+    // times a second) and the game then joins the library. server_fails: Office cannot be
+    // reached; download_fails: a download stops part way.
+    bool has_server = false;
+    bool server_fails = false;
+    bool download_fails = false;
+    ui::Sources sources() override;
+    void refresh_sources() override
+    {
+        ++generation_;
+    }
+    bool download(const ui::Game &game, int source, bool first) override;
+    bool cancel_download(const std::string &key) override;
+    std::vector<ui::Download> downloads() override;
+    // The queue as it is, without moving it on (for the preview to look at).
+    const std::vector<ui::Download> &downloads_now() const
+    {
+        return queue_;
+    }
+    bool delete_game(const ui::Game &game, std::string *message) override;
+
+    // The profile syncs its save data (save_sync_on); a sync takes a few looks of the launcher.
+    // save_sync_conflict: both sides changed; save_sync_fails: the server cannot be reached.
+    // played(): a game just ended, its save data goes up once the menu is back.
+    bool save_sync_on = false;
+    bool save_sync_conflict = false;
+    bool save_sync_fails = false;
+    bool save_sync_too_old = false; // the server runs RomM 4.9.2
+    bool save_sync_wanted(const std::string &) override
+    {
+        return save_sync_on;
+    }
+    void start_save_sync(const std::string &file, bool before) override;
+    ui::SaveSync save_sync() override;
+    void choose_save_data(ui::SaveChoice choice) override;
+    void end_save_sync() override
+    {
+        if (sync_.stage == ui::SaveSyncStage::done || sync_.stage == ui::SaveSyncStage::failed)
+            sync_ = {};
+    }
+    void stop_save_sync() override
+    {
+        sync_ = {};
+    }
+    void played(const std::string &name);
+
+    // Settings > Save sync: two profiles (the second paired with Home), two servers to pair with;
+    // a pairing is approved after a few looks.
+    ui::SaveSyncSetup save_sync_setup() override;
+    std::vector<ui::PairServer> pair_servers() override
+    {
+        return {{"Home", "http://192.168.1.20:3000"}, {"Office", "https://games.example.org"}};
+    }
+    bool start_pairing(int profile, int server) override;
+    ui::PairingStatus pairing() override;
+    void cancel_pairing() override
+    {
+        pair_ = {};
+    }
+    bool unlink_profile(int profile) override;
+
   private:
+    ui::PairingStatus pair_;
+    int pair_looks_ = 0;
+    int pair_profile_ = 0;
+    std::vector<std::string> linked_{"", "kids @ http://192.168.1.20:3000"};
+    ui::SaveSync sync_;
+    int sync_looks_ = 0;
+    std::vector<ui::Game> remote_; // the sources' games not on the console
+    std::vector<ui::Download> queue_;
+    // Where a download that goes on was (verifying reads up to there first), by its key.
+    std::vector<std::pair<std::string, std::uint64_t>> going_on_;
+    std::uint64_t generation_ = 1;
     std::vector<ui::Game> games_;
     std::vector<std::uint64_t> handheld_;
     ui::GameSettings game_settings_;
