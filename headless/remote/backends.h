@@ -9,6 +9,7 @@
 // Backend, a Make... below, and nullptr in it for the backends that cannot do it.
 #pragma once
 
+#include "remote/pairing.h"
 #include "remote/save_store.h"
 #include "remote/source.h"
 
@@ -27,6 +28,9 @@ struct Backend {
     // A profile's save store from its entry in save-sync.json, keeping what it needs between
     // starts in `folder` (the profile's own); nullptr: it cannot keep save data.
     std::unique_ptr<SaveStore> (*saves)(const nlohmann::json& settings, const std::string& folder, std::string* error);
+    // Its save store's entry signed in by pairing (pairing.h); nullptr: only by what is typed into
+    // save-sync.json.
+    const Pairing* pairing;
 };
 
 // All of them, in the order the menu offers them.

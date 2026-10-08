@@ -9,7 +9,7 @@ namespace Eden::Remote {
 
 const std::vector<Backend>& Backends() {
     static const std::vector<Backend> backends = {
-        {"romm", Romm::MakeSource, Romm::MakeSaves},
+        {"romm", Romm::MakeSource, Romm::MakeSaves, &Romm::kPairing},
     };
     return backends;
 }

@@ -501,7 +501,7 @@ void pictures(Stage &s)
     s.shoot("20-game-files-saved");
     s.press({Key::circle});
     s.wait(0.5f);
-    s.press({Key::down, Key::down, Key::cross});
+    s.press({Key::down, Key::down, Key::down, Key::cross}); // past Downloads and Save sync
     s.wait(1.0f);
     s.shoot("21-language");
     s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down,
@@ -753,6 +753,32 @@ void pictures(Stage &s)
     s.shoot("A7-save-sync-too-old-confirmed");
     s.services.save_sync_too_old = false;
     s.services.save_sync_on = false;
+
+    // Settings > Save sync: the profiles and their servers; pairing one by a QR code.
+    s.restart();
+    s.wait(1.0f);
+    s.press({Key::up, Key::right, Key::cross});
+    s.wait(1.0f);
+    s.press({Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down, Key::down});
+    s.wait(0.6f);
+    s.shoot("B0-settings-save-sync");
+    s.press({Key::cross});
+    s.wait(0.8f);
+    s.shoot("B1-save-sync-profiles");
+    s.press({Key::cross});
+    s.wait(0.6f);
+    s.shoot("B2-save-sync-choose-server");
+    s.press({Key::cross});
+    s.wait(1.5f);
+    s.shoot("B3-pairing-code");
+    s.wait(10.0f);
+    s.shoot("B4-pairing-done");
+    s.press({Key::cross});
+    s.wait(0.8f);
+    s.shoot("B5-save-sync-paired");
+    s.press({Key::down, Key::square});
+    s.wait(0.4f);
+    s.shoot("B6-save-sync-unlink-asked");
 }
 
 // A walk through the launcher, one frame per call of frame().

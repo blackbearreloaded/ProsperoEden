@@ -343,7 +343,26 @@ class FakeServices final : public ui::Services
     }
     void played(const std::string &name);
 
+    // Settings > Save sync: two profiles (the second paired with Home), two servers to pair with;
+    // a pairing is approved after a few looks.
+    ui::SaveSyncSetup save_sync_setup() override;
+    std::vector<ui::PairServer> pair_servers() override
+    {
+        return {{"Home", "http://192.168.1.20:3000"}, {"Office", "https://games.example.org"}};
+    }
+    bool start_pairing(int profile, int server) override;
+    ui::PairingStatus pairing() override;
+    void cancel_pairing() override
+    {
+        pair_ = {};
+    }
+    bool unlink_profile(int profile) override;
+
   private:
+    ui::PairingStatus pair_;
+    int pair_looks_ = 0;
+    int pair_profile_ = 0;
+    std::vector<std::string> linked_{"", "kids @ http://192.168.1.20:3000"};
     ui::SaveSync sync_;
     int sync_looks_ = 0;
     std::vector<ui::Game> remote_; // the sources' games not on the console

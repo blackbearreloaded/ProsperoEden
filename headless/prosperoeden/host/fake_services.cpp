@@ -601,4 +601,59 @@ void FakeServices::played(const std::string &name)
     sync_looks_ = 0;
 }
 
+// ---- Settings > Save sync ----
+
+ui::SaveSyncSetup FakeServices::save_sync_setup()
+{
+    ui::SaveSyncSetup setup;
+    setup.file = "/data/prosperoeden/config/remote/save-sync.json";
+    const char *names[] = {"Player 1", "Kids"};
+    for (int i = 0; i < 2; ++i)
+    {
+        ui::SaveSyncProfile profile;
+        profile.name = names[i];
+        profile.current = i == 0;
+        profile.linked = !linked_[static_cast<std::size_t>(i)].empty();
+        profile.server = linked_[static_cast<std::size_t>(i)];
+        setup.profiles.push_back(profile);
+    }
+    return setup;
+}
+
+bool FakeServices::start_pairing(int profile, int server)
+{
+    pair_ = {};
+    pair_.stage = ui::PairingStage::asking;
+    pair_.profile = profile == 0 ? "Player 1" : "Kids";
+    pair_.server = pair_servers()[static_cast<std::size_t>(server)].name;
+    pair_profile_ = profile;
+    pair_looks_ = 0;
+    return true;
+}
+
+ui::PairingStatus FakeServices::pairing()
+{
+    ++pair_looks_;
+    if (pair_.stage == ui::PairingStage::asking && pair_looks_ > 2)
+    {
+        pair_.stage = ui::PairingStage::waiting;
+        pair_.code = "K7QM2XWP";
+        pair_.address = "http://192.168.1.20:3000/pair/device?user_code=K7QM2XWP";
+        pair_.seconds_left = 598;
+    }
+    else if (pair_.stage == ui::PairingStage::waiting && pair_looks_ > 40)
+    {
+        pair_.stage = ui::PairingStage::done;
+        pair_.user = "mario";
+        linked_[static_cast<std::size_t>(pair_profile_)] = "mario @ http://192.168.1.20:3000";
+    }
+    return pair_;
+}
+
+bool FakeServices::unlink_profile(int profile)
+{
+    linked_[static_cast<std::size_t>(profile)].clear();
+    return true;
+}
+
 } // namespace pe::host

@@ -102,6 +102,25 @@ int main() {
     }
     assert(Read(file).entries.size() == 2);
 
+    // Linked from the menu (pairing): the sign-in replaced, the name and the player's fields kept;
+    // unlinked: type, url and token empty.
+    {
+        Json document = Json::parse(Contents(file));
+        document["profiles"][0]["note"] = "mine";
+        std::ofstream(file) << document.dump(2);
+    }
+    assert(SetEntry(two, Json{{"type", "romm"}, {"url", "http://nas:3000"}, {"token", "rmm_paired"}, {"__server_user", "kids"}}, file));
+    config = Read(file);
+    assert(config.entries[0].type == "romm" && config.entries[0].settings["token"] == "rmm_paired" &&
+           !config.entries[0].settings.contains("username") && !config.entries[0].settings.contains("password") &&
+           config.entries[0].settings["note"] == "mine" && config.entries[0].profile_name == "Children");
+    assert(SetEntry(two, Json::object(), file));
+    config = Read(file);
+    assert(config.entries[0].type.empty() && config.entries[0].settings["url"] == "" &&
+           !config.entries[0].settings.contains("__server_user") &&
+           config.entries[0].settings["token"] == "" && config.entries[0].settings["note"] == "mine");
+    assert(!SetEntry("00000000000000000000000000000000", Json{{"type", "romm"}}, file));
+
     // Not JSON (a typing error over FTP): left as it is, and nothing syncs.
     { std::ofstream(file) << "{ \"profiles\": [ { \"profile\": "; }
     const std::string broken = Contents(file);

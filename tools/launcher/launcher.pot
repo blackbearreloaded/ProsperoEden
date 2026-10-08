@@ -39,6 +39,10 @@ msgstr ""
 msgid "A firmware NCA cannot be read. Reinstall the firmware dump."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr ""
+
 #: pe/ui/home.cpp
 msgid "About"
 msgstr ""
@@ -114,6 +118,10 @@ msgstr ""
 msgid "As usual"
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr ""
+
 #. A switch. A shader is a small graphics program; keep the word the language's players use for it.
 #: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Asynchronous shaders"
@@ -136,7 +144,7 @@ msgid "Australia"
 msgstr ""
 
 #. Button hint: go back one screen.
-#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
 msgstr ""
 
@@ -176,7 +184,7 @@ msgstr ""
 msgid "BUTTON MAPPING"
 msgstr ""
 
-#: pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/update.cpp
 msgid "Cancel"
 msgstr ""
 
@@ -213,6 +221,10 @@ msgstr ""
 #. What a mod is made of: cheat codes.
 #: eden_services.cpp, host/fake_services.cpp
 msgid "Cheats"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
 msgstr ""
 
 #: pe/ui/remote.cpp
@@ -300,6 +312,10 @@ msgstr ""
 
 #: pe/ui/remote.cpp
 msgid "Could not cancel the download."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
 msgstr ""
 
 #: pe/ui/library.cpp
@@ -417,6 +433,10 @@ msgstr ""
 msgid "Docked"
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr ""
+
 #: pe/ui/library.cpp, pe/ui/remote.cpp
 msgid "Download"
 msgstr ""
@@ -484,6 +504,14 @@ msgstr ""
 
 #: pe/ui/profiles.cpp
 msgid "Each profile keeps its own save data, settings and recent games."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
 msgstr ""
 
 #: pe/ui/home.cpp
@@ -757,6 +785,10 @@ msgstr ""
 msgid "It replaces this console's."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr ""
+
 #: settings_store.h
 msgid "Italian"
 msgstr ""
@@ -850,6 +882,10 @@ msgstr ""
 msgid "LIBRARY"
 msgstr ""
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Linked"
+msgstr ""
+
 #: pe/ui/settings.cpp
 msgid "Lowest GPU accuracy: faster in demanding games, and graphics can be wrong."
 msgstr ""
@@ -911,7 +947,7 @@ msgstr ""
 msgid "Nearest"
 msgstr ""
 
-#: pe/ui/settings.cpp
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
 msgid "Needs attention"
 msgstr ""
 
@@ -975,6 +1011,14 @@ msgstr ""
 msgid "No roms folder"
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr ""
+
 #. No add-ons (updates or DLC).
 #: pe/ui/library.cpp
 msgid "None"
@@ -982,6 +1026,14 @@ msgstr ""
 
 #: pe/ui/remote.cpp
 msgid "Not connected yet"
+msgstr ""
+
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Not linked"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
 msgstr ""
 
 #: pe/ui/library.cpp
@@ -992,8 +1044,16 @@ msgstr ""
 msgid "Not on the console yet. Download it to play and to change its settings."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr ""
+
 #: pe/ui/remote.cpp
 msgid "Not reachable"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "Not readable"
 msgstr ""
 
 #: pe/ui/settings.cpp
@@ -1061,6 +1121,30 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr ""
+
 #: pe/ui/browse.cpp
 msgid "Parent folder"
 msgstr ""
@@ -1093,6 +1177,10 @@ msgstr ""
 
 #: pe/ui/save_sync.cpp
 msgid "Play with this console's; you are asked again next time."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "playing"
 msgstr ""
 
 #: pe/ui/profiles.cpp
@@ -1353,6 +1441,26 @@ msgstr ""
 msgid "Save folder found"
 msgstr ""
 
+#: pe/ui/pairing.cpp, pe/ui/settings.cpp
+msgid "Save sync"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "SAVE SYNC"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr ""
+
 #: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Saved for this game. Applies on next launch."
 msgstr ""
@@ -1378,13 +1486,17 @@ msgstr ""
 msgid "Saved. Reopen ProsperoEden to use this folder."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr ""
+
 #. Button hint: move through a long text (Up/Down).
 #: pe/ui/update.cpp
 msgid "Scroll"
 msgstr ""
 
 #. Button hint: choose the highlighted item (not the Select button).
-#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
+#: pe/ui/game_options.cpp, pe/ui/home.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Select"
 msgstr ""
 
@@ -1439,12 +1551,20 @@ msgstr ""
 msgid "Setup validation failed. Check that firmware and key files are readable and valid."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr ""
+
 #: pe/ui/remote.cpp
 msgid "Several sources have this game. Which one should it come from?"
 msgstr ""
 
 #: pe/ui/settings.cpp
 msgid "Show or hide the FPS overlay"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
 msgstr ""
 
 #: pe/ui/library.cpp
@@ -1498,6 +1618,10 @@ msgstr ""
 msgid "Square again takes {0} off the list. Its save data stays on the console."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr ""
+
 #. The app creates its user the first time a game runs.
 #: eden_services.cpp
 msgid "Start any game once before importing a save."
@@ -1518,6 +1642,10 @@ msgstr ""
 
 #: pe/ui/browse.cpp
 msgid "Supply your own files"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "SYNC"
 msgstr ""
 
 #: pe/ui/save_sync.cpp
@@ -1594,8 +1722,20 @@ msgstr ""
 msgid "The language games use when they offer it."
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr ""
+
 #: pe/ui/profiles.cpp
 msgid "The profile that is playing stays. Choose another one first."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
 msgstr ""
 
 #. Shown at the end of release notes that were cut short; homebrew.page is a site's name and stays as it is.
@@ -1659,7 +1799,7 @@ msgstr ""
 msgid "Triangle"
 msgstr ""
 
-#: pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
+#: pe/ui/pairing.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/update.cpp
 msgid "Try again"
 msgstr ""
 
@@ -1678,6 +1818,14 @@ msgstr ""
 
 #: pe/ui/save_sync.cpp
 msgid "Understood"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
 msgstr ""
 
 #. Update dialog headline while the downloaded release is extracted.
@@ -1785,6 +1933,10 @@ msgstr ""
 msgid "Vulkan (recommended)"
 msgstr ""
 
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr ""
+
 #: pe/ui/remote.cpp
 msgid "Waiting for {0}"
 msgstr ""
@@ -1813,6 +1965,10 @@ msgstr ""
 
 #: pe/ui/save_sync.cpp
 msgid "With this console's save data; it is synced after the game."
+msgstr ""
+
+#: pe/ui/pairing.cpp
+msgid "with {0}"
 msgstr ""
 
 #: pe/ui/save_sync.cpp
@@ -1918,6 +2074,10 @@ msgstr ""
 #. How many of a game's mods are switched on: 2 of 3 on.
 #: pe/ui/library.cpp
 msgid "{0} of {1} on"
+msgstr ""
+
+#: pe/ui/settings.cpp
+msgid "{0} of {1} profiles"
 msgstr ""
 
 #: pe/ui/save_sync.cpp

@@ -41,9 +41,9 @@ Launcher::Launcher(Services &services, Textures &textures, const Fonts &fonts, b
     const bool continue_ready = home_.setup_ready && home_.last_exists;
     home_focus_ = continue_ready ? 0 : home_.setup_ready ? 1 : 2;
     home_springs_[static_cast<std::size_t>(home_focus_)].snap(1.0f);
-    settings_.visible = 10;
-    settings_.pitch = 63.0f;
-    settings_.reset(10, 0);
+    settings_.visible = 11;
+    settings_.pitch = 57.0f;
+    settings_.reset(11, 0);
     section_.snap(1.0f);
     detail_.snap(1.0f);
     cue(home_.launch_failed ? Cue::notify : first_start ? Cue::welcome : Cue::resume);
@@ -203,6 +203,10 @@ void Launcher::press(Key key)
         return press_sources(key);
     if (modal_ == Modal::save_sync)
         return press_save_sync(key);
+    if (modal_ == Modal::sync_setup)
+        return press_sync_setup(key);
+    if (modal_ == Modal::pairing)
+        return press_pairing(key);
     if (modal_ != Modal::none)
         return press_dialog(key);
     switch (screen_)
@@ -234,6 +238,8 @@ void Launcher::update(float dt)
     finish_scan(false);
     poll_sources(dt);
     poll_save_sync(dt);
+    poll_pairing(dt);
+    refresh_sync_setup(dt);
     update_controllers(dt);
     transition_.update(dt);
     press_ = std::max(0.0f, press_ - dt / 0.18f);
@@ -264,6 +270,7 @@ void Launcher::update(float dt)
     source_rows_.update(dt);
     choice_rows_.update(dt);
     sync_rows_.update(dt);
+    sync_setup_rows_.update(dt);
     mode_.target = selected_docked_ ? 0.0f : 1.0f;
     mode_.update(dt, 22.0f);
     const bool mods_on = library_.selected >= 0 && library_.selected < static_cast<int>(games_.size()) &&
@@ -496,6 +503,10 @@ void Launcher::draw(gfx::DrawList &list)
             draw_choice(c, opened);
         else if (modal_shown_ == Modal::save_sync)
             draw_save_sync(c, opened);
+        else if (modal_shown_ == Modal::sync_setup)
+            draw_sync_setup(c, opened);
+        else if (modal_shown_ == Modal::pairing)
+            draw_pairing(c, opened);
         else if (modal_shown_ == Modal::sources)
             draw_sources(c, opened);
         else

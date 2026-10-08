@@ -155,4 +155,28 @@ inline bool Reconcile(const std::vector<Owner>& owners, const std::string& file 
     return Settings::WriteFile(file, document.dump(2, ' ', false, Json::error_handler_t::replace) + "\n");
 }
 
+// Sets what a profile's entry says about its server (pairing, Settings > Save sync): `fields`
+// ("type", "url", "token", "__server_user"...) replace its sign-in, and a sign-in typed in before
+// ("token", "username", "password", and whose it was: "__server_user") goes; the profile's name
+// and fields of the player's own stay. Empty fields unlink it (type, url and token empty). False
+// when the file cannot be read or written, or has no entry of the profile.
+inline bool SetEntry(const std::string& profile, const Json& fields, const std::string& file = File()) {
+    bool exists = false;
+    Json document = Detail::Load(file, &exists);
+    if (!exists || document.is_discarded() || !document.contains("profiles") || !document["profiles"].is_array())
+        return false;
+    for (Json& entry : document["profiles"]) {
+        if (!entry.is_object() || Detail::Text(entry, "profile") != profile) continue;
+        for (const char* key : {"token", "username", "password", "__server_user"}) entry.erase(key);
+        if (fields.empty()) {
+            entry["type"] = "";
+            entry["url"] = "";
+            entry["token"] = "";
+        }
+        for (const auto& [key, value] : fields.items()) entry[key] = value;
+        return Settings::WriteFile(file, document.dump(2, ' ', false, Json::error_handler_t::replace) + "\n");
+    }
+    return false;
+}
+
 } // namespace Eden::SaveSync

@@ -356,8 +356,14 @@ std::string SyncFolder() { return Eden::ConfigFile("remote") + "/save-sync"; }
 // The games whose save data is still to be synced after they were played, by profile.
 std::string PendingFile() { return SyncFolder() + "/pending.json"; }
 
-// A field of a JSON object as text; empty when it is not there or no text.
+// A field of a JSON object as text; empty when it is not there or no text (save-sync.json and
+// sources.json are edited by hand).
 std::string TextOf(const nlohmann::json& object, const char* key) {
+    if (!object.is_object()) return {};
+    const auto found = object.find(key);
+    return found != object.end() && found->is_string() ? found->get<std::string>() : std::string{};
+}
+std::string TextOf(const Eden::SaveSync::Json& object, const char* key) {
     if (!object.is_object()) return {};
     const auto found = object.find(key);
     return found != object.end() && found->is_string() ? found->get<std::string>() : std::string{};
@@ -414,6 +420,39 @@ void WritePending(const std::vector<std::pair<std::string, std::string>>& pendin
     (void)Eden::Settings::WriteFile(PendingFile(), list.dump(2) + "\n");
 }
 
+// The servers a profile can be paired with: the download sources whose kind of server can pair,
+// with what their entry in save-sync.json starts from (the type, the address, the platform).
+struct PairSource {
+    std::string name;
+    std::string address;
+    nlohmann::json settings;
+    const Eden::Remote::Pairing* pairing = nullptr;
+};
+std::vector<PairSource> PairSources() {
+    std::vector<PairSource> list;
+    std::string text;
+    if (!Eden::FilesystemAccess() || !Eden::Settings::ReadFile(Eden::ConfigFile("remote") + "/sources.json", text))
+        return list;
+    const nlohmann::json document = nlohmann::json::parse(text, nullptr, false);
+    if (!document.is_object() || !document.contains("sources") || !document["sources"].is_array()) return list;
+    for (const nlohmann::json& source : document["sources"]) {
+        if (!source.is_object()) continue;
+        // sources.json is written by hand: a field that is no text is not there.
+        const std::string type = TextOf(source, "type");
+        const std::string url = TextOf(source, "url");
+        const Eden::Remote::Backend* backend = Eden::Remote::FindBackend(type);
+        if (url.empty() || backend == nullptr || backend->saves == nullptr || backend->pairing == nullptr) continue;
+        PairSource item;
+        item.name = TextOf(source, "name").empty() ? type : TextOf(source, "name");
+        item.address = url;
+        item.settings = {{"type", type}, {"url", url}};
+        if (source.contains("platform")) item.settings["platform"] = source["platform"];
+        item.pairing = backend->pairing;
+        list.push_back(std::move(item));
+    }
+    return list;
+}
+
 std::string CurrentProfile(int user) {
     const auto who = Eden::Profiles::Resolve(user);
     return who.profiles.empty() ? std::string{} : who.profiles[static_cast<std::size_t>(who.current)].Key();
@@ -461,6 +500,8 @@ EdenServices::~EdenServices() {
     }
     sync_changed_.notify_all();
     if (sync_thread_.joinable()) sync_thread_.join();
+    pair_stop_ = true;
+    if (pair_thread_.joinable()) pair_thread_.join();
 }
 
 pe::ui::Home EdenServices::home() {
@@ -1379,4 +1420,166 @@ void EdenServices::will_play(const std::string& file) {
     const std::pair<std::string, std::string> job{CurrentProfile(user_), file};
     if (std::find(pending.begin(), pending.end(), job) == pending.end()) pending.push_back(job);
     WritePending(pending);
+}
+
+// ---- Settings > Save sync ----
+
+pe::ui::SaveSyncSetup EdenServices::save_sync_setup() {
+    pe::ui::SaveSyncSetup setup;
+    setup.file = Eden::SaveSync::File();
+    if (!Eden::FilesystemAccess()) return setup;
+    const auto who = Eden::Profiles::Resolve(user_);
+    const Eden::SaveSync::Config config = Eden::SaveSync::Read();
+    if (!config.readable) setup.error = config.error;
+    setup.automatic = config.automatic;
+    for (std::size_t index = 0; index < who.profiles.size(); ++index) {
+        const auto& profile = who.profiles[index];
+        pe::ui::SaveSyncProfile item;
+        item.name = profile.name;
+        item.current = static_cast<int>(index) == who.current;
+        const Eden::SaveSync::Entry* entry = config.readable ? Eden::SaveSync::Find(config, profile.Key()) : nullptr;
+        item.linked = entry != nullptr && !entry->type.empty();
+        if (item.linked) {
+            const std::string url = TextOf(entry->settings, "url");
+            const std::string user = TextOf(entry->settings, "__server_user");
+            item.server = user.empty() ? url : user + " @ " + url;
+            const Eden::Remote::Backend* backend = Eden::Remote::FindBackend(entry->type);
+            if (backend == nullptr || backend->saves == nullptr)
+                item.note = "Unknown type \"" + entry->type + "\" in save-sync.json";
+        }
+        setup.profiles.push_back(std::move(item));
+    }
+    return setup;
+}
+
+std::vector<pe::ui::PairServer> EdenServices::pair_servers() {
+    std::vector<pe::ui::PairServer> list;
+    for (const PairSource& source : PairSources()) list.push_back({source.name, source.address});
+    return list;
+}
+
+bool EdenServices::start_pairing(int profile_index, int server_index) {
+    {
+        const std::lock_guard lock(pair_lock_);
+        if (pair_.stage == pe::ui::PairingStage::asking || pair_.stage == pe::ui::PairingStage::waiting) return false;
+    }
+    if (pair_thread_.joinable()) pair_thread_.join();
+    const auto profiles = Eden::Profiles::Read();
+    const std::vector<PairSource> sources = PairSources();
+    if (profile_index < 0 || profile_index >= static_cast<int>(profiles.size()) || server_index < 0 ||
+        server_index >= static_cast<int>(sources.size()))
+        return false;
+    const auto profile = profiles[static_cast<std::size_t>(profile_index)];
+    const PairSource source = sources[static_cast<std::size_t>(server_index)];
+    {
+        const std::lock_guard lock(pair_lock_);
+        pair_ = {};
+        pair_.stage = pe::ui::PairingStage::asking;
+        pair_.profile = profile.name;
+        pair_.server = source.name;
+    }
+    pair_stop_ = false;
+    KeepSaveSyncFile(profiles); // the profile's entry is there to be filled in
+    pair_thread_ = std::thread([this, key = profile.Key(), name = profile.name, source] {
+        const std::string folder = SyncFolder() + "/" + key;
+        const auto fail = [&](std::string error, bool denied = false, bool expired = false) {
+            const std::lock_guard lock(pair_lock_);
+            pair_.stage = pe::ui::PairingStage::failed;
+            pair_.error = std::move(error);
+            pair_.denied = denied;
+            pair_.expired = expired;
+            Eden::Report("save sync", ("pairing " + name + " with " + source.name + ": " +
+                                       (denied ? "denied" : expired ? "expired" : pair_.error)).c_str());
+        };
+        Eden::Remote::PairingStart start;
+        std::string error;
+        const auto stopped = [this] { return pair_stop_.load(); };
+        if (!source.pairing->start(source.settings, folder, &start, &error, stopped)) {
+            if (pair_stop_) {
+                const std::lock_guard lock(pair_lock_);
+                pair_ = {};
+                return;
+            }
+            return fail(error);
+        }
+        if (pair_stop_) {
+            const std::lock_guard lock(pair_lock_);
+            pair_ = {};
+            return;
+        }
+        {
+            const std::lock_guard lock(pair_lock_);
+            pair_.stage = pe::ui::PairingStage::waiting;
+            pair_.code = start.user_code;
+            pair_.address = start.address;
+            pair_until_ = std::chrono::steady_clock::now() + std::chrono::seconds(start.expires_in);
+        }
+        int interval = start.interval;
+        for (;;) {
+            // Waits the interval, looking now and then whether it is cancelled.
+            for (int tenth = 0; tenth < interval * 10; ++tenth) {
+                if (pair_stop_) {
+                    const std::lock_guard lock(pair_lock_);
+                    pair_ = {};
+                    return;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            if (std::chrono::steady_clock::now() > pair_until_) return fail({}, false, true);
+            start.interval = interval; // slow_down adds to the interval used so far
+            const Eden::Remote::PairingResult result = source.pairing->poll(source.settings, folder, start, stopped);
+            // Cancelled while it asked: not linked, whatever the answer.
+            if (pair_stop_) {
+                const std::lock_guard lock(pair_lock_);
+                pair_ = {};
+                return;
+            }
+            switch (result.state) {
+            case Eden::Remote::PairingState::pending:
+                interval = std::max(1, result.interval);
+                continue;
+            case Eden::Remote::PairingState::denied:
+                return fail({}, true);
+            case Eden::Remote::PairingState::expired:
+                return fail({}, false, true);
+            case Eden::Remote::PairingState::failed:
+                return fail(result.error);
+            case Eden::Remote::PairingState::approved: {
+                Eden::SaveSync::Json fields = Eden::SaveSync::Json::parse(result.entry.dump());
+                if (!result.user.empty()) fields["__server_user"] = result.user;
+                if (!Eden::SaveSync::SetEntry(key, fields)) return fail("save-sync.json cannot be written");
+                const std::lock_guard lock(pair_lock_);
+                pair_.stage = pe::ui::PairingStage::done;
+                pair_.user = result.user;
+                Eden::Report("save sync", ("paired " + name + " with " + source.name + " as " + result.user).c_str());
+                return;
+            }
+            }
+        }
+    });
+    return true;
+}
+
+pe::ui::PairingStatus EdenServices::pairing() {
+    const std::lock_guard lock(pair_lock_);
+    pe::ui::PairingStatus status = pair_;
+    if (status.stage == pe::ui::PairingStage::waiting)
+        status.seconds_left = static_cast<int>(std::max<std::int64_t>(
+            0, std::chrono::duration_cast<std::chrono::seconds>(pair_until_ - std::chrono::steady_clock::now()).count()));
+    return status;
+}
+
+void EdenServices::cancel_pairing() {
+    pair_stop_ = true;
+    const std::lock_guard lock(pair_lock_);
+    if (pair_.stage == pe::ui::PairingStage::done || pair_.stage == pe::ui::PairingStage::failed) pair_ = {};
+}
+
+bool EdenServices::unlink_profile(int profile_index) {
+    const auto profiles = Eden::Profiles::Read();
+    if (profile_index < 0 || profile_index >= static_cast<int>(profiles.size())) return false;
+    const auto& profile = profiles[static_cast<std::size_t>(profile_index)];
+    const bool unlinked = Eden::SaveSync::SetEntry(profile.Key(), Eden::SaveSync::Json::object());
+    if (unlinked) Eden::Report("save sync", ("unlinked " + profile.name).c_str());
+    return unlinked;
 }

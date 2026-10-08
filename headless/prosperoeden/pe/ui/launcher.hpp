@@ -5,6 +5,7 @@
 #pragma once
 
 #include "pe/audio/sounds.hpp"
+#include "pe/ui/qr_code.hpp"
 #include "pe/ui/widgets.hpp"
 
 #include <array>
@@ -87,6 +88,8 @@ class Launcher
         source,       // which source a game is downloaded from, when several have it (remote.cpp)
         sources,      // Settings > Downloads: the download sources and the queue (remote.cpp)
         save_sync,    // a game's save data synced before it starts, or a conflict after (save_sync.cpp)
+        sync_setup,   // Settings > Save sync: the profiles and their servers (pairing.cpp)
+        pairing,      // a profile paired with a server by a QR code (pairing.cpp)
     };
     // The update dialog's steps: the offer, installing, stopping it, closing for the helper to
     // finish, and a failure.
@@ -244,6 +247,17 @@ class Launcher
     void press_save_sync(Key key);
     void draw_save_sync(Canvas &c, float open);
     void draw_save_sync_notice(Canvas &c);
+
+    // ---- Settings > Save sync and pairing (pairing.cpp) ----
+    void open_sync_setup();
+    // Reads the profiles' servers again (save-sync.json) while Settings shows them.
+    void refresh_sync_setup(float dt);
+    void press_sync_setup(Key key);
+    void draw_sync_setup(Canvas &c, float open);
+    void start_pairing(int profile, int server);
+    void poll_pairing(float dt);
+    void press_pairing(Key key);
+    void draw_pairing(Canvas &c, float open);
 
     // ---- game files, language, about (browse.cpp) ----
     void enter_files();
@@ -423,6 +437,21 @@ class Launcher
     SaveSync sync_notice_;          // what the notice at the top right says
     float sync_notice_left_ = 0.0f; // seconds it still shows
     tween::Spring sync_notice_in_;
+
+    // Settings > Save sync and pairing
+    SaveSyncSetup sync_setup_;
+    std::vector<PairServer> pair_servers_;
+    float sync_setup_wait_ = 1000.0f; // read at once the first time Settings shows
+    ListView sync_setup_rows_;
+    bool sync_setup_choosing_ = false; // the rows are the servers to pair sync_setup_profile_ with
+    int sync_setup_profile_ = 0;
+    int pair_server_ = 0;
+    int unlink_armed_ = -1;            // Square once on this profile: once more unlinks it
+    PairingStatus pairing_;
+    float pairing_wait_ = 0.0f;
+    float pairing_time_ = 0.0f;
+    QrCode pairing_qr_;
+    std::string pairing_qr_text_;      // the address pairing_qr_ is of
 };
 
 } // namespace pe::ui

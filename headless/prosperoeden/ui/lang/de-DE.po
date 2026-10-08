@@ -1956,3 +1956,173 @@ msgstr "Prüfung {0}"
 #: pe/ui/remote.cpp
 msgid "Checking the game files {0}"
 msgstr "Spieldateien werden geprüft {0}"
+
+#: pe/ui/pairing.cpp
+msgid "A pairing is running already."
+msgstr "Eine Kopplung läuft bereits."
+
+#: pe/ui/pairing.cpp
+msgid "The profile or the server is no longer there."
+msgstr "Das Profil oder der Server ist nicht mehr da."
+
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read: correct it over FTP first."
+msgstr "save-sync.json ist nicht lesbar: zuerst per FTP korrigieren."
+
+#: pe/ui/pairing.cpp
+msgid "No server to pair with: add a RomM server to sources.json, or set save-sync.json up over FTP."
+msgstr "Kein Server zum Koppeln: einen RomM-Server in sources.json eintragen oder save-sync.json per FTP einrichten."
+
+#. {0} is a profile's name.
+#: pe/ui/pairing.cpp
+msgid "Square again unlinks {0}. Its save data stays on the console and on the server."
+msgstr "Quadrat erneut trennt {0}. Die Speicherdaten bleiben auf der Konsole und auf dem Server."
+
+#: pe/ui/pairing.cpp
+msgid "Unlinked. Its save data is no longer synced."
+msgstr "Getrennt. Die Speicherdaten werden nicht mehr abgeglichen."
+
+#: pe/ui/pairing.cpp
+msgid "Could not change save-sync.json."
+msgstr "save-sync.json konnte nicht geändert werden."
+
+#. {0} is a profile's name; a server follows.
+#: pe/ui/pairing.cpp
+msgid "Pair {0} with"
+msgstr "{0} koppeln mit"
+
+#: pe/ui/pairing.cpp
+msgid "Save sync"
+msgstr "Speicherabgleich"
+
+#. {0} is why, in English.
+#: pe/ui/pairing.cpp
+msgid "save-sync.json cannot be read ({0}). Nothing syncs until it is corrected over FTP."
+msgstr "save-sync.json ist nicht lesbar ({0}). Bis zur Korrektur per FTP wird nichts abgeglichen."
+
+#: pe/ui/pairing.cpp
+msgid "Several servers can keep the save data. Which one should this profile use?"
+msgstr "Mehrere Server können die Speicherdaten aufbewahren. Welchen soll dieses Profil nutzen?"
+
+#: pe/ui/pairing.cpp
+msgid "Each profile keeps its save data on a server, as its own user there. Pair one with Cross: no typing, your phone does the signing in."
+msgstr "Jedes Profil hält seine Speicherdaten auf einem Server, als eigener Benutzer. Mit Kreuz koppeln: kein Tippen, die Anmeldung macht das Handy."
+
+#: pe/ui/pairing.cpp
+msgid "Not linked: its save data stays on the console"
+msgstr "Nicht gekoppelt: die Speicherdaten bleiben auf der Konsole"
+
+#: pe/ui/pairing.cpp
+msgid "Linked"
+msgstr "Gekoppelt"
+
+#: pe/ui/pairing.cpp
+msgid "Not linked"
+msgstr "Nicht gekoppelt"
+
+#. After a profile's name: the profile playing now.
+#: pe/ui/pairing.cpp
+msgid "playing"
+msgstr "spielt"
+
+#: pe/ui/pairing.cpp
+msgid "Pair"
+msgstr "Koppeln"
+
+#: pe/ui/pairing.cpp
+msgid "Pair again"
+msgstr "Neu koppeln"
+
+#: pe/ui/pairing.cpp
+msgid "Unlink"
+msgstr "Trennen"
+
+#: pe/ui/pairing.cpp
+msgid "Paired. The profile's save data syncs from now on."
+msgstr "Gekoppelt. Die Speicherdaten des Profils werden ab jetzt abgeglichen."
+
+#. {0} is a profile's name.
+#: pe/ui/pairing.cpp
+msgid "Pair {0}"
+msgstr "{0} koppeln"
+
+#. {0} is a server's name.
+#: pe/ui/pairing.cpp
+msgid "with {0}"
+msgstr "mit {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Asking the server for a code..."
+msgstr "Code wird beim Server angefragt …"
+
+#: pe/ui/pairing.cpp
+msgid "Scan the code with your phone, or open the address below."
+msgstr "Den Code mit dem Handy scannen oder die Adresse unten öffnen."
+
+#. {0} is a server's name.
+#: pe/ui/pairing.cpp
+msgid "Sign in to {0} as the user this profile's save data belongs to."
+msgstr "Bei {0} als der Benutzer anmelden, dem die Speicherdaten dieses Profils gehören."
+
+#: pe/ui/pairing.cpp
+msgid "Check that the code there is this one, and approve."
+msgstr "Prüfen, dass dort dieser Code steht, und bestätigen."
+
+#. {0} is minutes and seconds ("9:41").
+#: pe/ui/pairing.cpp
+msgid "Waiting for the approval  ·  the code works {0} more"
+msgstr "Warte auf die Bestätigung  ·  der Code gilt noch {0}"
+
+#: pe/ui/pairing.cpp
+msgid "Paired"
+msgstr "Gekoppelt"
+
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs with the server from now on."
+msgstr "Die Speicherdaten des Profils werden ab jetzt mit dem Server abgeglichen."
+
+#. {0} is the user's name on the server.
+#: pe/ui/pairing.cpp
+msgid "The profile's save data syncs as {0} from now on."
+msgstr "Die Speicherdaten des Profils werden ab jetzt als {0} abgeglichen."
+
+#: pe/ui/pairing.cpp
+msgid "Not paired"
+msgstr "Nicht gekoppelt"
+
+#: pe/ui/pairing.cpp
+msgid "It was declined on the server."
+msgstr "Auf dem Server wurde abgelehnt."
+
+#: pe/ui/pairing.cpp
+msgid "Nobody approved the code in time."
+msgstr "Der Code wurde nicht rechtzeitig bestätigt."
+
+#: pe/ui/pairing.cpp
+msgid "Done"
+msgstr "Fertig"
+
+#: pe/ui/pairing.cpp
+msgid "SAVE SYNC"
+msgstr "SPEICHERABGLEICH"
+
+#. {0} profiles linked of {1}.
+#: pe/ui/pairing.cpp
+msgid "{0} of {1} profiles"
+msgstr "{0} von {1} Profilen"
+
+#: pe/ui/pairing.cpp
+msgid "Each profile's save data on a server of its own, synced before and after a game."
+msgstr "Speicherdaten jedes Profils auf einem Server, vor und nach dem Spiel."
+
+#: pe/ui/pairing.cpp
+msgid "SAVE-SYNC.JSON"
+msgstr "SAVE-SYNC.JSON"
+
+#: pe/ui/pairing.cpp
+msgid "Not readable"
+msgstr "Nicht lesbar"
+
+#: pe/ui/pairing.cpp
+msgid "SYNC"
+msgstr "ABGLEICH"

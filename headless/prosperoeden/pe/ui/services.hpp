@@ -155,6 +155,51 @@ enum class SaveChoice : std::uint8_t
     neither, // both stay as they are
 };
 
+// Settings > Save sync: each profile and where it keeps its save data (save-sync.json).
+struct SaveSyncProfile
+{
+    std::string name;
+    bool current = false; // the one playing
+    bool linked = false;  // its entry names a server
+    std::string server;   // where: "player @ http://nas:3000" (who, when known)
+    std::string note;     // what is wrong with its entry (English); empty when nothing
+};
+struct SaveSyncSetup
+{
+    std::vector<SaveSyncProfile> profiles;
+    std::string error; // save-sync.json cannot be read (English): nothing syncs
+    bool automatic = true;
+    std::string file;  // where save-sync.json is, for editing it over FTP
+};
+// A server a profile can be paired with: a download source whose kind of server can pair.
+struct PairServer
+{
+    std::string name;
+    std::string address;
+};
+// A pairing: the code shown, approved on the server signed in as the profile's user.
+enum class PairingStage : std::uint8_t
+{
+    idle,
+    asking,  // the server is asked for a code
+    waiting, // the code shows: approve it on the server
+    done,    // approved: the profile syncs with that user
+    failed,  // see error; denied and expired say so
+};
+struct PairingStatus
+{
+    PairingStage stage = PairingStage::idle;
+    std::string profile;  // its name
+    std::string server;   // the server's name
+    std::string code;     // to tell the request on the server's page
+    std::string address;  // the page that approves it, the code in it (the QR code)
+    int seconds_left = 0; // until the code expires
+    std::string user;     // done: who it signed in as
+    bool denied = false;  // failed: the player said no on the server
+    bool expired = false; // failed: nobody approved it in time
+    std::string error;    // failed otherwise (English)
+};
+
 // A game in the download queue.
 enum class DownloadState : std::uint8_t
 {
@@ -540,6 +585,38 @@ class Services
     // not before), and on later starts until that worked.
     virtual void will_play(const std::string &)
     {
+    }
+
+    // ---- Settings > Save sync: profiles linked with a server ----
+    virtual SaveSyncSetup save_sync_setup()
+    {
+        return {};
+    }
+    // The servers a profile can be paired with, in the order of sources.json.
+    virtual std::vector<PairServer> pair_servers()
+    {
+        return {};
+    }
+    // Pairs a profile (an index into save_sync_setup().profiles) with a server (into
+    // pair_servers()), on a thread of its own; pairing() tells how it goes. False when it cannot
+    // start (one runs already).
+    virtual bool start_pairing(int, int)
+    {
+        return false;
+    }
+    virtual PairingStatus pairing()
+    {
+        return {};
+    }
+    // Stops a pairing that waits, or forgets the end of one: pairing() is idle again.
+    virtual void cancel_pairing()
+    {
+    }
+    // Takes a profile's server out of save-sync.json: its save data stays on the console and on
+    // the server.
+    virtual bool unlink_profile(int)
+    {
+        return false;
     }
 
     // ---- images ----

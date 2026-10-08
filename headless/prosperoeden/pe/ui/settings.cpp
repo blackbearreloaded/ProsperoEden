@@ -20,7 +20,7 @@ constexpr Rect kListPanel{108.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDetailPanel{980.0f, 188.0f, 820.0f, 720.0f};
 constexpr Rect kDialog{550.0f, 180.0f, 820.0f, 720.0f};
 constexpr float kRowsTop = 264.0f;
-constexpr float kRowHeight = 58.0f;
+constexpr float kRowHeight = 54.0f;
 enum Category
 {
     kProfiles,
@@ -32,16 +32,17 @@ enum Category
     kDiagnostics,
     kFiles,
     kDownloads,
+    kSaveSync,
     kLanguage,
     kCategoryCount,
 };
 constexpr const char *kCategories[kCategoryCount] = {
     TR("Profiles"), TR("Video"), TR("Performance"), TR("Audio"), TR("Controls"), TR("Accessibility"),
-    TR("Diagnostics"), TR("Game files"), TR("Downloads"), TR("Language")};
+    TR("Diagnostics"), TR("Game files"), TR("Downloads"), TR("Save sync"), TR("Language")};
 // The same as headings: capitals differ by language, so each is its own text.
 constexpr const char *kHeadings[kCategoryCount] = {
     TR("PROFILES"), TR("VIDEO"), TR("PERFORMANCE"), TR("AUDIO"), TR("CONTROLS"), TR("ACCESSIBILITY"),
-    TR("DIAGNOSTICS"), TR("GAME FILES"), TR("DOWNLOADS"), TR("LANGUAGE")};
+    TR("DIAGNOSTICS"), TR("GAME FILES"), TR("DOWNLOADS"), TR("SAVE SYNC"), TR("LANGUAGE")};
 
 // The Video dialog's rows, and the window that shows five of them (placed as a game's settings
 // are).
@@ -143,6 +144,9 @@ void Launcher::press_settings(Key key)
         case kDownloads:
             open_sources();
             break;
+        case kSaveSync:
+            open_sync_setup();
+            break;
         case kVideo:
             open_modal(Modal::video);
             video_rows_.visible = kVideoRowsShown;
@@ -201,6 +205,13 @@ void Launcher::draw_settings(Canvas &c)
         !sources_.configured ? std::string{tr("Not set up")} :
         sources_.list.size() == 1 ? sources_.list.front().name :
                                     fill(tr("{0} sources"), {std::to_string(sources_.list.size())}),
+        [&] {
+            int linked = 0;
+            for (const SaveSyncProfile &profile : sync_setup_.profiles)
+                linked += profile.linked ? 1 : 0;
+            return linked == 0 ? std::string{tr("Off")} : fill(tr("{0} of {1} profiles"), {std::to_string(linked),
+                                                                                           std::to_string(sync_setup_.profiles.size())});
+        }(),
         pick(services_.language_labels(), prefs_.language),
     };
     for (int row = 0; row < kCategoryCount; ++row)
@@ -314,6 +325,21 @@ void Launcher::draw_settings(Canvas &c)
         }
         lines.push_back({tr("FTP SERVER"), fill(tr("Port {0}"), {std::to_string(sources_.ftp_port)})});
         lines.push_back({tr("DOWNLOADS"), std::to_string(queued)});
+        break;
+    }
+    case kSaveSync:
+    {
+        about = tr("Each profile's save data on a server of its own, synced before and after a game.");
+        if (!sync_setup_.error.empty())
+            lines.push_back({tr("SAVE-SYNC.JSON"), tr("Not readable")});
+        for (std::size_t i = 0; i < sync_setup_.profiles.size() && i < 4; ++i)
+        {
+            const SaveSyncProfile &profile = sync_setup_.profiles[i];
+            lines.push_back({profile.name.c_str(), profile.linked ? (profile.note.empty() ? tr("Linked") : tr("Needs attention")) :
+                                                                    tr("Not linked")});
+        }
+        if (!sync_setup_.automatic)
+            lines.push_back({tr("SYNC"), tr("Off")});
         break;
     }
     default:

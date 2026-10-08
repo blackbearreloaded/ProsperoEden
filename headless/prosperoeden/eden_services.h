@@ -7,6 +7,7 @@
 #include "remote/remote.h"
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <optional>
@@ -92,6 +93,13 @@ public:
     void stop_save_sync() override;
     void will_play(const std::string& file) override;
 
+    pe::ui::SaveSyncSetup save_sync_setup() override;
+    std::vector<pe::ui::PairServer> pair_servers() override;
+    bool start_pairing(int profile, int server) override;
+    pe::ui::PairingStatus pairing() override;
+    void cancel_pairing() override;
+    bool unlink_profile(int profile) override;
+
     bool load_image(const std::string& path, pe::gfx::Image* image) override;
 
 private:
@@ -122,4 +130,12 @@ private:
     pe::ui::SaveSync sync_;
     std::optional<pe::ui::SaveChoice> sync_choice_;
     std::atomic<bool> sync_stop_{false};
+
+    // A pairing (Settings > Save sync), on a thread of its own: it asks the server for a code and
+    // then whether it was approved, until it was, or the code expired, or it is cancelled.
+    std::thread pair_thread_;
+    std::mutex pair_lock_;
+    pe::ui::PairingStatus pair_;
+    std::chrono::steady_clock::time_point pair_until_;
+    std::atomic<bool> pair_stop_{false};
 };
