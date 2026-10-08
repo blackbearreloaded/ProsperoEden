@@ -1,3 +1,4 @@
+#include "game_name.h"
 #include "metadata_bridge.h"
 #include "assets_dir.h"
 #include "diagnostics.h"
@@ -65,12 +66,16 @@ std::string ReadTitle(const FileSys::VirtualDir& romfs) {
     auto nacp = romfs->GetFile("control.nacp");
     if (!nacp) nacp = romfs->GetFile("Control.nacp");
     if (!nacp || nacp->GetSize() < 0x3000) return {};
+    // The first of the game's names (one per language, English first) that is text: a name can be
+    // empty or hold something else (game_name.h), and the next language's is then the one to show.
     std::array<char, 0x200> name{};
     for (std::size_t language = 0; language < 16; ++language) {
         if (nacp->Read(reinterpret_cast<unsigned char*>(name.data()), name.size(),
                        language * 0x300) != name.size()) return {};
         name.back() = '\0';
-        if (name.front()) return name.data();
+        if (!name.front()) continue;
+        if (Eden::UsableName(name.data())) return Eden::PlainName(name.data());
+        std::fprintf(stderr, "[ProsperoEden] library: name %zu of a game is not text; trying its next one\n", language);
     }
     return {};
 }

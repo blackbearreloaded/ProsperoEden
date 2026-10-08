@@ -8,6 +8,7 @@
 #include "mods.h"
 #include "profiles.h"
 #include "update_notice.h"
+#include "game_name.h"
 #include "native_directory.h"
 #include "pe/core/strings.hpp"
 #include "radio_input.h"
@@ -203,9 +204,11 @@ void SaveTitle(const std::string& filename, const std::string& title) {
         (void)std::remove(staged.c_str());
 }
 
+// The name kept for a game, when it is one that can be shown (game_name.h: an earlier version
+// kept whatever the game's first name held), else the name its file gives.
 std::string GameTitle(const std::string& filename) {
     const std::string saved = SavedTitle(filename);
-    return saved.empty() ? CleanTitle(filename) : saved;
+    return Eden::UsableName(saved) ? Eden::PlainName(saved) : CleanTitle(filename);
 }
 
 // The cached cover of a ROM, extracted from it when missing; empty when it has none.
