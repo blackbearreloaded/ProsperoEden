@@ -64,9 +64,9 @@ def check():
     runpy.run_path(str(ROOT / 'tools/load_alignment.py'))['check_load_alignment']((APP / 'eboot.bin').read_bytes())
     imports = (OUT / 'imports.txt').read_text()
     needed = sorted(imports.split('NeededLibraries [', 1)[1].split(']', 1)[0].split())
-    # libSceImeDialog and libSceSysmodule: the PS5 keyboard for a game's text entry
-    # (headless/system_keyboard.cpp); RADV loads system modules as well.
-    expected = ['libSceAudioOut.sprx', 'libSceImeDialog.sprx', 'libSceLibcInternal.sprx', 'libSceNet.sprx',
+    # libSceCommonDialog, libSceImeDialog and libSceSysmodule: the PS5 keyboard for a game's text
+    # entry (headless/system_keyboard.cpp); RADV loads system modules as well.
+    expected = ['libSceAudioOut.sprx', 'libSceCommonDialog.sprx', 'libSceImeDialog.sprx', 'libSceLibcInternal.sprx', 'libSceNet.sprx',
                 'libScePad.sprx', 'libSceSysmodule.sprx', 'libSceUserService.sprx', 'libkernel.sprx']
     if json.loads((OUT / 'frontend.json').read_text())['renderer'] == 'opengl-4.6-compatibility':
         assert b'[ps5-batch-summary] config gpu-present=1 multidraw=1 deferred=1 ' in (OUT / 'llvm-pie.elf').read_bytes(), 'SDK batching disabled or missing compiled receipt'

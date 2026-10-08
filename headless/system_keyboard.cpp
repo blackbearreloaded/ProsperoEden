@@ -36,6 +36,7 @@ static_assert(offsetof(ImeParam, title) == 72);
 static_assert(sizeof(ImeResult) == 16);
 
 constexpr std::uint16_t kImeDialogModule = 0x0096;
+constexpr std::uint32_t kCommonDialogAlreadyInitialized = 0x80b80002u;
 constexpr std::int32_t kTypeNumber = 4;
 constexpr std::uint32_t kOptionPassword = 0x4;
 constexpr std::int32_t kAlignCenter = 1;
@@ -60,6 +61,7 @@ void Note(const char* what, int code) {
 }  // namespace
 
 extern "C" {
+int sceCommonDialogInitialize();
 int sceImeDialogAbort();
 int sceImeDialogGetResult(ImeResult* result);
 int sceImeDialogGetStatus();
@@ -81,14 +83,15 @@ TextAnswer AskSystemKeyboard(const TextRequest& request, const std::atomic<bool>
         return answer;
     }
     if (!loaded) {
-        // The dialog's library is one the app imports, so the system has loaded it with the app;
-        // asking for the module as well is refused on some set-ups (seen: 0x80020063) and is not
-        // what decides whether the dialog opens. Its answer goes to the log, no more.
+        // The system's dialogs first, then the keyboard's own module.
+        if (const int dialogs = sceCommonDialogInitialize();
+            dialogs < 0 && static_cast<std::uint32_t>(dialogs) != kCommonDialogAlreadyInitialized) {
+            Note("The PS5's dialogs did not start", dialogs);
+            return answer;
+        }
         if (const int module = sceSysmoduleLoadModule(kImeDialogModule); module < 0) {
-            char line[96];
-            std::snprintf(line, sizeof(line), "Asking for the keyboard's module answered %#x; going on",
-                          static_cast<unsigned>(module));
-            Report("keyboard", line);
+            Note("The PS5 keyboard's module did not load", module);
+            return answer;
         }
         loaded = true;
     }

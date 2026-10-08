@@ -2183,7 +2183,8 @@ target_link_libraries(eden-headless PRIVATE core eden-pad)
 target_sources(eden-headless PRIVATE "${EDEN_PORT_DIR}/system_keyboard.cpp")
 if(PS5_NATIVE)
     target_link_libraries(eden-headless PRIVATE
-        "${sdk}/target/lib/libSceImeDialog.so" "${sdk}/target/lib/libSceSysmodule.so")
+        "${sdk}/target/lib/libSceImeDialog.so" "${sdk}/target/lib/libSceSysmodule.so"
+        "${PORT_ROOT}/build/stubs/libSceCommonDialog.so")
 endif()
 add_library(eden-metadata STATIC "${EDEN_PORT_DIR}/metadata_bridge.cpp")
 target_include_directories(eden-metadata PUBLIC "${EDEN_PORT_DIR}" PRIVATE "${PROJECT_SOURCE_DIR}/src")
