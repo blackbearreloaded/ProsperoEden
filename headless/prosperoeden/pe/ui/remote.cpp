@@ -577,6 +577,7 @@ void Launcher::press_sources(Key key)
                                          false);
             }
         downloads_ = services_.downloads();
+        source_rows_.reset(source_row_count(), std::min(row, std::max(0, source_row_count() - 1)));
         say(tr("Trying again."));
         cue(Cue::select);
     }
@@ -660,6 +661,13 @@ void Launcher::draw_sources(Canvas &c, float open)
                      664.0f - taken - 28.0f);
             notice(c, warning ? source.error : source.address, 628.0f, baseline(top + 52.0f, 28.0f, theme::kSmall),
                    theme::kSmall, warning ? theme::kWarning : theme::kMeta, 664.0f, warning);
+            list.pop_opacity();
+            continue;
+        }
+        // The queue is read again in other places too: a row it no longer has stays empty until the
+        // rows follow it.
+        if (row - sources >= static_cast<int>(downloads_.size()))
+        {
             list.pop_opacity();
             continue;
         }

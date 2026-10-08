@@ -681,18 +681,20 @@ void ListThread() {
             SaveCatalog(s, *state);
         }
         s.wake.notify_all(); // queued games that waited for the list
-        std::vector<Game> covers;
+        // Where each goes, while the lock is held (Start sets the paths again).
+        std::vector<std::pair<Game, std::string>> covers;
         for (const Game& game : state->games)
-            if (!game.cover_source.empty() && !s.covers.contains(CoverPath(s, key, game.id))) covers.push_back(game);
+            if (const std::string path = CoverPath(s, key, game.id); !game.cover_source.empty() && !s.covers.contains(path))
+                covers.emplace_back(game, path);
         const CoverWriter writer = s.writer;
         lock.unlock();
         // The Library shows them once all are in: each new list reads every game of the console.
         std::vector<std::string> written;
-        for (const Game& game : covers) {
+        for (const auto& [game, path] : covers) {
             if (s.halt.load() || writer == nullptr) break;
             std::string picture;
             if (!source->cover(AsSourceGame(game), &picture, [&s] { return s.halt.load(); })) continue;
-            if (writer(picture, CoverPath(s, key, game.id))) written.push_back(CoverPath(s, key, game.id));
+            if (writer(picture, path)) written.push_back(path);
             else Log("the cover of " + game.name + " cannot be read");
         }
         lock.lock();
@@ -769,7 +771,8 @@ void DownloadThread() {
         const bool cancelled = s.cancel.load() == serial;
         if (cancelled) s.cancel.store(0);
         const auto at = std::find_if(s.queue.begin(), s.queue.end(), [&](const Entry& e) { return e.serial == serial; });
-        if (cancelled) {
+        // Cancelled once it was all in place already: it is done, and on the console.
+        if (cancelled && outcome != Outcome::done) {
             DiscardParts(s, game.source, game.id, &game);
             if (at != s.queue.end()) s.queue.erase(at);
             SaveQueue(s);
@@ -1044,6 +1047,8 @@ bool Enqueue(const std::string& source, const std::string& id, bool first) {
             at->state = State::queued;
             at->error.clear();
         }
+        // Cancelled while it downloads, and wanted again before the download stopped: it goes on.
+        if (s.cancel.load() == at->serial) s.cancel.store(0);
         // Played now: it comes before the others (the one downloading goes on first).
         if (first && at->state == State::queued && at != s.queue.begin()) {
             Entry entry = *at;
