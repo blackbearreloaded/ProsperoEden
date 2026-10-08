@@ -59,6 +59,8 @@ class Font
     void use_system_fonts(std::vector<std::string> files, std::string_view language);
     // Whether every character of text has a glyph, in the baked font or a system font.
     bool can_draw(std::string_view text) const;
+    // text without the characters no font has a glyph for (they would be drawn as "?").
+    std::string drawable(std::string_view text) const;
     // The system fonts read so far, for the log.
     std::string system_fonts_read() const;
 
