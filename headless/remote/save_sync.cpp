@@ -97,9 +97,34 @@ void KeepSynced(const std::string& folder, const std::string& server, const std:
     (void)WriteWhole(folder + "/synced.json", synced.dump(2) + "\n");
 }
 
+// Where a replacement that is under way says which backup holds the console's save data
+// (Replace): beside the backups, removed once the new save data is in place.
+std::string ReplacingNote(const SyncPlaces& places, const std::string& title) {
+    return places.backups + "/" + title + ".replacing";
+}
+
+// A replacement that did not end (the app was closed or the console lost power between moving the
+// console's save data away and putting the new one in): the save data goes back to its place.
+// Without this the game would start as new, and that new save data would be the one synced.
+void Recover(const SyncPlaces& places, const std::string& title) {
+    const std::string note = ReplacingNote(places, title);
+    std::string backup;
+    {
+        std::ifstream in(note);
+        if (!in) return;
+        std::getline(in, backup);
+    }
+    std::error_code status;
+    if (!backup.empty() && !fs::exists(places.save, status) && fs::exists(backup, status) &&
+        std::rename(backup.c_str(), places.save.c_str()) == 0)
+        std::fprintf(stderr, "[ProsperoEden] save sync: a replacement of %s did not end; the console's save data is back in its place\n", title.c_str());
+    (void)std::remove(note.c_str());
+}
+
 // The store's copy, unpacked, in place of the console's; the console's goes to the backups first
 // and comes back when the new one cannot be put in place.
 bool Replace(const std::string& zip, const SyncPlaces& places, const std::string& title, std::string* error) {
+    Recover(places, title);
     const std::string incoming = places.save + ".incoming";
     Remove(incoming);
     if (!SaveArchive::Unpack(zip, incoming, title, error)) {
@@ -121,13 +146,32 @@ bool Replace(const std::string& zip, const SyncPlaces& places, const std::string
         for (int n = 2; fs::exists(backup, status); ++n) backup = folder + "/" + stamp + "-" + std::to_string(n);
         std::error_code made;
         fs::create_directories(folder, made);
-        if (made || std::rename(places.save.c_str(), backup.c_str()) != 0) {
+        // Which backup it is, written down before the save data leaves its place (Recover).
+        if (made || !WriteWhole(ReplacingNote(places, title), backup + "\n") ||
+            std::rename(places.save.c_str(), backup.c_str()) != 0) {
+            (void)std::remove(ReplacingNote(places, title).c_str());
             Remove(incoming);
             *error = "Cannot move the console's save data to " + backup;
             return false;
         }
-        // The newest few stay, by when they were made (not by their names: the console's clock may
-        // have been set back since). This one is the newest whatever its name.
+    } else {
+        std::error_code made;
+        fs::create_directories(fs::path(places.save).parent_path(), made);
+    }
+    if (std::rename(incoming.c_str(), places.save.c_str()) != 0) {
+        const bool back = !had || std::rename(backup.c_str(), places.save.c_str()) == 0;
+        if (back) (void)std::remove(ReplacingNote(places, title).c_str());
+        Remove(incoming);
+        *error = back ? "Cannot put the save data in place" :
+                        "Cannot put the save data in place; the console's own is in " + backup;
+        return false;
+    }
+    (void)std::remove(ReplacingNote(places, title).c_str());
+    if (had) {
+        // Older backups go only now that the new save data is in place. The newest few stay, by
+        // when they were made (not by their names: the console's clock may have been set back
+        // since). This one is the newest whatever its name.
+        const std::string folder = places.backups + "/" + title;
         fs::last_write_time(backup, fs::file_time_type::clock::now(), status);
         std::vector<std::string> names;
         if (places.lister(folder, &names)) {
@@ -138,15 +182,6 @@ bool Replace(const std::string& zip, const SyncPlaces& places, const std::string
             for (std::size_t index = 0; index + kBackups < kept.size() + 1; ++index)
                 Remove(folder + "/" + kept[index].second);
         }
-    } else {
-        std::error_code made;
-        fs::create_directories(fs::path(places.save).parent_path(), made);
-    }
-    if (std::rename(incoming.c_str(), places.save.c_str()) != 0) {
-        if (had) std::rename(backup.c_str(), places.save.c_str());
-        Remove(incoming);
-        *error = "Cannot put the save data in place";
-        return false;
     }
     return true;
 }
@@ -186,8 +221,9 @@ SyncResult SyncSaveData(const std::string& type, const nlohmann::json& settings,
     }
     if (found == nullptr) return Result(SyncOutcome::no_game, {}, user);
 
-    // The console's save data, packed.
+    // The console's save data, packed; put back first when a replacement did not end.
     const std::string title = TitleFolder(game.title_id);
+    Recover(places, title);
     SaveArchive::Folder folder;
     if (!SaveArchive::List(places.save, title, places.lister, &folder, &error)) return Failed(error, user);
     std::error_code made;

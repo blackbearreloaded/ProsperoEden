@@ -14,8 +14,8 @@ takes it all down again. The first run of a version downloads its image (about 1
 
 Needs Docker with Compose, and what tools/check-remote.py needs to build (libcurl's, OpenSSL's
 and nlohmann/json's headers; CURL_INCLUDE, JSON_INCLUDE and CURL_LIBRARY as there). Without
-Docker or the headers it says so and is skipped. ROMM_CHECK=0 skips it (make test runs it
-otherwise); ROMM_KEEP=1 leaves the servers running (their port is printed).
+Docker or the headers it says so and is skipped. It runs only when asked: with ROMM_CHECK=1 (also from make test)
+or with versions as arguments; ROMM_KEEP=1 leaves the servers running (their port is printed).
 """
 
 import hashlib
@@ -278,8 +278,10 @@ def run_version(version, binary, work):
 
 
 def main():
-    if os.environ.get("ROMM_CHECK") == "0":
-        print("check-romm: SKIPPED (ROMM_CHECK=0)")
+    # Asked for, not part of every make test: it pulls several server images, and for its length
+    # an FTP server without a sign-in listens on this computer's network.
+    if os.environ.get("ROMM_CHECK") != "1" and not sys.argv[1:]:
+        print("check-romm: SKIPPED (ROMM_CHECK=1 runs it against RomM servers in Docker)")
         return 0
     if shutil.which("docker") is None or subprocess.run(["docker", "compose", "version"],
                                                         capture_output=True).returncode != 0:

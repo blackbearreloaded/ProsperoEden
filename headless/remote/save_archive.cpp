@@ -278,6 +278,12 @@ bool Unpack(const std::string& path, const std::string& folder, const std::strin
         }
         top = first;
     }
+    // A zip without a file is not save data: unpacked, it would put an empty folder in the place
+    // of the console's own.
+    if (std::none_of(items.begin(), items.end(), [](const Item& item) { return !item.folder; })) {
+        *error = "The save data's zip has no files";
+        return false;
+    }
     std::error_code ignored;
     if (std::filesystem::exists(folder, ignored)) {
         *error = folder + " is there already";
