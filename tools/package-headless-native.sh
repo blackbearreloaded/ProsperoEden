@@ -36,6 +36,8 @@ if grep -qx 'EDEN_PS5_OPENGL:BOOL=ON' "$out/CMakeCache.txt"; then
     fi
     stub_flags+=(--stub "$gl46/lib/libSceAgc.so" --stub "$driver_stub")
 fi
+# The PS5 keyboard's libSceCommonDialog import (tools/build-common-dialog-stub.sh).
+stub_flags+=(--stub "$root/build/stubs/libSceCommonDialog.so")
 "$builder" link --in "$out/llvm-pie.elf" --out "$out/eboot.elf" \
     "${stub_flags[@]}" --module-sdk 0x02000009 \
     --companion-sdk 0x08050001 --file-name eboot.elf

@@ -2183,6 +2183,13 @@ write_derived("${PORT_BUILD_DIR}/version/app_version.h"
     "// Generated from sce_sys/param.json (contentVersion).\n#pragma once\n#define EDEN_APP_VERSION \"${app_version}\"\n")
 target_include_directories(eden-headless PRIVATE "${PORT_BUILD_DIR}/version")
 target_link_libraries(eden-headless PRIVATE core eden-pad)
+# A game's text entry on the PS5's own on-screen keyboard (system_keyboard.h, keyboard_applet.h).
+target_sources(eden-headless PRIVATE "${EDEN_PORT_DIR}/system_keyboard.cpp")
+if(PS5_NATIVE)
+    target_link_libraries(eden-headless PRIVATE
+        "${sdk}/target/lib/libSceImeDialog.so" "${sdk}/target/lib/libSceSysmodule.so"
+        "${PORT_ROOT}/build/stubs/libSceCommonDialog.so")
+endif()
 add_library(eden-metadata STATIC "${EDEN_PORT_DIR}/metadata_bridge.cpp")
 target_include_directories(eden-metadata PUBLIC "${EDEN_PORT_DIR}" PRIVATE "${PROJECT_SOURCE_DIR}/src")
 target_link_libraries(eden-metadata PUBLIC core stb)

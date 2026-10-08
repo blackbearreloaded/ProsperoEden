@@ -38,6 +38,7 @@
 #include "mods.h"
 #include "controller_applet.h"
 #include "error_applet.h"
+#include "keyboard_applet.h"
 #include "preferences.h"
 #include "metadata_bridge.h"
 #ifdef EDEN_PS5_OPENGL
@@ -191,6 +192,9 @@ int main(int argc, char** argv) {
         std::setvbuf(report, nullptr, _IONBF, 0);
 #ifdef PS5_NATIVE
         Eden::BootTrace::Begin(Eden::kAppVersion, __DATE__ " " __TIME__);
+        // The PS5 keyboard's module, for a game's text entry: asked for before anything else
+        // changes what the app may load (system_keyboard.h).
+        Eden::BootTrace::Line("PS5 keyboard module: %#x", static_cast<unsigned>(Eden::PrepareSystemKeyboard()));
         Eden::BootTrace::Line("requesting filesystem access");
         // Filesystem access beyond the sandbox, first: every path below depends on it
         // (assets_dir.h). A resident upstream Lapy service gets the first opportunity; otherwise
@@ -1010,14 +1014,29 @@ int main(int argc, char** argv) {
             // One Pro Controller per signed-in user's DualSense; later changes apply mid-game.
             const unsigned connected = pad->ConnectedPlayers();
             (void)pad->TakeConnectionChanges();
+            // The game's own Controller type (Game settings > Controls), a Pro Controller without
+            // one. The handheld is a controller of its own, for player 1 only.
+            Eden::session_controller = controls.controller;
+            const bool handheld = Eden::ControllerSetting(controls.controller) == Settings::ControllerType::Handheld;
             for (std::size_t index = 0; index < Eden::Pad::kMaxPlayers; ++index) {
                 auto& player = Settings::values.players.GetValue()[index];
-                player.connected = index == 0 || (connected & (1u << index)) != 0;
-                player.controller_type = Settings::ControllerType::ProController;
+                player.connected = handheld ? false : index == 0 || (connected & (1u << index)) != 0;
+                player.controller_type = handheld ? Settings::ControllerType::ProController :
+                                                    Eden::ControllerSetting(controls.controller);
                 // DualSense rumble (headless/pad.cpp) at Eden's full strength.
                 player.vibration_enabled = true;
                 player.vibration_strength = 100;
             }
+            {
+                auto& player = Settings::values.players.GetValue()[8];  // Eden's handheld controller
+                player.connected = handheld;
+                player.controller_type = Settings::ControllerType::Handheld;
+                player.vibration_enabled = true;
+                player.vibration_strength = 100;
+            }
+            if (controls.controller >= 0)
+                Eden::Report("launch", (std::string("Controller type: ") +
+                                        Eden::kControllerKeys[controls.controller]).c_str());
         }
         {
 #ifdef EDEN_PS5_OPENGL
@@ -1100,6 +1119,8 @@ int main(int argc, char** argv) {
                     if (pad) applets.controller = std::make_unique<Eden::PadControllerApplet>(system.HIDCore(), *pad);
                     // A game's error dialog: logged and closed, so the game carries on.
                     applets.error = std::make_unique<Eden::LoggedErrorApplet>();
+                    // A game's text entry: the PS5's own on-screen keyboard.
+                    applets.software_keyboard = std::make_unique<Eden::SystemKeyboardApplet>(Eden::AskSystemKeyboard);
                     system.GetFrontendAppletHolder().SetFrontendAppletSet(std::move(applets));
                 }
                 Service::AM::FrontendAppletParameters params{
@@ -1410,8 +1431,11 @@ int main(int argc, char** argv) {
                                 const bool present = (connected & (1u << index)) != 0;
                                 Settings::values.players.GetValue()[index].connected = present;
                                 auto* controller = system.HIDCore().GetEmulatedControllerByIndex(index);
+                                // With the handheld chosen, the game has one player.
+                                const auto chosen = Eden::ChosenStyle(Eden::session_controller.load());
+                                if (present && chosen == Core::HID::NpadStyleIndex::Handheld) continue;
                                 if (present) {
-                                    controller->SetNpadStyleIndex(Core::HID::NpadStyleIndex::Fullkey);
+                                    controller->SetNpadStyleIndex(chosen.value_or(Core::HID::NpadStyleIndex::Fullkey));
                                     controller->Connect();
                                 } else {
                                     controller->Disconnect();

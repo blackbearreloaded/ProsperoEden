@@ -320,6 +320,7 @@ struct GameSettings
     int mute = -1;
     int vibration = -1;
     int language = -1;   // index into Services::language_labels
+    int controller = -1; // 0 Pro Controller, 1 handheld, 2 two Joy-Cons, 3 left Joy-Con, 4 right Joy-Con
     bool own_mapping = false; // the game has a button mapping of its own
     ButtonMapping mapping = kDefaultMapping;
     // The Performance switches, in the order of Preferences: block list, async shaders, fast GPU,

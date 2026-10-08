@@ -143,6 +143,10 @@ msgstr ""
 msgid "Australia"
 msgstr ""
 
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr ""
+
 #. Button hint: go back one screen.
 #: pe/ui/browse.cpp, pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/pairing.cpp, pe/ui/profiles.cpp, pe/ui/remote.cpp, pe/ui/save_sync.cpp, pe/ui/settings.cpp, pe/ui/update.cpp
 msgid "Back"
@@ -296,6 +300,10 @@ msgstr ""
 
 #: pe/ui/settings.cpp
 msgid "Controller shortcuts and supported features."
+msgstr ""
+
+#: pe/ui/game_options.cpp
+msgid "Controller type"
 msgstr ""
 
 #: pe/ui/home.cpp
@@ -496,6 +504,10 @@ msgstr ""
 
 #: pe/ui/settings.cpp
 msgid "Draws the menu's small text larger."
+msgstr ""
+
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
 msgstr ""
 
 #: settings_store.h
@@ -734,7 +746,7 @@ msgid "Graphics backend initialization failed. Try another backend in Settings; 
 msgstr ""
 
 #. Console mode: the console as if held in the hands. Keep it short (about 9 letters).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Handheld"
 msgstr ""
 
@@ -859,6 +871,10 @@ msgstr ""
 
 #: pe/ui/home.cpp
 msgid "Launch game"
+msgstr ""
+
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
 msgstr ""
 
 #. Pressing the left stick down like a button.
@@ -1234,6 +1250,10 @@ msgstr ""
 msgid "Press again to replace this game's save. The current one is backed up."
 msgstr ""
 
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr ""
+
 #: eden_services.cpp
 msgid "prod.keys could not supply an NCA header key. Replace it with a valid key dump."
 msgstr ""
@@ -1383,6 +1403,10 @@ msgstr ""
 
 #: pe/ui/settings.cpp
 msgid "RESOLUTION"
+msgstr ""
+
+#: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
 msgstr ""
 
 #: pe/ui/game_options.cpp

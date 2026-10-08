@@ -62,6 +62,7 @@ if [[ ! -f ../ps5-native-app-boilerplate/runtime/libc.prx ]]; then
 fi
 step "libSceAgcDriver link stub"
 bash tools/build-agc-driver-stub.sh
+bash tools/build-common-dialog-stub.sh
 # The driver's display code carries this repository's adaptation (tools/patch-radv-wsi.py): a
 # driver built with another version of it is built again (only the changed file compiles).
 # So is a driver built from another Mesa revision than tools/deps.json pins.

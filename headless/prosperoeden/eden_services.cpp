@@ -838,6 +838,7 @@ pe::ui::GameSettings EdenServices::game_settings(std::uint64_t title_id) {
     result.mute = saved.mute;
     result.vibration = saved.vibration;
     result.language = saved.language;
+    result.controller = saved.controller;
     result.own_mapping = saved.own_mapping;
     result.mapping = saved.mapping;
     result.performance = saved.performance;
@@ -855,6 +856,7 @@ bool EdenServices::set_game_settings(std::uint64_t title_id, const pe::ui::GameS
     value.mute = settings.mute;
     value.vibration = settings.vibration;
     value.language = settings.language;
+    value.controller = settings.controller;
     value.own_mapping = settings.own_mapping;
     value.mapping = settings.mapping;
     value.performance = settings.performance;

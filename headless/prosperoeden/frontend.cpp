@@ -24,6 +24,9 @@
 #include "crash_trigger.h"
 #include "development_input.h"
 #include "stop_limit.h"
+#include "system_keyboard.h"
+#include <atomic>
+#include <thread>
 #include <cerrno>
 #include <fstream>
 #endif
@@ -269,6 +272,25 @@ std::string RunApp(const std::string& launch_error, bool first_start) {
                 if (std::remove(Eden::AppFile("quit-app.txt").c_str()) == 0) {
                     std::fprintf(stderr, "EDEN_DEV_QUIT requested=1\n");
                     running = false;
+                }
+                // The check that the PS5 keyboard opens (system_keyboard.h): asked for from the
+                // launcher, left open for a few seconds, closed again.
+                if (std::remove(Eden::AppFile("keyboard-test.txt").c_str()) == 0) {
+                    std::thread([] {
+                        std::atomic<bool> stop{false};
+                        std::thread closer([&stop] {
+                            std::this_thread::sleep_for(std::chrono::seconds(6));
+                            stop = true;
+                        });
+                        Eden::TextRequest request;
+                        request.title = u"ProsperoEden";
+                        request.initial = u"Eden";
+                        request.max_length = 16;
+                        const Eden::TextAnswer answer = Eden::AskSystemKeyboard(request, stop);
+                        closer.join();
+                        std::fprintf(stderr, "EDEN_DEV_KEYBOARD outcome=%d length=%zu\n",
+                                     static_cast<int>(answer.outcome), answer.text.size());
+                    }).detach();
                 }
                 // The runner's crash request, to test the crash report in the launcher.
                 Eden::Crash::DevelopmentRequest(Eden::AppFile("crash-app.txt"));

@@ -40,6 +40,7 @@ constexpr const char *kCategoryNames[] = {TR("Video"), TR("Performance"), TR("Au
 // The Controls category's rows.
 constexpr int kVibrationRow = 0;
 constexpr int kMappingRow = 1;
+constexpr int kControllerRow = 2;
 
 // The game's buttons and the DualSense buttons, in the mapping's order (services.hpp). The game's
 // are its own names; the stick presses and the DualSense's named buttons are translated.
@@ -135,6 +136,12 @@ std::vector<Option> options(int category, const GameSettings &game, Preferences 
         rows.push_back({tr("Vibration"), off_on, game.vibration, on_off(prefs.vibration)});
         rows.push_back({tr("Button mapping"), {tr("This game")}, game.own_mapping ? 0 : -1,
                         prefs.mapping == kDefaultMapping ? tr("As usual") : tr("Changed")});
+        // The controller the game is given: without a choice, what it takes, a Pro Controller
+        // first. Some games take one and then only work with another.
+        rows.push_back({tr("Controller type"),
+                        {tr("Pro Controller"), tr("Handheld"), tr("Dual Joy-Cons"), tr("Left Joy-Con"),
+                         tr("Right Joy-Con")},
+                        game.controller, tr("Automatic")});
         break;
     default:
         rows.push_back({tr("Language"), services.language_labels(), game.language,
@@ -165,6 +172,8 @@ GameSettings with_option(GameSettings game, int category, int row, int value, co
     case category_controls:
         if (row == kVibrationRow)
             game.vibration = value;
+        else if (row == kControllerRow)
+            game.controller = value;
         else
         {
             // A mapping of its own starts as Settings' one.
@@ -196,7 +205,7 @@ int Launcher::game_overrides(int category) const
     case category_audio:
         return (game.volume >= 0) + (game.mute >= 0);
     case category_controls:
-        return (game.vibration >= 0) + game.own_mapping;
+        return (game.vibration >= 0) + game.own_mapping + (game.controller >= 0);
     default:
         return game.language >= 0;
     }

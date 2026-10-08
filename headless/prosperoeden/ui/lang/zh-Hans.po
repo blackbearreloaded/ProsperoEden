@@ -1582,3 +1582,27 @@ msgstr "{0}/（NSP 或 XCI）"
 #: pe/ui/browse.cpp
 msgid "{0}/ (one folder per game ID)"
 msgstr "{0}/（每个游戏 ID 一个文件夹）"
+
+#: pe/ui/game_options.cpp
+msgid "Controller type"
+msgstr "控制器类型"
+
+#: pe/ui/game_options.cpp
+msgid "Automatic"
+msgstr "自动"
+
+#: pe/ui/game_options.cpp
+msgid "Pro Controller"
+msgstr "Pro 控制器"
+
+#: pe/ui/game_options.cpp
+msgid "Dual Joy-Cons"
+msgstr "双 Joy-Con"
+
+#: pe/ui/game_options.cpp
+msgid "Left Joy-Con"
+msgstr "左 Joy-Con"
+
+#: pe/ui/game_options.cpp
+msgid "Right Joy-Con"
+msgstr "右 Joy-Con"
