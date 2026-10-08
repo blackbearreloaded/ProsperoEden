@@ -10,9 +10,9 @@ name: Release build
 # entry 0777) and keeps it as a 7-day artifact; only a v* tag also publishes it, as a pre-release.
 #
 # Downloads, ccache and the RADV driver are cached between runs. A build with these caches takes
-# about a quarter of an hour; the first one compiles everything on four cores and takes hours.
-# The build step stops after 315 minutes so that ccache is still saved: running the workflow
-# again continues from there.
+# about ten minutes; one without them compiles everything on four cores and takes about an hour.
+# Should a build ever reach the build step's limit (315 minutes), ccache is still saved: running
+# the workflow again continues from there.
 # The actions are the Node 24 versions, pinned by commit.
 on:
   # A build on main is started by hand (Run workflow): pushes to main build nothing.
@@ -79,7 +79,7 @@ jobs:
           mkdir -p "$cache_root"
           {
             echo "CACHE_ROOT=$cache_root"
-            echo "RADV_RELEASE=$(dirname "$GITHUB_WORKSPACE")/mihawk-vulkan-review/.deps/native/radv-release"
+            echo "RADV_NATIVE=$(dirname "$GITHUB_WORKSPACE")/mihawk-vulkan-review/.deps/native"
             echo "PROSPEROEDEN_DEPS_CACHE=$cache_root/downloads"
             echo "CCACHE_DIR=$cache_root/ccache"
             echo "XDG_CACHE_HOME=$cache_root/xdg"
@@ -111,15 +111,18 @@ jobs:
         run: make deps
 
       # After `make deps`: a restored RADV folder would otherwise stand in for the git checkout
-      # it lives in, and deps.py would not fetch that checkout.
+      # it lives in, and deps.py would not fetch that checkout. With the driver go the Payload
+      # SDK and zlib its build sets up beside it: the final link takes libraries from that SDK.
       - name: Restore the RADV driver
         id: radv
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: |
-            ${{ env.RADV_RELEASE }}
+            ${{ env.RADV_NATIVE }}/radv-release
+            ${{ env.RADV_NATIVE }}/ps5-payload-sdk
+            ${{ env.RADV_NATIVE }}/zlib
             build/radv-isolated
-          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+          key: radv-2-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
 
       - name: Restore ccache
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
@@ -156,9 +159,11 @@ jobs:
         uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: |
-            ${{ env.RADV_RELEASE }}
+            ${{ env.RADV_NATIVE }}/radv-release
+            ${{ env.RADV_NATIVE }}/ps5-payload-sdk
+            ${{ env.RADV_NATIVE }}/zlib
             build/radv-isolated
-          key: radv-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+          key: radv-2-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
 
       - name: Match the tag to the package version
         if: startsWith(github.ref, 'refs/tags/')

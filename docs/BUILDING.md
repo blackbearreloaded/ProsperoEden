@@ -164,10 +164,12 @@ disk space, and builds with as many jobs as the runner has cores (`JOBS`, and `R
 for RADV, whose build otherwise runs 24).
 
 Between runs it caches the downloads (`PROSPEROEDEN_DEPS_CACHE`, keyed on `tools/deps.json`),
-ccache, and the built RADV driver (keyed on its pins and build scripts), so a later run compiles
-mostly what changed. The first run builds everything on four cores and takes hours (a hosted job may run six). The build step stops after 315
-minutes so that ccache is still saved, and running the workflow again continues from there. A
-pull request starts from `main`'s caches and, when it builds, saves no ccache of its own.
+ccache, and the built RADV driver with the SDK it is linked with (keyed on its pins and build
+scripts), so a later run compiles mostly what changed and takes about ten minutes. A run without
+these caches builds everything on four cores and takes about an hour. Should a build ever reach
+the build step's limit (315 minutes), ccache is still saved, and running the workflow again
+continues from there. A pull request starts from `main`'s caches and, when it builds, saves no
+ccache of its own.
 
 `tools/ci/build-release.sh` still accepts `EDEN_DEV_CHECKOUT` (a development checkout whose
 dependencies are reused instead of fetched) for a build on your own machine.
