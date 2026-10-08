@@ -67,7 +67,8 @@ def main():
         subprocess.run([compiler, "-std=c++20", *flags, "-fno-rtti", *includes,
                         str(HEADLESS / "remote_check.cpp"), str(HEADLESS / "remote/remote.cpp"),
                         str(HEADLESS / "remote/backends.cpp"), str(HEADLESS / "remote/ftp.cpp"),
-                        str(HEADLESS / "remote/romm/romm_source.cpp"), str(http),
+                        str(HEADLESS / "remote/romm/romm_client.cpp"), str(HEADLESS / "remote/romm/romm_source.cpp"),
+                        str(http),
                         library, "-pthread", "-o", str(binary)], check=True)
         port_file = work / "port"
         ftp_port_file = work / "ftp-port"

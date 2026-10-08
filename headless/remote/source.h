@@ -4,8 +4,8 @@
 // games of every source set up, downloads them and keeps what it needs between starts, the same
 // way for every backend. A backend only talks to its server.
 //
-// A new backend: a class deriving from Source in a folder of its own (remote/<type>/), and a line
-// in backends.cpp that makes it for its "type" in sources.json.
+// A new backend: a class deriving from Source in a folder of its own (remote/<type>/), and the
+// function that makes it in its line of backends.cpp (backends.h), for its "type" in sources.json.
 #pragma once
 
 #include <cstddef>
@@ -15,8 +15,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <nlohmann/json.hpp>
 
 namespace Eden::Remote {
 
@@ -73,9 +71,5 @@ class Source {
     virtual bool fetch(const SourceGame& game, const SourceFile& file, std::uint64_t offset, Receiver& receiver,
                        std::string* error) = 0;
 };
-
-// Makes the source of a "type" from its entry in sources.json (backends.cpp). nullptr with *error
-// when the type is unknown or the entry is not usable.
-std::unique_ptr<Source> MakeSource(const std::string& type, const nlohmann::json& settings, std::string* error);
 
 } // namespace Eden::Remote

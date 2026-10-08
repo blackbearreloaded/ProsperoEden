@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // The RomM backend of the download sources (https://github.com/rommapp/romm): the Switch games of
-// a RomM server. Its entry in config/remote/sources.json:
+// a RomM server. Its entry in config/remote/sources.json, with the server as romm_client.h has it:
 //
 //   { "type": "romm", "name": "Home",
 //     "url": "http://192.168.1.20:3000",
@@ -15,21 +15,13 @@
 
 #include "remote/source.h"
 
-#include <cstddef>
 #include <memory>
 #include <string>
-#include <vector>
+
+#include <nlohmann/json.hpp>
 
 namespace Eden::Remote::Romm {
 
-std::unique_ptr<Source> Make(const nlohmann::json& settings, std::string* error);
-
-// ---- the parts, for tests ----
-// The server's address as typed, made usable: "nas:3000/" is http://nas:3000.
-std::string NormalUrl(std::string url);
-// Adds the games of a page of /api/roms to games; false when the answer is no such page. listed:
-// the entries the page had; total: the games the server has.
-bool ParsePage(const std::string& json, std::vector<SourceGame>* games, std::size_t* listed = nullptr,
-               std::size_t* total = nullptr);
+std::unique_ptr<Source> MakeSource(const nlohmann::json& settings, std::string* error);
 
 } // namespace Eden::Remote::Romm

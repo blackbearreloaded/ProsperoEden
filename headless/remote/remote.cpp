@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Download sources; see remote.h. Nothing here knows a backend: they are made by MakeSource
-// (backends.cpp) and used through Source (source.h).
+// (backends.h) and used through Source (source.h).
 #include "remote.h"
 
+#include "backends.h"
 #include "ftp.h"
-#include "source.h"
 
 #include <algorithm>
 #include <atomic>

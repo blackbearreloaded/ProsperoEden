@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """romm-mock-server.py <port file>
 
-Serves the parts of RomM's API that headless/remote/romm/romm_source.cpp uses, on 127.0.0.1 and a free port it
+Serves the parts of RomM's API that headless/remote/romm/ uses, on 127.0.0.1 and a free port it
 writes to <port file>: /api/platforms, /api/roms (a page), /api/roms/<file id>/files/content/<name> (with
 Range) and a cover. It asks for "Authorization: Bearer rmm_test" or "Basic" me:secret. Files are
 made of a pattern of their id, so the check can tell every byte. ROM 13 is sent slowly (to cancel

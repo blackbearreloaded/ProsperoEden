@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Host check of the download sources (remote/remote.h) with their RomM backend
-// (remote/romm/romm_source.h) against tools/romm-mock-server.py: the backend's reading of RomM's
+// (remote/romm/, remote/backends.h) against tools/romm-mock-server.py: the backend's reading of RomM's
 // answers, then sources.json with one and two sources, the game lists, downloads (written through
 // tools/ftp-mock-server.py as through the console's FTP server; going on after a stop, with a spoilt
 // end, from a server that cannot resume, of a game in several files, and failing without an FTP
@@ -8,10 +8,11 @@
 // runs it.
 //
 //   remote_check <server address> <empty folder> <FTP server's port>
+#include "remote/backends.h"
 #include "remote/ftp.h"
 #include "remote/http.h"
 #include "remote/remote.h"
-#include "remote/romm/romm_source.h"
+#include "remote/romm/romm_client.h"
 
 #include <chrono>
 #include <cstdio>
@@ -163,7 +164,7 @@ void Identity() {
 }
 
 // The RomM backend on its own.
-void Backend() {
+void RommBackend() {
     Expect(Romm::NormalUrl(" nas.local:3000/ ") == "http://nas.local:3000", "address without a scheme");
     Expect(Romm::NormalUrl("HTTPS://romm.example.com//") == "https://romm.example.com", "https address");
     Expect(Romm::NormalUrl("ftp://nas") == "", "another scheme is refused");
@@ -220,6 +221,17 @@ void Backend() {
            "a RomM source without an address is not usable");
     Expect(MakeSource("ftp", {{"url", "x"}}, &error) == nullptr && error.find("Unknown") != std::string::npos,
            "an unknown type is reported");
+    Expect(FindBackend("romm") != nullptr && FindBackend("romm")->source != nullptr && FindBackend("ftp") == nullptr,
+           "RomM is a backend that has games to download");
+    // The server's part of an entry, read for any config file: what goes wrong names that file.
+    Expect(Romm::Client::Make(nlohmann::json::object(), "save-sync.json", &error) == nullptr &&
+               error.find("save-sync.json") != std::string::npos,
+           "a RomM entry without an address names its file");
+    const auto client = Romm::Client::Make({{"url", "nas:3000/"}, {"username", "me"}, {"password", "secret"}},
+                                           "save-sync.json", &error);
+    Expect(client && client->url() == "http://nas:3000" && client->authorization() == "Basic bWU6c2VjcmV0" &&
+               client->StatusError(401).find("save-sync.json") != std::string::npos,
+           "a RomM entry's address and sign-in");
     // A file name comes from the source: a line break in it would be a command to the FTP server.
     FtpUpload upload;
     Expect(!upload.Open(FtpServer{}, "/data/x.nsp\r\nDELE /data/y", 0, &error) && error.find("line break") != std::string::npos,
@@ -480,7 +492,7 @@ void Sources(const std::string& url, const fs::path& root, const std::string& ft
 
 int main(int argc, char** argv) {
     Identity();
-    Backend();
+    RommBackend();
     if (argc >= 4) Sources(argv[1], argv[2], argv[3]);
     if (failures == 0) std::printf("remote check: PASS\n");
     return failures == 0 ? 0 : 1;
