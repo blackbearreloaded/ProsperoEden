@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-# ProsperoEden - Host check of the download sources and the save sync against a stand-in RomM server.
+# ProsperoEden - Host check of the download sources and the save sync without a real server.
 # Copyright (C) 2026 BlackBearReloaded
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check-remote.py
 
-Builds headless/remote_check.cpp (the download sources with their RomM backend, and the save
-sync's parts that need no server) with the host's C++ compiler, libcurl and OpenSSL's libcrypto
-and runs it against tools/romm-mock-server.py, with tools/ftp-mock-server.py writing the downloads
-as the console's FTP server does. Needs libcurl's headers (libcurl4-openssl-dev), OpenSSL's (libssl-dev) and
+Builds headless/remote_check.cpp with the host's C++ compiler, libcurl and OpenSSL's libcrypto
+and runs it: what the download sources and the save sync need no server for, and, against
+tools/romm-mock-server.py and tools/ftp-mock-server.py, the cases a real RomM and ftpsrv do not
+show on demand. Their basic workings are checked against real RomM servers and ftpsrv by
+tools/check-romm.py. Needs libcurl's headers (libcurl4-openssl-dev), OpenSSL's (libssl-dev) and
 nlohmann/json's (nlohmann-json3-dev, or the copy Eden's build fetched); CURL_INCLUDE,
 JSON_INCLUDE and CURL_LIBRARY name other places for them. Without the headers it says so and is
 skipped.

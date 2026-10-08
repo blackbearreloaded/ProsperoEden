@@ -57,7 +57,7 @@ deps-status: ## Show every dependency, where it lives and whether it matches its
 toolchain: ## Check the host tools the build needs
 	@bash tools/check-toolchain.sh
 
-test: deps ## Host (Linux) build of the emulator and its test suites
+test: deps ## Host (Linux) build of the emulator and its test suites (ROMM_CHECK=0: without the RomM servers in Docker)
 	bash tools/check-elevation-client.sh
 	bash tools/build-headless-host.sh
 
