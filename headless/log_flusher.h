@@ -6,7 +6,9 @@
 // thread writes them out once a second. A thread that prints only waits for the storage when it
 // prints while that write is going on, or when a second's lines overfill the buffer. Lines still
 // buffered when the process is killed are lost (a second's worth); the crash handler writes them
-// out (crash_report.cpp).
+// out (crash_report.cpp). To find a fault that kills the process anyway, Settings > Diagnostics >
+// "Write logs at once" has every line written as it comes, as before: stderr unbuffered, stdout
+// by lines, and games stutter again.
 #pragma once
 #include <chrono>
 #include <condition_variable>
@@ -22,10 +24,15 @@ public:
     LogFlusher& operator=(const LogFlusher&) = delete;
     ~LogFlusher() { Stop(); }
 
-    // The streams must already write to their log files.
-    bool Start() {
+    // The streams must already write to their log files. At once: every line is written as it
+    // comes, with no thread.
+    bool Start(bool at_once = false) {
         static char stderr_buffer[64 * 1024], stdout_buffer[64 * 1024];
         if (worker.joinable()) return true;
+        if (at_once)
+            return std::setvbuf(stderr, nullptr, _IONBF, 0) == 0 &&
+                   (std::setvbuf(stdout, stdout_buffer, _IOLBF, sizeof(stdout_buffer)) == 0 ||
+                    std::setvbuf(stdout, nullptr, _IONBF, 0) == 0);
         if (std::setvbuf(stderr, stderr_buffer, _IOFBF, sizeof(stderr_buffer)) != 0 ||
             std::setvbuf(stdout, stdout_buffer, _IOFBF, sizeof(stdout_buffer)) != 0) return false;
         worker = std::thread([this] { Run(); });

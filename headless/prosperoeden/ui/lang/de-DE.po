@@ -530,6 +530,10 @@ msgstr "Speicherdaten jedes Profils auf einem Server, vor und nach dem Spiel."
 msgid "Eden emulator for PlayStation 5"
 msgstr "Eden-Emulator für PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Edens Debug-Meldungen in den Logs eines Spiels."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Bewahre die Ordner keys, firmware und roms zusammen auf. DREIECK verwend
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Die der Konsole behalten"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Behält die letzte Zeile vor einem Absturz, aber Spiele ruckeln. Ab dem nächsten Start."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Mit denen der Konsole; Abgleich nach dem Spiel."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "mit {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Logs sofort schreiben"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

@@ -13,7 +13,8 @@ inline void Report(const char* stage, const char* message) {
     std::snprintf(line, sizeof(line), "[ProsperoEden] %s: %.900s\n", stage, message);
     std::fputs(line, stderr);
 #if defined(__PROSPERO__)
-    // Written out within a second (log_flusher.h); flushing here would wait for the storage.
+    // Written out within a second, or at once when so set (log_flusher.h); flushing here would
+    // wait for the storage.
     (void)sceKernelDebugOutText(0, line);
 #else
     std::fflush(stderr);

@@ -46,6 +46,9 @@ int main() {
     auto saved = Eden::LoadPreferences(file);
     assert(!saved.hud && saved.volume == 40 && saved.mute && saved.detailed_logging &&
            saved.backend == Eden::GraphicsBackend::OpenGL);
+    assert(!saved.immediate_logs);
+    saved.immediate_logs = true;
+    assert(Eden::SavePreferences(saved, file) && Eden::LoadPreferences(file).immediate_logs);
     assert(!Eden::SavePreferences({true, 101, false, false}, file));
     assert(Eden::LoadPreferences(file).volume == 40);
     assert(Read(file).find("\"renderer\": \"opengl\"") != std::string::npos);

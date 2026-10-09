@@ -239,9 +239,10 @@ int main(int argc, char** argv) {
 #endif
         if (!std::freopen(Eden::LogFile("stderr.log").c_str(), "w", stderr) ||
             !std::freopen(Eden::LogFile("heap.log").c_str(), "w", stdout)) return 2;
-        // Console storage writes take ~25 ms each; a background thread writes both streams out.
+        // Console storage writes take ~25 ms each; a background thread writes both streams out,
+        // unless Settings > Diagnostics asks for every line at once (to find a crash).
         static Eden::LogFlusher log_flusher;
-        if (!log_flusher.Start()) return 2;
+        if (!log_flusher.Start(Eden::LoadPreferences().immediate_logs)) return 2;
         Eden::Crash::Install(Eden::LogsDir(), Eden::kAppVersion, last_crash.restarted);
         Eden::BootTrace::Ready(Eden::LogsDir(), Eden::FilesystemAccess());
         Eden::BootTrace::Line("logs and crash handler ready (%s)", Eden::LogsDir().c_str());

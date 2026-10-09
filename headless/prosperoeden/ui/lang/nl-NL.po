@@ -530,6 +530,10 @@ msgstr "De opgeslagen data van elk profiel op een server, gesynchroniseerd voor 
 msgid "Eden emulator for PlayStation 5"
 msgstr "Eden-emulator voor PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "De debugberichten van Eden in de logs van een game."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Houd de mappen keys, firmware en roms bij elkaar. DRIEHOEK gebruikt de g
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Die van deze console houden"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Bewaart de laatste regel voor een crash, maar games haperen. Vanaf de volgende start."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Met de opgeslagen data van deze console; na de game wordt gesynchronisee
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "met {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Logs direct schrijven"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

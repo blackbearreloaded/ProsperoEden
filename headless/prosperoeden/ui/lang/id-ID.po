@@ -530,6 +530,10 @@ msgstr "Data simpanan tiap profil di servernya sendiri, disinkronkan sebelum dan
 msgid "Eden emulator for PlayStation 5"
 msgstr "Emulator Eden untuk PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Pesan debug Eden dalam log game."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Simpan folder keys, firmware, dan roms di tempat yang sama. SEGITIGA men
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Pertahankan milik konsol ini"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Menyimpan baris terakhir sebelum crash, tetapi game tersendat. Mulai saat dijalankan berikutnya."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Dengan data simpanan konsol ini; disinkronkan setelah bermain."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "dengan {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Tulis log seketika"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."
