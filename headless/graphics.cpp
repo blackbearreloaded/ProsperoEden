@@ -277,7 +277,6 @@ public:
             std::printf("EDEN_DEV_FRAME frames=%u seconds=%.6f fps=%.3f worst_ms=%.3f total=%u\n",
                         sample_frames, now - sample_start, sample_frames / (now - sample_start),
                         worst_frame * 1000.0, presented_frames);
-            std::fflush(stdout);
             sample_start = now;
             sample_frames = 0;
             worst_frame = 0;
@@ -295,7 +294,6 @@ public:
                             sample_frames, now - sample_start,
                             sample_frames / (now - sample_start), sample_worst * 1000.0,
                             presented_frames);
-                std::fflush(stdout);
                 sample_start = now;
                 sample_frames = 0;
                 sample_worst = 0;
@@ -660,7 +658,6 @@ void GraphicsWindow::OnFrameDisplayed() {
                 // Composite runs on the GPU thread, so its owner CPU clock is valid here.
                 Eden::Performance::ReportGpuThread(frame_total);
 #endif
-                std::fflush(stdout);
                 frame_sample_start = now;
                 frame_sample_count = 0;
                 frame_sample_worst = 0;
