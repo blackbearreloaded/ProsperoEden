@@ -530,6 +530,10 @@ msgstr "Dữ liệu lưu của mỗi hồ sơ trên máy chủ riêng, đồng b
 msgid "Eden emulator for PlayStation 5"
 msgstr "Trình giả lập Eden cho PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Thông báo gỡ lỗi của Eden trong nhật ký của trò chơi."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Hãy để các thư mục keys, firmware và roms cùng một chỗ. TA
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Giữ của máy này"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Giữ dòng cuối cùng trước khi lỗi, nhưng trò chơi bị giật. Từ lần mở tiếp theo."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Với dữ liệu lưu của máy này; sẽ được đồng bộ sau k
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "với {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Ghi nhật ký ngay"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

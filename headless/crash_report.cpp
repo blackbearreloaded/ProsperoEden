@@ -509,7 +509,7 @@ void WaitForReport() noexcept {
 // Starts the app again (or closes it), calling only the system.
 void Restarter() {
     WaitForReport();
-    Sleep(300000);  // what was printed reaches the log files (log_pipe.h)
+    Sleep(300000);  // what was printed reaches the log files (log_flusher.h)
     if (!leave.load(std::memory_order_acquire)) eden_restart_app();
     eden_exit_app();
     helper_failed.store(true, std::memory_order_release);

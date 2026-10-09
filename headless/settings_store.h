@@ -10,7 +10,7 @@
 //     "controls": { "vibration": true, "mapping": { "a": "cross", "b": "circle" } },
 //     "system": { "language": "en-US" },
 //     "accessibility": { "large_text": false, "high_contrast": false, "reduce_motion": false },
-//     "diagnostics": { "detailed_logging": false },
+//     "diagnostics": { "detailed_logging": false, "immediate_logs": false },
 //     "performance": { "block_list": false, "async_shaders": false, "fast_gpu": false,
 //                      "unsafe_cpu": false, "unsafe_dma": false, "reactive_flushing": true,
 //                      "skip_invalidation": false },
@@ -106,6 +106,7 @@ struct Preferences {
     bool reduce_motion = false;
     ButtonMapping mapping = kDefaultMapping;  // Settings > Controls > Button mapping
     int controller = -1;                 // a game's own Controller type (kControllerKeys); -1: automatic
+    bool immediate_logs = false;         // Settings > Diagnostics: log lines written as they come
 };
 
 inline int KeyIndex(const std::string& value, const char* const* keys, int count, int fallback) {
@@ -314,6 +315,8 @@ inline Preferences LoadPreferences(const std::string& file = SettingsFile()) {
     if (menu_volume >= 0 && menu_volume <= 100) result.menu_volume = menu_volume;
     result.detailed_logging = Settings::Bool(document, Json::json_pointer("/diagnostics/detailed_logging"),
                                              result.detailed_logging);
+    result.immediate_logs = Settings::Bool(document, Json::json_pointer("/diagnostics/immediate_logs"),
+                                           result.immediate_logs);
     result.resolution = KeyIndex(Settings::String(document, Json::json_pointer("/video/resolution")),
                                  kResolutionKeys, int(std::size(kResolutionKeys)), result.resolution);
     result.upscaling_filter = KeyIndex(Settings::String(document, Json::json_pointer("/video/upscaling_filter")),
@@ -358,6 +361,7 @@ inline bool SavePreferences(const Preferences& value, const std::string& file = 
     else document["controls"]["mapping"] = Settings::MappingJson(value.mapping);
     document["system"]["language"] = kLanguageKeys[value.language];
     document["diagnostics"]["detailed_logging"] = value.detailed_logging;
+    document["diagnostics"]["immediate_logs"] = value.immediate_logs;
     document["accessibility"]["large_text"] = value.large_text;
     document["accessibility"]["high_contrast"] = value.high_contrast;
     document["accessibility"]["reduce_motion"] = value.reduce_motion;

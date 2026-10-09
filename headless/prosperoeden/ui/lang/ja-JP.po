@@ -530,6 +530,10 @@ msgstr "各プロフィールのセーブデータを専用のサーバーに保
 msgid "Eden emulator for PlayStation 5"
 msgstr "PlayStation 5用Edenエミュレーター"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "ゲームのログに Eden のデバッグメッセージを含めます。"
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "keys、firmware、roms の各フォルダーは同じ場所に置いて�
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "この本体のデータを残す"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "クラッシュ直前の最後の行が残りますが、ゲームがカクつきます。次回の起動から有効です。"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "この本体のセーブデータを使用。ゲーム終了後に同期
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "{0}と"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "ログをすぐに書き込む"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

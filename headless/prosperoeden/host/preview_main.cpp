@@ -493,6 +493,9 @@ void pictures(Stage &s)
     s.press({Key::circle, Key::down, Key::cross});
     s.wait(0.8f);
     s.shoot("18-diagnostics");
+    s.press({Key::down});
+    s.wait(0.6f);
+    s.shoot("18b-diagnostics-logs-at-once");
     s.press({Key::circle, Key::down, Key::cross});
     s.wait(1.0f);
     s.shoot("19-game-files");

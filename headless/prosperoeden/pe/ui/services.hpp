@@ -284,6 +284,7 @@ struct Preferences
     int volume = 100; // game volume, 0-100
     bool mute = false;
     bool detailed_logging = false;
+    bool immediate_logs = false; // every log line written as it comes; from the next start
     int renderer = 1; // 0 OpenGL, 1 Vulkan
     int resolution = 2;
     int filter = 0;

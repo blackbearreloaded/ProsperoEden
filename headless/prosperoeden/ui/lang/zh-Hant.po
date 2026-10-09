@@ -530,6 +530,10 @@ msgstr "每個玩家檔案的存檔資料保存在各自的伺服器上，遊戲
 msgid "Eden emulator for PlayStation 5"
 msgstr "適用於 PlayStation 5 的 Eden 模擬器"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "遊戲記錄中包含 Eden 的除錯訊息。"
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "請將 keys、firmware 與 roms 資料夾放在一起。按△鍵使用�
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "保留此主機的"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "保留當機前的最後一行，但遊戲會卡頓。下次啟動時生效。"
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "使用此主機的存檔資料；遊戲結束後同步。"
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "與 {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "立即寫入記錄"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

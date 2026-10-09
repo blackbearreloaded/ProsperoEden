@@ -872,6 +872,7 @@ pe::ui::Preferences EdenServices::preferences() {
     result.volume = saved.volume;
     result.mute = saved.mute;
     result.detailed_logging = saved.detailed_logging;
+    result.immediate_logs = saved.immediate_logs;
     result.renderer = saved.backend == Eden::GraphicsBackend::OpenGL ? 0 : 1;
     result.resolution = saved.resolution;
     result.filter = saved.upscaling_filter;
@@ -902,6 +903,7 @@ bool EdenServices::set_preferences(const pe::ui::Preferences& preferences) {
     value.volume = preferences.volume;
     value.mute = preferences.mute;
     value.detailed_logging = preferences.detailed_logging;
+    value.immediate_logs = preferences.immediate_logs;
     value.backend = preferences.renderer == 0 ? Eden::GraphicsBackend::OpenGL : Eden::GraphicsBackend::Vulkan;
     value.resolution = preferences.resolution;
     value.upscaling_filter = preferences.filter;

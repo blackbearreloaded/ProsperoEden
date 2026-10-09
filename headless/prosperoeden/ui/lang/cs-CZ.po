@@ -530,6 +530,10 @@ msgstr "Uložená data každého profilu na vlastním serveru, synchronizovaná 
 msgid "Eden emulator for PlayStation 5"
 msgstr "Emulátor Eden pro PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Ladicí zprávy Edenu v lozích hry."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Složky keys, firmware a roms měj pohromadě. Tlačítko TROJÚHELNÍK 
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Ponechat data z konzole"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Zachová poslední řádek před pádem, ale hry se trhají. Od příštího spuštění."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "S uloženými daty z konzole; synchronizují se po hře."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "se serverem {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Zapisovat logy hned"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

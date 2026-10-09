@@ -530,6 +530,10 @@ msgstr "Zapisy każdego profilu na serwerze, synchronizowane przed grą i po nie
 msgid "Eden emulator for PlayStation 5"
 msgstr "Emulator Eden na PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Komunikaty debugowania Edena w logach gry."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Trzymaj foldery keys, firmware i roms razem. Naciśnij TRÓJKĄT, aby u�
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Zachowaj zapisy z konsoli"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Zachowuje ostatnią linię przed awarią, ale gry się zacinają. Od następnego uruchomienia."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Z zapisami z konsoli; synchronizacja nastąpi po grze."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "z {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Zapisuj logi od razu"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."
