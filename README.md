@@ -448,11 +448,18 @@ The touchpad is pressed as a button. On its own, a tap of the touchpad presses t
 - **Better OpenGL performance** - make the OpenGL renderer faster, and add tuning options for it.
 - **More game compatibility** - validate more games on the PS5, and fix what keeps them from running well, such as games that crash at launch.
 
-## Issues are disabled
+## Issues and reports
 
-GitHub issues are turned off for this repository on purpose. ProsperoEden is a general-purpose emulator port, and the project does not host discussion of console makers, specific commercial games, compatibility reports, or where to find game files. Issue threads tend to fill up with exactly that, so there are none.
+Problems and ideas go to [GitHub issues](https://github.com/blackbearreloaded/ProsperoEden/issues). Reports about a particular game are welcome: name the game, and say what happens and where.
 
-Please do not use pull requests or other channels to post that kind of content either.
+A report that can be acted on has:
+
+- the game and its version (and any update or mod in use);
+- the ProsperoEden version, the PS5 model and system software version, and what the console runs (kstuff-lite or etaHEN, ShadowMountPlus version);
+- the renderer, resolution and Performance switches;
+- the crash report or the logs from `/data/prosperoeden/logs`, with **Settings > Diagnostics > Detailed logging** on when the problem can be repeated.
+
+**No piracy.** ProsperoEden is for games you own and dumped yourself. Do not ask for, post or link to game files, keys or firmware, here or in any of the project's channels, and do not ask where to find them. Such posts are removed.
 
 ## Elevation credits
 
