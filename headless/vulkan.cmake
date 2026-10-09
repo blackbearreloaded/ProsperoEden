@@ -55,7 +55,10 @@ set_property(SOURCE
     "${PORT_BUILD_DIR}/vulkan_renderer.cpp" "${PORT_BUILD_DIR}/vulkan_blit_screen.cpp"
     "${PORT_BUILD_DIR}/vulkan_rasterizer.cpp" "${PORT_BUILD_DIR}/vulkan_window_adapt_pass.cpp"
     TARGET_DIRECTORY video_core APPEND PROPERTY OBJECT_DEPENDS
-    "${PORT_BUILD_DIR}/include/video_core/renderer_vulkan/vk_present_manager.h")
+    "${PORT_BUILD_DIR}/include/video_core/renderer_vulkan/vk_present_manager.h"
+    # FrameGen is embedded by value in RendererVulkan too. The port's copy of its header adds the
+    # member that reports generation once per session (tools/prepare-vulkan-port.py).
+    "${PORT_BUILD_DIR}/include/video_core/renderer_vulkan/present/frame_gen.h")
 # Existing depfiles name the original header; rebuild all filter consumers once
 # when introducing the override so the shared struct layout stays consistent.
 set_property(SOURCE
@@ -107,8 +110,10 @@ if(EDEN_PS5_FRAMEGEN)
     list(APPEND video_sources
         frame_gen/lossless_dll.cpp
         frame_gen/lsfg_translate.cpp
-        renderer_vulkan/present/frame_gen.cpp
-        renderer_vulkan/present/lsfg_shaders.cpp
+        # The port's copies: prepare-vulkan-port.py adds the frame generation diagnostics to
+        # these two (tools/prepare-vulkan-port.py), so the generated files replace the originals.
+        "${PORT_BUILD_DIR}/vulkan_frame_gen.cpp"
+        "${PORT_BUILD_DIR}/vulkan_lsfg_shaders.cpp"
         renderer_vulkan/present/frame_gen_pacer.cpp
         renderer_vulkan/present/lsfg_alpha.cpp
         renderer_vulkan/present/lsfg_beta.cpp
