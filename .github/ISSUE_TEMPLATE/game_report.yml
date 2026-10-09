@@ -36,6 +36,32 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: enabler
+    attributes:
+      label: "Homebrew enabler"
+      options:
+        - "etaHEN"
+        - "kstuff-lite"
+        - "onionHEN"
+        - "Other (name it below)"
+        - "Not sure"
+    validations:
+      required: true
+  - type: input
+    id: enabler_version
+    attributes:
+      label: "Homebrew enabler version"
+      description: "For example etaHEN 2.5b. Name it here if you chose Other."
+    validations:
+      required: true
+  - type: input
+    id: shadowmount
+    attributes:
+      label: "ShadowMountPlus version"
+      description: "Leave empty if you do not use it"
+    validations:
+      required: false
+  - type: dropdown
     id: result
     attributes:
       label: "Result"
