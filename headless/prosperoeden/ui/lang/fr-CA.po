@@ -530,6 +530,10 @@ msgstr "Les sauvegardes de chaque profil sur son propre serveur, synchronisées 
 msgid "Eden emulator for PlayStation 5"
 msgstr "Émulateur Eden pour PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Les messages de débogage d'Eden dans les journaux d'un jeu."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Gardez les dossiers keys, firmware et roms ensemble. TRIANGLE utilise le
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Garder celles de la console"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Garde la dernière ligne avant un plantage, mais les jeux saccadent. Au prochain démarrage."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Avec les sauvegardes de la console; elles sont synchronisées après le 
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "avec {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Écrire les journaux aussitôt"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

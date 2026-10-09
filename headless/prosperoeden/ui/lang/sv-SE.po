@@ -530,6 +530,10 @@ msgstr "Varje profils sparade data på en egen server, synkade före och efter e
 msgid "Eden emulator for PlayStation 5"
 msgstr "Eden-emulatorn för PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Edens felsökningsmeddelanden i ett spels loggar."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Håll mapparna keys, firmware och roms samlade. TRIANGEL använder mappe
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Behåll konsolens"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Behåller sista raden före en krasch, men spel hackar. Från nästa start."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Med konsolens sparade data; de synkas efter spelet."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "med {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Skriv loggar direkt"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

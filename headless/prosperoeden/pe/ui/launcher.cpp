@@ -110,7 +110,7 @@ std::array<bool, 7> Launcher::switch_states(Modal modal) const
     case Modal::accessibility:
         return {prefs_.large_text, prefs_.high_contrast, prefs_.reduce_motion};
     default:
-        return {prefs_.detailed_logging, false, false};
+        return {prefs_.detailed_logging, prefs_.immediate_logs, false};
     }
 }
 

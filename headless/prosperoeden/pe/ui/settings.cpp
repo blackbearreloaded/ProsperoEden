@@ -200,7 +200,7 @@ void Launcher::draw_settings(Canvas &c)
         prefs_.mute ? tr("Muted") : percent(prefs_.volume),
         prefs_.vibration ? tr("Vibration on") : tr("Vibration off"),
         prefs_.large_text || prefs_.high_contrast || prefs_.reduce_motion ? tr("On") : "",
-        prefs_.detailed_logging ? tr("Detailed logs on") : "",
+        prefs_.detailed_logging ? tr("Detailed logs on") : prefs_.immediate_logs ? tr("On") : "",
         "",
         !sources_.configured ? std::string{tr("Not set up")} :
         sources_.list.size() == 1 ? sources_.list.front().name :
@@ -396,8 +396,8 @@ int Launcher::dialog_rows(Modal modal) const
                (library_.selected < static_cast<int>(games_.size()) &&
                         !games_[static_cast<std::size_t>(library_.selected)].sources.empty() &&
                         !games_[static_cast<std::size_t>(library_.selected)].remote ? 1 : 0);
-    case Modal::controls:
-        // Vibration, the button mapping.
+    case Modal::controls:     // vibration, the button mapping
+    case Modal::diagnostics:  // detailed logging, logs written at once
         return 2;
     default:
         return 1;
@@ -419,6 +419,8 @@ float Launcher::dialog_row_top(Modal modal, int row) const
         return 334.0f + 96.0f * static_cast<float>(row);
     case Modal::controls: // under the shortcuts
         return 560.0f + 96.0f * static_cast<float>(row);
+    case Modal::diagnostics: // under the setup's state
+        return 500.0f + 102.0f * static_cast<float>(row);
     default:
         return 670.0f;
     }
@@ -530,7 +532,10 @@ void Launcher::press_dialog(Key key)
             prefs_.reduce_motion = !prefs_.reduce_motion;
         break;
     case Modal::diagnostics:
-        prefs_.detailed_logging = !prefs_.detailed_logging;
+        if (option_ == 0)
+            prefs_.detailed_logging = !prefs_.detailed_logging;
+        else
+            prefs_.immediate_logs = !prefs_.immediate_logs;
         break;
     default:
         return;
@@ -757,11 +762,25 @@ void Launcher::draw_dialog(Canvas &c, Modal modal, float open)
         break;
     }
     default:
+    {
         text_block(c, services_.setup_details(), 592.0f, baseline(364.0f, 40.0f, theme::kText24),
-                   theme::kText24, 40.0f, theme::kBody, 736.0f, 7);
-        label(0, tr("Detailed logging"), kToggle);
-        toggle(c, 1292.0f, row_centre(0), knob);
+                   theme::kText24, 40.0f, theme::kBody, 736.0f, 3, kShrink);
+        static constexpr const char *kNames[] = {TR("Detailed logging"), TR("Write logs at once")};
+        static constexpr const char *kAbout[] = {
+            TR("Eden's debug messages in the logs of a game."),
+            TR("Keeps the last line before a crash, but games stutter. From the next start.")};
+        for (int row = 0; row < 2; ++row)
+        {
+            label(row, tr(kNames[row]), kToggle);
+            toggle(c, 1292.0f, row_centre(row),
+                   tween::clamp01(switches_[static_cast<std::size_t>(row)].value));
+        }
+        // What the highlighted switch does.
+        text_block(c, tr(kAbout[std::clamp(option_, 0, 1)]), 592.0f,
+                   baseline(716.0f, 30.0f, theme::kSmall), theme::kSmall, 30.0f, theme::kMeta, 736.0f,
+                   2, kShrink);
         break;
+    }
     }
 
     if (scrolls)

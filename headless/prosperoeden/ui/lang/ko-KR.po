@@ -530,6 +530,10 @@ msgstr "각 프로필의 세이브 데이터를 전용 서버에 보관하고 �
 msgid "Eden emulator for PlayStation 5"
 msgstr "PlayStation 5용 Eden 에뮬레이터"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "게임 로그에 Eden의 디버그 메시지를 남깁니다."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "keys, firmware, roms 폴더를 한곳에 두세요. △ 버튼을 누르
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "이 본체의 데이터 유지"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "충돌 직전의 마지막 줄이 남지만 게임이 끊깁니다. 다음 실행부터 적용됩니다."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "이 본체의 세이브 데이터 사용. 게임 후에 동기화됩니�
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "대상: {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "로그 즉시 기록"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

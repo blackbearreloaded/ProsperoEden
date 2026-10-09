@@ -530,6 +530,10 @@ msgstr "Salvările fiecărui profil pe un server, sincronizate înainte și dup�
 msgid "Eden emulator for PlayStation 5"
 msgstr "Emulatorul Eden pentru PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Mesajele de depanare ale Eden în jurnalele unui joc."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Ține folderele keys, firmware și roms la un loc. TRIUNGHI folosește f
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Păstrează-le pe ale consolei"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Păstrează ultima linie dinaintea unei erori, dar jocurile sacadează. De la următoarea pornire."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Cu salvările consolei; se sincronizează după joc."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "cu {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Scrie jurnalele imediat"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

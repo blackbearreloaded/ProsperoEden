@@ -530,6 +530,10 @@ msgstr "Hver profils gemte data på sin egen server, synkroniseret før og efter
 msgid "Eden emulator for PlayStation 5"
 msgstr "Eden-emulator til PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "Edens fejlsøgningsbeskeder i et spils logfiler."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "Hold mapperne keys, firmware og roms samlet. TREKANT bruger den viste ma
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "Behold konsollens"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "Bevarer sidste linje før et nedbrud, men spil hakker. Fra næste start."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "Med konsollens gemte data; de synkroniseres efter spillet."
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "med {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "Skriv logfiler med det samme"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

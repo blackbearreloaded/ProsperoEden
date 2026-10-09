@@ -530,6 +530,10 @@ msgstr "بيانات حفظ كل ملف شخصي على خادم خاص به، �
 msgid "Eden emulator for PlayStation 5"
 msgstr "محاكي Eden لجهاز PlayStation 5"
 
+#: pe/ui/settings.cpp
+msgid "Eden's debug messages in the logs of a game."
+msgstr "رسائل تصحيح الأخطاء من Eden في سجلات اللعبة."
+
 #. Label of the shortcut that ends the running game.
 #: pe/ui/settings.cpp
 msgid "END GAME"
@@ -821,6 +825,10 @@ msgstr "أبقِ مجلدات keys و firmware و roms معًا. زر المثل
 #: pe/ui/save_sync.cpp
 msgid "Keep this console's"
 msgstr "إبقاء بيانات هذا الجهاز"
+
+#: pe/ui/settings.cpp
+msgid "Keeps the last line before a crash, but games stutter. From the next start."
+msgstr "تحتفظ بآخر سطر قبل التعطل، لكن الألعاب تتقطع. من التشغيل التالي."
 
 #: pe/ui/settings.cpp
 msgid "Keeps what a game reads back from the GPU exact. Off is faster, and some effects break."
@@ -1994,6 +2002,10 @@ msgstr "ببيانات حفظ هذا الجهاز؛ تُزامَن بعد الل
 #: pe/ui/pairing.cpp
 msgid "with {0}"
 msgstr "مع {0}"
+
+#: pe/ui/settings.cpp
+msgid "Write logs at once"
+msgstr "كتابة السجلات فورًا"
 
 #: pe/ui/save_sync.cpp
 msgid "You are asked again next time."

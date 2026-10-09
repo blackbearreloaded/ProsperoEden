@@ -34,7 +34,7 @@
 #include "devices.h"
 #include "diagnostics.h"
 #include "display_refresh.h"
-#include "log_pipe.h"
+#include "log_flusher.h"
 #include "mods.h"
 #include "controller_applet.h"
 #include "error_applet.h"
@@ -239,14 +239,10 @@ int main(int argc, char** argv) {
 #endif
         if (!std::freopen(Eden::LogFile("stderr.log").c_str(), "w", stderr) ||
             !std::freopen(Eden::LogFile("heap.log").c_str(), "w", stdout)) return 2;
-        std::setvbuf(stderr, nullptr, _IONBF, 0);
-        // Batch SDK success traces; phase receipts still flush explicitly.
-        static char stdout_buffer[64 * 1024];
-        if (std::setvbuf(stdout, stdout_buffer, _IOFBF, sizeof(stdout_buffer)) != 0) return 2;
-        // Console storage writes take ~25 ms each; background threads copy both streams to disk.
-        static Eden::LogPipe stderr_pipe, stdout_pipe;
-        if (!stderr_pipe.Attach(stderr) || !stdout_pipe.Attach(stdout))
-            Eden::Report("logs", "Asynchronous log writing unavailable; writing directly");
+        // Console storage writes take ~25 ms each; a background thread writes both streams out,
+        // unless Settings > Diagnostics asks for every line at once (to find a crash).
+        static Eden::LogFlusher log_flusher;
+        if (!log_flusher.Start(Eden::LoadPreferences().immediate_logs)) return 2;
         Eden::Crash::Install(Eden::LogsDir(), Eden::kAppVersion, last_crash.restarted);
         Eden::BootTrace::Ready(Eden::LogsDir(), Eden::FilesystemAccess());
         Eden::BootTrace::Line("logs and crash handler ready (%s)", Eden::LogsDir().c_str());
