@@ -1,9 +1,10 @@
 name: Release build
 
 # Builds the release ZIP (make release, which fetches pinned dependencies; docs/BUILDING.md) on a
-# GitHub-hosted runner, inside an Ubuntu 26.04 container with the packages in
-# tools/ci/ubuntu-packages.txt: the distribution and the LLVM versions (18 and 21) the releases
-# are built with on a developer machine, so the linker is the same and no link flag differs.
+# GitHub-hosted runner (ubuntu-24.04, no container). tools/ci/setup-ubuntu-24.04.sh installs the
+# host tools: the packages in tools/ci/ubuntu-24.04-packages.txt, with LLVM 21 from apt.llvm.org
+# beside Ubuntu's LLVM 18 (the versions the releases are built with on a developer machine, so
+# the linker is the same and no link flag differs), Meson, and the SPIR-V LLVM translator.
 #
 # A pull request and a v* tag build by themselves; a build on main is started by hand (Actions >
 # Release build > Run workflow). Every run builds the ZIP, checks it (intact, eboot.bin, every
@@ -43,43 +44,24 @@ jobs:
       contents: read
       id-token: write
       attestations: write
-    container:
-      image: ubuntu:26.04
-      # SDKs preinstalled on the runner image, mounted so the job can delete them: the build
-      # (Eden, Mesa, FFmpeg and their caches) needs the disk space.
-      volumes:
-        - /usr/share/dotnet:/host-free/dotnet
-        - /usr/local/lib/android:/host-free/android
-        - /opt/ghc:/host-free/ghc
-        - /usr/local/.ghcup:/host-free/ghcup
-        - /opt/hostedtoolcache:/host-free/toolcache
-        - /usr/local/share/boost:/host-free/boost
     defaults:
       run:
         shell: bash
     env:
-      DEBIAN_FRONTEND: noninteractive
       CCACHE_MAXSIZE: 4G
     steps:
+      # SDKs preinstalled on the runner that this build does not use: the build (Eden, Mesa,
+      # FFmpeg and their caches) needs the disk space.
       - name: Free disk space
         run: |
           df -h "$GITHUB_WORKSPACE"
-          find /host-free -mindepth 2 -maxdepth 2 -exec rm -rf {} + 2>/dev/null || true
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup \
+            /usr/local/share/boost /opt/hostedtoolcache/CodeQL /opt/hostedtoolcache/go \
+            /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk /opt/hostedtoolcache/PyPy \
+            /opt/hostedtoolcache/Ruby
           df -h "$GITHUB_WORKSPACE"
 
-      - name: Install git (for the checkout)
-        run: |
-          apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates
-
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install the build tools (tools/ci/ubuntu-packages.txt)
-        run: |
-          # shellcheck disable=SC2046 # one package name per word
-          apt-get install --yes --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
-          git config --global --add safe.directory '*'
-          make toolchain
 
       - name: Locate the caches
         run: |
@@ -94,7 +76,20 @@ jobs:
             echo "XDG_CACHE_HOME=$cache_root/xdg"
             echo "JOBS=$(nproc)"
             echo "RADV_BUILD_JOBS=$(nproc)"
+            echo "SPIRV_TRANSLATOR=$cache_root/spirv-llvm-translator"
           } >> "$GITHUB_ENV"
+
+      # Built from source by the next step when this finds nothing (a few minutes).
+      - name: Restore the SPIR-V LLVM translator
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ${{ env.SPIRV_TRANSLATOR }}
+          key: spirv-llvm-translator-${{ hashFiles('tools/ci/setup-ubuntu-24.04.sh', 'tools/ci/ubuntu-24.04-packages.txt') }}
+
+      - name: Install the build tools (tools/ci/setup-ubuntu-24.04.sh)
+        run: |
+          bash tools/ci/setup-ubuntu-24.04.sh "$SPIRV_TRANSLATOR" 3>> "$GITHUB_ENV"
+          make toolchain
 
       # A pull request's artifact is named by its number and its own commit (github.sha is a
       # temporary merge commit there); the version in param.json stays the release's.
@@ -131,14 +126,14 @@ jobs:
             ${{ env.RADV_NATIVE }}/ps5-payload-sdk
             ${{ env.RADV_NATIVE }}/zlib
             build/radv-isolated
-          key: radv-2-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+          key: radv-3-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-24.04-packages.txt', 'tools/ci/setup-ubuntu-24.04.sh') }}
 
       - name: Restore ccache
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: ${{ env.CACHE_ROOT }}/ccache
-          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ccache-
+          key: ccache-u24-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ccache-u24-
 
       - name: Build and package
         id: build
@@ -161,7 +156,7 @@ jobs:
         uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: ${{ env.CACHE_ROOT }}/ccache
-          key: ccache-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ccache-u24-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save the RADV driver
         if: always() && steps.radv.outputs.cache-hit != 'true' && hashFiles('build/radv-isolated/libvulkan_radeon.ps5.a') != ''
@@ -172,7 +167,7 @@ jobs:
             ${{ env.RADV_NATIVE }}/ps5-payload-sdk
             ${{ env.RADV_NATIVE }}/zlib
             build/radv-isolated
-          key: radv-2-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-packages.txt') }}
+          key: radv-3-${{ hashFiles('tools/deps.json', 'tools/patch-radv-wsi.py', 'tools/build-radv-dependencies.sh', 'tools/isolate-radv.py', 'tools/ci/ubuntu-24.04-packages.txt', 'tools/ci/setup-ubuntu-24.04.sh') }}
 
       - name: Match the tag to the package version
         if: startsWith(github.ref, 'refs/tags/')

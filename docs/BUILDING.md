@@ -138,8 +138,7 @@ RADV's host tools (`mesa_clc`, `vtn_bindgen2`) are built against the host's LLVM
 development files, Clang 21 libraries, libclc and the SPIR-V LLVM translator. The Payload SDK's
 `prospero-*` wrappers (the RADV build and the final link) use `$LLVM_CONFIG`, else the newest of
 LLVM 21 to 15 that is installed: the releases are linked with LLD 21. On Ubuntu 26.04 every
-package the release build needs is listed in `tools/ci/ubuntu-packages.txt`, the file the release
-workflow installs from:
+package the release build needs is listed in `tools/ci/ubuntu-packages.txt`:
 
 ```bash
 sudo apt install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
@@ -169,9 +168,12 @@ crashes on request, to try it on a console: write `segv`, `thread`, `abort` or `
 ## Release workflow
 
 `.github/workflows/release.yml` runs `tools/ci/build-release.sh` (`make release`) on a
-GitHub-hosted runner (`ubuntu-24.04`), inside an `ubuntu:26.04` container with the packages in
-`tools/ci/ubuntu-packages.txt`: the same distribution and LLVM versions as a build on your own
-machine. It first deletes SDKs the runner image carries (.NET, Android, GHC, the tool cache) for
+GitHub-hosted runner (`ubuntu-24.04`), without a container. Ubuntu 24.04 lacks part of what the
+build needs, so `tools/ci/setup-ubuntu-24.04.sh` installs the packages in
+`tools/ci/ubuntu-24.04-packages.txt` with LLVM 21 from apt.llvm.org (the same LLVM versions as a
+build on your own machine), Meson from PyPI, and builds the SPIR-V LLVM translator for LLVM 21
+from source (kept in a cache); CMake is the runner's own. The workflow first deletes SDKs the
+runner image carries (.NET, Android, GHC, parts of the tool cache) for
 disk space, and builds with as many jobs as the runner has cores (`JOBS`, and `RADV_BUILD_JOBS`
 for RADV, whose build otherwise runs 24).
 
@@ -195,8 +197,7 @@ dependencies are reused instead of fetched) for a build on your own machine.
   the pull request's own head commit. A newer push to a pull request, or a newer manual run on
   the same branch, cancels the run in progress.
 - **Tag `vX.Y.Z`** (by itself, when the tag is pushed): builds and checks them the same way, checks that the tag matches the package
-  version, and publishes a pre-release with the ZIP and `SHA256SUMS` (a second job, outside the
-  container). The release notes come from the README's "Changes in vX.Y.Z" section.
+  version, and publishes a pre-release with the ZIP and `SHA256SUMS` (a second job). The release notes come from the README's "Changes in vX.Y.Z" section.
 - Every run also keeps `build/symbols/` as an artifact with `-symbols` after the name: 90 days
   for a tag, 7 days otherwise.
 - A tag's or a manual run's ZIP is attested (signed build provenance): a release ZIP built by
