@@ -75,11 +75,8 @@ builds on the following projects, each under its own license.
   not have. `stb_image_write` saves the PC previews and is not part of the app.
 - The launcher's sound effects were generated with
   [ElevenLabs](https://elevenlabs.io) and edited for this project.
-- `third_party/ps5_pad.hpp` comes from
-  [ps5-native-gamepad-input-research](https://github.com/blackbearreloaded/ps5-native-gamepad-input-research),
-  and `third_party/native_audio.hpp` from
-  [ps5-audio-decoding-research](https://github.com/blackbearreloaded/ps5-audio-decoding-research).
-  Both are GPL-3.0-or-later.
+- `third_party/ps5_pad.hpp` and `third_party/native_audio.hpp` are this
+  project's own platform declarations, GPL-3.0-or-later.
 
 ## Thanks
 
