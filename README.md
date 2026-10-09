@@ -438,6 +438,7 @@ The touchpad is pressed as a button. On its own, a tap of the touchpad presses t
 - **Keyboard as a controller** - map a USB keyboard's keys to the game's buttons, like the DualSense's. Text entry itself is done: it uses the PS5's on-screen keyboard.
 - **Multiplayer with Eden on other systems (investigation)** - join Eden's multiplayer rooms from the PS5 and play with Eden players on PC, Linux and Android, entering a room's address by hand, including a room hosted on your local network (no PSN needed). Rooms only accept the same Eden version on every side, so each release would name the matching PC version.
 - **DualShock 4 controllers** - use DualShock 4 controllers as players too, next to the DualSense, so multiplayer games do not need four DualSense controllers.
+- **Controller type for each player** - choose, for each of the four connected controllers, which controller the game sees: a Pro Controller, a pair of Joy-Cons, a single left or right Joy-Con, a GameCube controller, or Handheld mode, as Eden does on other systems.
 - **Better OpenGL performance** - make the OpenGL renderer faster, and add tuning options for it.
 - **More game compatibility** - validate more games on the PS5, and fix what keeps them from running well, such as games that crash at launch.
 
