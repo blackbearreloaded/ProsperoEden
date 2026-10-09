@@ -243,13 +243,20 @@ void CheckPad() {
             for (int i = 0; i < 22; ++i)
                 CHECK(pad.Engine().GetButton({}, i) == (i == button || (sl_sr >= 0 && (i == sl_sr || i == sl_sr + 4))));
         }
-        // Player 1's DualSense also plays Eden's handheld controller (port 8).
+        // Player 1's DualSense plays Eden's handheld controller (port 8) only while that is the
+        // controller in use: a button that reached it at any other time would connect it.
+        sample.buttons = kButtonCircle; sample.left_stick = {0, 255}; consume();
+        CHECK(pad.Engine().GetButton({}, 0)); CHECK(!pad.Engine().GetButton({.port = 8}, 0));
+        CHECK(pad.Engine().GetAxis({.port = 8}, 0) == 0);
+        sample.buttons = 0; sample.left_stick = {128, 128}; consume();
+        Eden::handheld_in_use = true;
         sample.buttons = kButtonCircle; consume();
         CHECK(pad.Engine().GetButton({.port = 8}, 0)); CHECK(!pad.Engine().GetButton({.port = 8}, 1));
         sample.buttons = 0;
         sample.left_stick = {0, 255}; sample.right_stick = {255, 0}; consume();
         CHECK(!pad.Engine().GetButton({.port = 8}, 0));
         CHECK(pad.Engine().GetAxis({.port = 8}, 0) == -1); CHECK(pad.Engine().GetAxis({.port = 8}, 3) == 1);
+        Eden::handheld_in_use = false;
         CHECK(pad.Engine().GetAxis({}, 0) == -1); CHECK(pad.Engine().GetAxis({}, 1) == -1);
         CHECK(pad.Engine().GetAxis({}, 2) == 1); CHECK(pad.Engine().GetAxis({}, 3) == 1);
         sample.left_stick = {128, 132}; sample.triggers = {127, 128}; consume();

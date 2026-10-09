@@ -87,6 +87,7 @@ public:
         const std::size_t players = std::clamp(pads, min_players, max_players);
         const bool docked = ::Settings::IsDockedMode();
         std::size_t connected = 0;
+        bool handheld_given = false;
         const int chosen = session_controller.load();
         // The handheld is a controller of its own, not player 1 with another style; player 1's
         // DualSense plays it (pad.cpp).
@@ -99,10 +100,15 @@ public:
             const auto style = ControllerStyle(parameters, index, chosen);
             if (!style) continue;
             auto* target = *style == Core::HID::NpadStyleIndex::Handheld ? handheld : controller;
+            handheld_given |= target == handheld;
+            // Player 1's DualSense plays the handheld from here on, and stops when a later screen
+            // gives the game another controller.
+            if (index == 0) handheld_in_use = target == handheld;
             target->SetNpadStyleIndex(*style);
             target->Connect(true);
             ++connected;
         }
+        if (!handheld_given) handheld_in_use = false;
         if (const auto style = ChosenStyle(chosen); style && !TakesStyle(parameters, *style))
             Report("controllers", "This game does not take the Controller type chosen for it: it gets what it takes");
         // What the game asked for goes to the log: a game stuck on this screen can then be told

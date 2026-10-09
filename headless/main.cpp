@@ -1018,6 +1018,7 @@ int main(int argc, char** argv) {
             // one. The handheld is a controller of its own, for player 1 only.
             Eden::session_controller = controls.controller;
             const bool handheld = Eden::ControllerSetting(controls.controller) == Settings::ControllerType::Handheld;
+            Eden::handheld_in_use = handheld;
             for (std::size_t index = 0; index < Eden::Pad::kMaxPlayers; ++index) {
                 auto& player = Settings::values.players.GetValue()[index];
                 player.connected = handheld ? false : index == 0 || (connected & (1u << index)) != 0;
