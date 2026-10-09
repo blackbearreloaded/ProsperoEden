@@ -10,7 +10,7 @@
 
 **ProsperoEden is an unofficial PlayStation 5 port of [Eden](https://github.com/eden-emulator/mirror)** - an accurate, high-performance emulator. All credit for the emulator core belongs to the Eden project and its contributors. ProsperoEden is not affiliated with or endorsed by the Eden team or Sony.
 
-This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.090**.
+This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.095**.
 
 ## Source code
 
@@ -313,6 +313,12 @@ The launcher follows the language the PS5 is set to: Arabic, Chinese (simplified
 ### Upgrading from an earlier alpha
 
 Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That folder keeps working until you choose a game files folder, and settings are migrated automatically on first launch. To move to the new layout, move `assets/keys`, `assets/firmware` and `assets/roms` into any folder, then select it in **Settings > Game files**. The release ZIP contains no user files, so copy its app files over your installation without deleting your own data.
+
+## Changes in v1.000.095
+
+A bug fix for v1.000.090. If you are on v1.000.090, update.
+
+- **Stutter and crashes while playing are fixed.** In v1.000.090 every button press could make a game bring up its controller screen again: play stuttered, and some games crashed after a minute or two. A second, handheld controller was being connected beside the player's own at the first press. It is now only used when **Handheld** is the game's Controller type, or the only controller the game takes.
 
 ## Changes in v1.000.090
 
