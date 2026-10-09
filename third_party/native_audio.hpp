@@ -1,5 +1,5 @@
 /*
- * ps5-audio-decoding-research - Small native AudioOut/file helpers.
+ * Small native AudioOut/file helpers.
  * Copyright (C) 2026 BlackBearReloaded
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
