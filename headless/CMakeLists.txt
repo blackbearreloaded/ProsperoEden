@@ -1595,7 +1595,7 @@ set(audio_contract "${PORT_ROOT}/third_party")
 file(SHA256 "${pad_contract}/ps5_pad.hpp" pad_hash)
 file(SHA256 "${audio_contract}/native_audio.hpp" audio_hash)
 if(NOT pad_hash STREQUAL "6a9708fe7ab59afa69899e1981e84decf1492a97e8ebd08194f8e27841a00ee0" OR
-   NOT audio_hash STREQUAL "5274633c4f7cd4598fc4cdbfe5b044cbfca908845eb22157e73a80dca8faa0f6")
+   NOT audio_hash STREQUAL "54627379f641d608a9a5c6a96ebdfc543a0dbb8a1e843e0ce08cb6e3adb93528")
     message(FATAL_ERROR "Native device contracts changed; review the adapter ABI first.")
 endif()
 # Guest rumble: with no mapped buttons (this frontend binds the virtual_gamepad engine), send each
