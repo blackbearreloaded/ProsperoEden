@@ -43,6 +43,12 @@ extern "C"
 #endif
 
 #define UPDATE_CHECK_HOST "homebrew.page"
+/* The catalog's store API is published in two places: on its own site, and as a mirror for
+ * networks that block that site. They hold the same answers. Each place has its own signed
+ * manifest, because icon addresses inside the files name the place they are served from. */
+#define UPDATE_CHECK_API "https://" UPDATE_CHECK_HOST "/api/v1/"
+#define UPDATE_CHECK_MIRROR_API "https://blackbearreloaded.github.io/ps5-homebrew-catalog/api/v1/"
+#define UPDATE_CHECK_ORIGINS 2
 #define UPDATE_CHECK_MAX_RESPONSE 65536u
 
     typedef enum update_check_state
@@ -76,6 +82,7 @@ extern "C"
         char available[12]; /* the catalog's content_version, when known */
         char version[40];   /* the release's name for display, e.g. "0.11.0" */
         char page[160];     /* the app's page on homebrew.page */
+        int origin;         /* which place answered: 0 the catalog's site, 1 its mirror */
     } update_check_result;
 
     /* Fetches `url` with `user_agent` into `body` (at most `capacity` bytes), storing the byte
@@ -110,6 +117,10 @@ extern "C"
 
     /* The whole check with a transport of your own (tests use this; so can an app that
      * already has an HTTP client). Blocking. */
+    /* The API's address at a place: 0 the catalog's site, 1 its mirror; NULL for any other. */
+    const char *update_check_api(int origin);
+    /* As update_check_url, for the place `origin`. */
+    size_t update_check_url_at(char *out, size_t size, const char *title_id, int origin);
     void update_check_run_with(update_check_fetch_fn fetch, const char *title_id,
                                const char *installed, update_check_result *result);
 

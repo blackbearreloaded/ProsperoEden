@@ -207,15 +207,17 @@ static int member_true(const char *json, size_t length, const char *key)
     return 0;
 }
 
-self_update_check_result self_update_check(const self_update_platform *platform,
-                                           const char *title_id, const char *installed,
-                                           self_update_offer *offer)
+/* The check against one place the catalog is published at. */
+static self_update_check_result check_at(const self_update_platform *platform, const char *title_id,
+                                         const char *installed, self_update_offer *offer,
+                                         const char *api)
 {
     /* One check at a time: the buffers are shared. */
     static char manifest[SELF_UPDATE_MAX_MANIFEST];
     static char body[SELF_UPDATE_MAX_APP_FILE];
     unsigned char signature[80];
     char url[160];
+    char address[160];
     char key[32];
     char listed[65];
     char actual[65];
@@ -236,17 +238,21 @@ self_update_check_result self_update_check(const self_update_platform *platform,
     if (platform == NULL || title_id == NULL || installed == NULL)
         return SELF_UPDATE_UNKNOWN;
     used = update_check_url(url, sizeof(url), title_id);
-    if (used == 0) /* also refuses anything that isn't a title ID */
+    if (used == 0 || api == NULL) /* also refuses anything that isn't a title ID */
+        return SELF_UPDATE_UNKNOWN;
+    if (snprintf(url, sizeof(url), "%sapps/%s.json", api, title_id) >= (int)sizeof(url))
         return SELF_UPDATE_UNKNOWN;
 
     /* The manifest and its signature. */
-    if (platform->fetch(platform->user, SELF_UPDATE_API "manifest.json", manifest, sizeof(manifest),
-                        &manifest_length, &status) != 0 ||
+    (void)snprintf(address, sizeof(address), "%smanifest.json", api);
+    if (platform->fetch(platform->user, address, manifest, sizeof(manifest), &manifest_length,
+                        &status) != 0 ||
         status != 200)
         return SELF_UPDATE_UNKNOWN;
     status = 0;
-    if (platform->fetch(platform->user, SELF_UPDATE_API "manifest.sig", (char *)signature,
-                        sizeof(signature), &signature_length, &status) != 0 ||
+    (void)snprintf(address, sizeof(address), "%smanifest.sig", api);
+    if (platform->fetch(platform->user, address, (char *)signature, sizeof(signature),
+                        &signature_length, &status) != 0 ||
         status != 200)
         return SELF_UPDATE_UNKNOWN;
     if (signature_length != 64 || (platform->verify(platform->user, self_update_keys[0], signature,
@@ -307,6 +313,32 @@ self_update_check_result self_update_check(const self_update_platform *platform,
     if (offer->size > SELF_UPDATE_MAX_ARCHIVE)
         return SELF_UPDATE_NOT_INSTALLABLE;
     return SELF_UPDATE_AVAILABLE;
+}
+
+self_update_check_result self_update_check(const self_update_platform *platform,
+                                           const char *title_id, const char *installed,
+                                           self_update_offer *offer)
+{
+    /* The catalog's own site first, then its mirror. A place counts only when its manifest is
+     * signed by the catalog's keys, is not older than one already accepted, and lists the very
+     * file it then serves: the mirror can make the catalog reachable and nothing else. An
+     * unreachable site and a network's block page both end up here as "no answer". When neither
+     * place answers, the result is the site's. */
+    self_update_check_result first = SELF_UPDATE_UNKNOWN;
+    int origin;
+    for (origin = 0; origin < UPDATE_CHECK_ORIGINS; ++origin)
+    {
+        const self_update_check_result result =
+            check_at(platform, title_id, installed, offer, update_check_api(origin));
+        if (result == SELF_UPDATE_AVAILABLE || result == SELF_UPDATE_UP_TO_DATE ||
+            result == SELF_UPDATE_NOT_INSTALLABLE)
+            return result;
+        if (origin == 0)
+            first = result;
+    }
+    if (offer != NULL)
+        memset(offer, 0, sizeof(*offer));
+    return first;
 }
 
 /* ---- 2. The job ---------------------------------------------------------------------------- */
