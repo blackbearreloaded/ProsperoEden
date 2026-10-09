@@ -538,7 +538,15 @@ adapt('src/video_core/renderer_vulkan/renderer_vulkan.h',
 ])
 adapt('src/video_core/renderer_vulkan/renderer_vulkan.cpp', 'vulkan_renderer.cpp', [
     ('#include "video_core/renderer_vulkan/renderer_vulkan.h"',
-     '#include "video_core/renderer_vulkan/renderer_vulkan.h"\n#include "display_refresh.h"'),
+     '#include "video_core/renderer_vulkan/renderer_vulkan.h"\n#include "display_refresh.h"\n'
+     '#include "diagnostics.h"\n#include "hud.h"'),
+    # The HUD counted the guest rate only: OnFrameDisplayed() runs once per Composite(), while the
+    # frames frame generation adds are presented through PresentManager::Present() (hud.h). Count
+    # every frame handed to the present manager.
+    ('        present_manager.Present(generated);\n    }',
+     '        present_manager.Present(generated);\n'
+     '        Eden::CountPresentedFrame();\n'
+     '    }'),
     # A frame the display has no refresh for is not presented: a game patched for more frames
     # than the output shows keeps its pace instead of waiting for a refresh per frame
     # (headless/display_refresh.h). The frame still ends as any other.
@@ -559,7 +567,8 @@ adapt('src/video_core/renderer_vulkan/renderer_vulkan.cpp', 'vulkan_renderer.cpp
     # the present thread gets this frame immediately instead of after the
     # producer's next 8-draw dispatch (upstream does this only with LSFG).
     ('    present_manager.Present(frame);\n#ifdef HAS_LSFG\n    scheduler.DispatchWork();\n#endif',
-     '    present_manager.Present(frame);\n    scheduler.DispatchWork();'),
+     '    present_manager.Present(frame);\n    Eden::CountPresentedFrame();\n'
+     '    scheduler.DispatchWork();'),
     ('} // namespace Vulkan', '''} // namespace Vulkan
 namespace Eden {
 void PresentVulkanLoading(VideoCore::RendererBase& renderer) {

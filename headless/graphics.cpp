@@ -48,6 +48,9 @@ double LoadingCalm() {
 }
 std::atomic<bool> hud_enabled{true};
 HudClock vulkan_hud_clock;
+// What the display is actually given: the guest's frames plus the ones frame generation
+// adds (CountPresentedFrame(), hud.h).
+HudClock vulkan_hud_output_clock;
 HudSnapshot vulkan_hud;
 double vulkan_hud_stats_time{}, vulkan_hud_speed{};
 bool vulkan_loading{};
@@ -522,6 +525,7 @@ GraphicsWindow::GraphicsWindow(bool use_vulkan) : vulkan(use_vulkan) {
 #ifdef EDEN_PS5_VULKAN
     if (vulkan) {
         vulkan_hud_clock = {};
+        vulkan_hud_output_clock = {};
         vulkan_hud = MakeLoadingSnapshot(0);
         vulkan_hud_stats_time = vulkan_hud_speed = 0;
         window_info.type = Core::Frontend::WindowSystemType::PS5;
@@ -610,6 +614,15 @@ GraphicsWindow::~GraphicsWindow() {
     Cleanup(eglTerminate(display), "display");
     std::puts("EDEN_EGL_CLOSED");
 }
+void CountPresentedFrame() {
+    // The renderer calls this for every frame it hands to the present manager, so F in the HUD is
+    // the output rate. Same clock and timestamp as OnFrameDisplayed(); only the count differs.
+    const double now = std::chrono::duration<double>(
+                           std::chrono::steady_clock::now().time_since_epoch())
+                           .count();
+    vulkan_hud_output_clock.Present(now);
+}
+
 void GraphicsWindow::OnFrameDisplayed() {
 #ifdef PS5_NATIVE
     if (vulkan) {
@@ -625,7 +638,8 @@ void GraphicsWindow::OnFrameDisplayed() {
             vulkan_hud_speed = system->GetAndResetPerfStats().emulation_speed * 100.0;
             vulkan_hud_stats_time = now;
         }
-        vulkan_hud = MakeHudSnapshot(vulkan_hud_clock, vulkan_hud_speed);
+        vulkan_hud =
+            MakeHudSnapshot(vulkan_hud_clock, vulkan_hud_output_clock, vulkan_hud_speed);
 #endif
         ++frame_total;
         if (frame_sample_start < 0) {

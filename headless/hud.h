@@ -172,19 +172,37 @@ struct LoadingPace {
         return true;
     }
 };
-inline std::array<char, 25> FormatHudText(const HudClock& clock, double speed,
-                                          const char* backend) {
+// N is the rate the guest itself produces; F is the rate the display is actually given. They are
+// the same until frame generation is on, and then F is the one that says what is on screen: the
+// renderer presents the frames frame generation adds through PresentManager::Present() without
+// going through OnFrameDisplayed(), which runs once per guest frame (CountPresentedFrame()).
+inline std::array<char, 25> FormatHudText(const HudClock& clock, const HudClock& output,
+                                          double speed, const char* backend) {
     std::array<char, 25> text{};
-    if (clock.fps < 0) std::snprintf(text.data(), text.size(), "%s F-- S-- W--", backend);
-    else std::snprintf(text.data(), text.size(), "%s F%.0f S%.0f W%.0f",
-                       backend, clock.fps, speed, clock.worst_ms);
+    if (clock.fps < 0 || output.fps < 0) {
+        std::snprintf(text.data(), text.size(), "%s N-- F-- S-- W--", backend);
+    } else {
+        std::snprintf(text.data(), text.size(), "%s N%.0f F%.0f S%.0f W%.0f", backend, clock.fps,
+                      output.fps, speed, clock.worst_ms);
+    }
     return text;
 }
-inline HudSnapshot MakeHudSnapshot(const HudClock& clock, double speed) {
-    const auto text = FormatHudText(clock, speed, "VLK");
+inline HudSnapshot MakeHudSnapshot(const HudClock& clock, const HudClock& output, double speed) {
+    const auto text = FormatHudText(clock, output, speed, "VLK");
     const std::string_view value{text.data()};
     return {HudText(value), static_cast<uint32_t>(value.size() * 16 + 24)};
 }
+// The OpenGL renderer has no frame generation: what it presents is the guest's own rate, so both
+// numbers come from one clock and read alike. Callers that cannot have an output clock use these.
+inline std::array<char, 25> FormatHudText(const HudClock& clock, double speed, const char* backend) {
+    return FormatHudText(clock, clock, speed, backend);
+}
+inline HudSnapshot MakeHudSnapshot(const HudClock& clock, double speed) {
+    return MakeHudSnapshot(clock, clock, speed);
+}
+// Every frame handed to the present manager, the guest's own and each one frame generation adds,
+// so the HUD's F measures the output and not just the guest (graphics.cpp).
+void CountPresentedFrame();
 // Read on the renderer thread; the scheduler captures the returned value per frame.
 HudSnapshot GetVulkanHud();
 } // namespace Eden
