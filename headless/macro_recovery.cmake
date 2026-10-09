@@ -16,7 +16,7 @@ string(PREPEND macro_source "#include <exception>\n")
 # which needs no executable memory.
 string(PREPEND macro_source "#include <cstdio>\n")
 macro_replace("    if (!is_interpreted)\n        return std::make_unique<MacroJITx64Impl>(system, code);\n"
-    "    if (!is_interpreted) {\n        try {\n            return std::make_unique<MacroJITx64Impl>(system, code);\n        } catch (const std::exception& refused) {\n            std::fprintf(stderr, \"[ProsperoEden] graphics: the macro compiler is not usable on this console (%s); macros are interpreted\\n\", refused.what());\n            is_interpreted = true;\n        }\n    }\n")
+    "    if (!is_interpreted) {\n        try {\n            return std::make_unique<MacroJITx64Impl>(system, code);\n        } catch (const std::exception& refused) {\n            std::fprintf(stderr, \"[ProsperoEden] graphics: the macro compiler is not usable on this console (%s); macros are interpreted%c\", refused.what(), 10);\n            is_interpreted = true;\n        }\n    }\n")
 macro_replace("        u32 carry_flag{};"
     "        u32 carry_flag{};\n        std::exception_ptr failure;\n        bool failed{};")
 macro_replace("    program(&state, parameters.data(), parameters.data() + parameters.size());"
