@@ -46,6 +46,9 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 [[ $(meson --version) == "$meson_version" ]] || { echo "meson $meson_version is not the one on PATH" >&2; exit 1; }
 
+# The build scripts set their own PATH (tools/prepare-build.sh): the system folders only.
+[[ $(command -v meson) == /usr/local/bin/meson ]] || sudo ln -sf "$(command -v meson)" /usr/local/bin/meson
+
 # Mesa's build asks `llvm-config` for LLVM; the runner has none, or an older one.
 sudo ln -sf /usr/bin/llvm-config-21 /usr/local/bin/llvm-config
 
