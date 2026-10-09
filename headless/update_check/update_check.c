@@ -83,17 +83,34 @@ static int is_title_id(const char *text)
     return text[9] == '\0';
 }
 
+const char *update_check_api(int origin)
+{
+    return origin == 0 ? UPDATE_CHECK_API : origin == 1 ? UPDATE_CHECK_MIRROR_API : NULL;
+}
+
+size_t update_check_url_at(char *out, size_t size, const char *title_id, int origin)
+{
+    static const char folder[] = "apps/";
+    static const char suffix[] = ".json";
+    const char *api = update_check_api(origin);
+    size_t prefix;
+    size_t length;
+    if (api == NULL || out == NULL || title_id == NULL || !is_title_id(title_id))
+        return 0;
+    prefix = strlen(api) + sizeof(folder) - 1;
+    length = prefix + 9 + sizeof(suffix) - 1;
+    if (size <= length)
+        return 0;
+    memcpy(out, api, strlen(api));
+    memcpy(out + strlen(api), folder, sizeof(folder) - 1);
+    memcpy(out + prefix, title_id, 9);
+    memcpy(out + prefix + 9, suffix, sizeof(suffix));
+    return length;
+}
+
 size_t update_check_url(char *out, size_t size, const char *title_id)
 {
-    static const char prefix[] = "https://" UPDATE_CHECK_HOST "/api/v1/apps/";
-    static const char suffix[] = ".json";
-    const size_t length = sizeof(prefix) - 1 + 9 + sizeof(suffix) - 1;
-    if (out == NULL || title_id == NULL || !is_title_id(title_id) || size <= length)
-        return 0;
-    memcpy(out, prefix, sizeof(prefix) - 1);
-    memcpy(out + sizeof(prefix) - 1, title_id, 9);
-    memcpy(out + sizeof(prefix) - 1 + 9, suffix, sizeof(suffix));
-    return length;
+    return update_check_url_at(out, size, title_id, 0);
 }
 
 /* A reader for one string value of a top-level JSON object. */
@@ -442,19 +459,19 @@ void update_check_evaluate(const char *json, size_t length, const char *installe
     result->state = order > 0 ? UPDATE_CHECK_AVAILABLE : UPDATE_CHECK_UP_TO_DATE;
 }
 
-void update_check_run_with(update_check_fetch_fn fetch, const char *title_id, const char *installed,
-                           update_check_result *result)
+/* One place asked: its answer, or why there is none. */
+static void run_at(update_check_fetch_fn fetch, const char *title_id, const char *installed,
+                   update_check_result *result, int origin)
 {
     static char body[UPDATE_CHECK_MAX_RESPONSE];
-    char url[96];
+    char url[128];
     char agent[48];
     size_t length = 0;
     int status = 0;
     int code;
-    if (result == NULL)
-        return;
     result_reset(result, installed);
-    if (fetch == NULL || update_check_url(url, sizeof(url), title_id) == 0)
+    result->origin = origin;
+    if (fetch == NULL || update_check_url_at(url, sizeof(url), title_id, origin) == 0)
     {
         result->reason = UPDATE_CHECK_BAD_ARGUMENT;
         return;
@@ -492,6 +509,31 @@ void update_check_run_with(update_check_fetch_fn fetch, const char *title_id, co
         return;
     }
     update_check_evaluate(body, length, installed, result);
+    result->origin = origin;
+}
+
+/* Whether a place gave no usable answer: unreachable, an error status, or something that isn't
+ * the catalog's JSON (a network's block page answers 200 with a page of its own). */
+static int no_answer(const update_check_result *result)
+{
+    return result->reason == UPDATE_CHECK_NETWORK || result->reason == UPDATE_CHECK_HTTP_STATUS ||
+           result->reason == UPDATE_CHECK_TOO_LARGE || result->reason == UPDATE_CHECK_BAD_RESPONSE;
+}
+
+void update_check_run_with(update_check_fetch_fn fetch, const char *title_id, const char *installed,
+                           update_check_result *result)
+{
+    update_check_result mirrored;
+    if (result == NULL)
+        return;
+    /* The catalog's own site first; its mirror only when the site gives no usable answer. A
+     * failure of both is reported as the site's. */
+    run_at(fetch, title_id, installed, result, 0);
+    if (!no_answer(result))
+        return;
+    run_at(fetch, title_id, installed, &mirrored, 1);
+    if (!no_answer(&mirrored))
+        *result = mirrored;
 }
 
 const char *update_check_reason_text(update_check_reason reason)
