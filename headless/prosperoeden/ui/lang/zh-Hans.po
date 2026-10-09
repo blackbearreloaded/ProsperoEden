@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "澳大利亚"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "自动"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "自动"
 
@@ -650,6 +654,18 @@ msgstr "帧率显示"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "帧率显示"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "补帧倍率"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "补帧目标帧率"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "帧生成"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "已安装 {0} 个游戏"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

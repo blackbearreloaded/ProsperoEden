@@ -105,6 +105,20 @@ std::vector<Option> options(int category, const GameSettings &game, Preferences 
                         pick(services.filter_labels(), prefs.filter)});
         rows.push_back({tr("Refresh rate"), rates, game.refresh, pick(rates, prefs.refresh)});
         rows.push_back({tr("FPS overlay"), off_on, game.hud, on_off(prefs.hud)});
+        // Appended last on purpose: the rows above keep the indexes with_option() and the
+        // saved game settings use. Vulkan only -- the OpenGL renderer has no frame generation.
+        rows.push_back({tr("Frame generation"), off_on, game.frame_gen, on_off(prefs.frame_gen)});
+        // Indexes match the settings layer's tables (settings_store.h). Eden's two controls work the
+        // way Eden defines them: a target rate makes the pacer add as many frames as that rate
+        // needs, up to Eden's own maximum; "Auto" asks for none and leaves the multiplier in charge.
+        const std::vector<std::string> multipliers = {"2x", "3x", "4x"};
+        const auto hz = [](const char *value) { return fill(tr("{0} Hz"), {value}); };
+        const std::vector<std::string> frames = {tr("Auto"), hz("60"), hz("90"), hz("120"), hz("144"),
+                                                 hz("240")};
+        rows.push_back({tr("Frame gen target"), frames, game.frame_gen_target,
+                        pick(frames, prefs.frame_gen_target)});
+        rows.push_back({tr("Frame gen multiplier"), multipliers, game.frame_gen_multiplier,
+                        pick(multipliers, prefs.frame_gen_multiplier)});
         break;
     }
     case category_performance:
@@ -158,7 +172,8 @@ GameSettings with_option(GameSettings game, int category, int row, int value, co
     {
     case category_video:
         (row == 0 ? game.renderer : row == 1 ? game.resolution : row == 2 ? game.filter :
-         row == 3 ? game.refresh : game.hud) = value;
+         row == 3 ? game.refresh : row == 4 ? game.hud : row == 5 ? game.frame_gen :
+         row == 6 ? game.frame_gen_target : game.frame_gen_multiplier) = value;
         break;
     case category_performance:
         game.performance[static_cast<std::size_t>(std::clamp(row, 0, 6))] = value;
@@ -198,7 +213,8 @@ int Launcher::game_overrides(int category) const
     {
     case category_video:
         return (game.renderer >= 0) + (game.resolution >= 0) + (game.filter >= 0) + (game.refresh >= 0) +
-               (game.hud >= 0);
+               (game.hud >= 0) + (game.frame_gen >= 0) + (game.frame_gen_target >= 0) +
+               (game.frame_gen_multiplier >= 0);
     case category_performance:
         return static_cast<int>(
             std::count_if(game.performance.begin(), game.performance.end(), [](int v) { return v >= 0; }));

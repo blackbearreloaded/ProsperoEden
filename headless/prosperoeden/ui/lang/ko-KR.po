@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "호주"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "자동"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "자동"
 
@@ -650,6 +654,18 @@ msgstr "FPS 표시"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "FPS 표시"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "프레임 생성 배율"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "프레임 생성 목표"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "프레임 생성"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "게임 {0}개 설치됨"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0}Hz"
 

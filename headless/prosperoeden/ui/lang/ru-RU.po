@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "Австралия"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "Авто"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "Автоматически"
 
@@ -650,6 +654,18 @@ msgstr "Счетчик FPS"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "СЧЕТЧИК FPS"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "Множитель генерации кадров"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "Цель генерации кадров"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "Генерация кадров"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "Установлено игр: {0}"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0} Гц"
 

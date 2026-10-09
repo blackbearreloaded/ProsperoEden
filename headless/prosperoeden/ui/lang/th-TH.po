@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "ออสเตรเลีย"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "อัตโนมัติ"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "อัตโนมัติ"
 
@@ -650,6 +654,18 @@ msgstr "ตัวแสดง FPS"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "ตัวแสดง FPS"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "ตัวคูณการสร้างเฟรม"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "เป้าหมายการสร้างเฟรม"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "การสร้างเฟรม"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "ติดตั้งแล้ว {0} เกม"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "Ausztrália"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "Automatikus"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "Automatikus"
 
@@ -650,6 +654,18 @@ msgstr "FPS-kijelző"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "FPS-KIJELZŐ"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "Képkockagenerálás szorzója"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "Képkockagenerálás célértéke"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "Képkockagenerálás"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "{0} játék telepítve"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

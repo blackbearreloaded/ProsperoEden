@@ -834,6 +834,9 @@ pe::ui::GameSettings EdenServices::game_settings(std::uint64_t title_id) {
     result.filter = saved.upscaling_filter;
     result.refresh = saved.refresh;
     result.hud = saved.hud;
+    result.frame_gen = saved.frame_gen;
+    result.frame_gen_target = saved.frame_gen_target;
+    result.frame_gen_multiplier = saved.frame_gen_multiplier;
     result.volume = saved.volume;
     result.mute = saved.mute;
     result.vibration = saved.vibration;
@@ -852,6 +855,9 @@ bool EdenServices::set_game_settings(std::uint64_t title_id, const pe::ui::GameS
     value.upscaling_filter = settings.filter;
     value.refresh = settings.refresh;
     value.hud = settings.hud;
+    value.frame_gen = settings.frame_gen;
+    value.frame_gen_target = settings.frame_gen_target;
+    value.frame_gen_multiplier = settings.frame_gen_multiplier;
     value.volume = settings.volume;
     value.mute = settings.mute;
     value.vibration = settings.vibration;
@@ -877,6 +883,9 @@ pe::ui::Preferences EdenServices::preferences() {
     result.filter = saved.upscaling_filter;
     result.refresh = saved.refresh;
     result.output = saved.output;
+    result.frame_gen = saved.frame_gen;
+    result.frame_gen_target = saved.frame_gen_target;
+    result.frame_gen_multiplier = saved.frame_gen_multiplier;
     result.vibration = saved.vibration;
     result.language = saved.language;
     result.menu_volume = saved.menu_volume;
@@ -907,6 +916,9 @@ bool EdenServices::set_preferences(const pe::ui::Preferences& preferences) {
     value.upscaling_filter = preferences.filter;
     value.refresh = preferences.refresh;
     value.output = preferences.output;
+    value.frame_gen = preferences.frame_gen;
+    value.frame_gen_target = preferences.frame_gen_target;
+    value.frame_gen_multiplier = preferences.frame_gen_multiplier;
     value.vibration = preferences.vibration;
     value.language = preferences.language;
     value.menu_volume = preferences.menu_volume;

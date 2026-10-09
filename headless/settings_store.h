@@ -5,7 +5,8 @@
 //     "version": 1,
 //     "video": { "renderer": "vulkan", "fps_overlay": true, "resolution": "1x",
 //                "upscaling_filter": "bilinear", "refresh_rate": "60",
-//                "output_resolution": "1080p" },
+//                "output_resolution": "1080p", "frame_gen": false,
+//                "frame_gen_target": "auto", "frame_gen_multiplier": "2" },
 //     "audio": { "volume": 100, "mute": false, "menu_volume": 70 },
 //     "controls": { "vibration": true, "mapping": { "a": "cross", "b": "circle" } },
 //     "system": { "language": "en-US" },
@@ -19,6 +20,8 @@
 //     "games": { "0100000000010000": { "console_mode": "handheld", "renderer": "opengl",
 //                                      "resolution": "0.75x", "upscaling_filter": "fsr",
 //                                      "refresh_rate": "120", "fps_overlay": false,
+//                                      "frame_gen": true,
+//                                      "frame_gen_target": "120", "frame_gen_multiplier": "3",
 //                                      "volume": 80, "mute": false, "vibration": false,
 //                                      "language": "ja", "mapping": { "a": "cross" },
 //                                      "controller": "handheld",
@@ -69,6 +72,17 @@ inline constexpr const char* kUpscalingFilterLabels[] = {"Bilinear", "AMD FSR", 
 // display (display_refresh.h); one that cannot show it stays at 60 Hz.
 inline constexpr const char* kRefreshKeys[] = {"60", "120"};
 inline constexpr int kRefreshHz[] = {60, 120};
+// Lossless Scaling frame generation (Vulkan only): the multiplier is how many frames the driver
+// makes out of each one the game draws, and the target is the rate it aims for instead. Eden
+// ignores the multiplier once a target rate is set (FrameGenMaxGenerations in settings.cpp lets
+// the pacer add up to its own maximum then), so "auto" passes 0 and leaves the ratio in charge.
+// The target's limits are Eden's own: 0 to 240 Hz.
+inline constexpr const char* kFrameGenTargetKeys[] = {"auto", "60", "90", "120", "144", "240"};
+inline constexpr int kFrameGenTargetHz[] = {0, 60, 90, 120, 144, 240};
+static_assert(std::size(kFrameGenTargetKeys) == std::size(kFrameGenTargetHz));
+inline constexpr const char* kFrameGenMultiplierKeys[] = {"2", "3", "4"};
+inline constexpr int kFrameGenMultiplierValue[] = {2, 3, 4};
+static_assert(std::size(kFrameGenMultiplierKeys) == std::size(kFrameGenMultiplierValue));
 // Settings > Video: the size of the picture the app puts out, for the menu and for a game (its
 // frame after the upscaling filter). The console scales it to what the TV shows.
 inline constexpr const char* kOutputKeys[] = {"1080p", "1440p", "2160p"};
@@ -98,6 +112,9 @@ struct Preferences {
     int upscaling_filter = 0;            // index into kUpscalingFilterKeys
     int refresh = 0;                     // index into kRefreshKeys
     int output = 0;                      // index into kOutputKeys
+    bool frame_gen = false;              // Lossless Scaling frame generation (Vulkan only)
+    int frame_gen_target = 0;            // index into kFrameGenTargetKeys (0 is "auto")
+    int frame_gen_multiplier = 0;        // index into kFrameGenMultiplierKeys (0 is 2x)
     bool vibration = true;
     int language = 0;                    // index into kLanguageKeys (English (US), Eden's default)
     int menu_volume = 70;                // the launcher's own sounds, 0 (off) to 100
@@ -323,6 +340,13 @@ inline Preferences LoadPreferences(const std::string& file = SettingsFile()) {
                               kRefreshKeys, int(std::size(kRefreshKeys)), result.refresh);
     result.output = KeyIndex(Settings::String(document, Json::json_pointer("/video/output_resolution")),
                              kOutputKeys, int(std::size(kOutputKeys)), result.output);
+    result.frame_gen = Settings::Bool(document, Json::json_pointer("/video/frame_gen"), result.frame_gen);
+    result.frame_gen_target = KeyIndex(
+        Settings::String(document, Json::json_pointer("/video/frame_gen_target")), kFrameGenTargetKeys,
+        int(std::size(kFrameGenTargetKeys)), result.frame_gen_target);
+    result.frame_gen_multiplier = KeyIndex(
+        Settings::String(document, Json::json_pointer("/video/frame_gen_multiplier")),
+        kFrameGenMultiplierKeys, int(std::size(kFrameGenMultiplierKeys)), result.frame_gen_multiplier);
     result.vibration = Settings::Bool(document, Json::json_pointer("/controls/vibration"), result.vibration);
     result.language = KeyIndex(Settings::String(document, Json::json_pointer("/system/language")),
                                kLanguageKeys, int(std::size(kLanguageKeys)), result.language);
@@ -350,6 +374,9 @@ inline bool SavePreferences(const Preferences& value, const std::string& file = 
     document["video"]["upscaling_filter"] = kUpscalingFilterKeys[value.upscaling_filter];
     document["video"]["refresh_rate"] = kRefreshKeys[value.refresh];
     document["video"]["output_resolution"] = kOutputKeys[value.output];
+    document["video"]["frame_gen"] = value.frame_gen;
+    document["video"]["frame_gen_target"] = kFrameGenTargetKeys[value.frame_gen_target];
+    document["video"]["frame_gen_multiplier"] = kFrameGenMultiplierKeys[value.frame_gen_multiplier];
     document["audio"]["volume"] = value.volume;
     document["audio"]["mute"] = value.mute;
     document["audio"]["menu_volume"] = value.menu_volume;
@@ -399,6 +426,9 @@ struct GameSettings {
     int upscaling_filter = -1;  // index into kUpscalingFilterKeys
     int refresh = -1;           // index into kRefreshKeys
     int hud = -1;               // FPS overlay
+    int frame_gen = -1;         // Lossless Scaling frame generation (Vulkan only)
+    int frame_gen_target = -1;  // index into kFrameGenTargetKeys
+    int frame_gen_multiplier = -1;  // index into kFrameGenMultiplierKeys
     int volume = -1;            // game volume, 0 to 100
     int mute = -1;
     int vibration = -1;
@@ -426,6 +456,10 @@ inline GameSettings LoadGameSettings(uint64_t title_id, const std::string& file 
     result.upscaling_filter = KeyIndex(key("upscaling_filter"), kUpscalingFilterKeys,
                                        int(std::size(kUpscalingFilterKeys)), -1);
     result.refresh = KeyIndex(key("refresh_rate"), kRefreshKeys, int(std::size(kRefreshKeys)), -1);
+    result.frame_gen_target = KeyIndex(key("frame_gen_target"), kFrameGenTargetKeys,
+                                       int(std::size(kFrameGenTargetKeys)), -1);
+    result.frame_gen_multiplier = KeyIndex(key("frame_gen_multiplier"), kFrameGenMultiplierKeys,
+                                           int(std::size(kFrameGenMultiplierKeys)), -1);
     result.language = KeyIndex(key("language"), kLanguageKeys, int(std::size(kLanguageKeys)), -1);
     result.controller = KeyIndex(key("controller"), kControllerKeys, int(std::size(kControllerKeys)), -1);
     const auto flag = [&](const std::string& path) {
@@ -433,6 +467,7 @@ inline GameSettings LoadGameSettings(uint64_t title_id, const std::string& file 
         return document.contains(at) && document.at(at).is_boolean() ? int(document.at(at).get<bool>()) : -1;
     };
     result.hud = flag("/fps_overlay");
+    result.frame_gen = flag("/frame_gen");
     result.mute = flag("/mute");
     result.vibration = flag("/vibration");
     for (int i = 0; i < kPerformanceSwitches; ++i)
@@ -452,7 +487,10 @@ inline bool SaveGameSettings(uint64_t title_id, const GameSettings& value, const
         value.upscaling_filter >= int(std::size(kUpscalingFilterKeys)) ||
         value.refresh >= int(std::size(kRefreshKeys)) || value.language >= int(std::size(kLanguageKeys)) ||
         value.controller >= int(std::size(kControllerKeys)) ||
-        value.volume > 100 || !flag_ok(value.hud) || !flag_ok(value.mute) || !flag_ok(value.vibration) ||
+        value.frame_gen_target >= int(std::size(kFrameGenTargetKeys)) ||
+        value.frame_gen_multiplier >= int(std::size(kFrameGenMultiplierKeys)) ||
+        value.volume > 100 || !flag_ok(value.hud) || !flag_ok(value.frame_gen) || !flag_ok(value.mute) ||
+        !flag_ok(value.vibration) ||
         !std::all_of(value.performance.begin(), value.performance.end(), flag_ok) ||
         (value.own_mapping && !ValidMapping(value.mapping))) return false;
     Settings::Json document = Settings::Load(file);
@@ -467,6 +505,8 @@ inline bool SaveGameSettings(uint64_t title_id, const GameSettings& value, const
     store("resolution", value.resolution, kResolutionKeys);
     store("upscaling_filter", value.upscaling_filter, kUpscalingFilterKeys);
     store("refresh_rate", value.refresh, kRefreshKeys);
+    store("frame_gen_target", value.frame_gen_target, kFrameGenTargetKeys);
+    store("frame_gen_multiplier", value.frame_gen_multiplier, kFrameGenMultiplierKeys);
     store("language", value.language, kLanguageKeys);
     store("controller", value.controller, kControllerKeys);
     const auto flag = [](Settings::Json& owner, const char* name, int value) {
@@ -474,6 +514,7 @@ inline bool SaveGameSettings(uint64_t title_id, const GameSettings& value, const
         else owner[name] = value == 1;
     };
     flag(game, "fps_overlay", value.hud);
+    flag(game, "frame_gen", value.frame_gen);
     flag(game, "mute", value.mute);
     flag(game, "vibration", value.vibration);
     if (value.volume < 0) game.erase("volume");
@@ -497,6 +538,9 @@ inline Preferences PreferencesFor(uint64_t title_id, const std::string& file = S
     if (game.upscaling_filter >= 0) result.upscaling_filter = game.upscaling_filter;
     if (game.refresh >= 0) result.refresh = game.refresh;
     if (game.hud >= 0) result.hud = game.hud == 1;
+    if (game.frame_gen >= 0) result.frame_gen = game.frame_gen == 1;
+    if (game.frame_gen_target >= 0) result.frame_gen_target = game.frame_gen_target;
+    if (game.frame_gen_multiplier >= 0) result.frame_gen_multiplier = game.frame_gen_multiplier;
     if (game.volume >= 0) result.volume = game.volume;
     if (game.mute >= 0) result.mute = game.mute == 1;
     if (game.vibration >= 0) result.vibration = game.vibration == 1;

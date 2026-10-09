@@ -144,6 +144,10 @@ msgid "Australia"
 msgstr "Australia"
 
 #: pe/ui/game_options.cpp
+msgid "Auto"
+msgstr "Otomatis"
+
+#: pe/ui/game_options.cpp
 msgid "Automatic"
 msgstr "Otomatis"
 
@@ -650,6 +654,18 @@ msgstr "Penghitung FPS"
 #: pe/ui/settings.cpp
 msgid "FPS OVERLAY"
 msgstr "PENGHITUNG FPS"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen multiplier"
+msgstr "Pengali pembuatan frame"
+
+#: pe/ui/game_options.cpp
+msgid "Frame gen target"
+msgstr "Target pembuatan frame"
+
+#: pe/ui/game_options.cpp
+msgid "Frame generation"
+msgstr "Pembuatan bingkai"
 
 #: settings_store.h
 msgid "French"
@@ -2056,7 +2072,7 @@ msgid "{0} games installed"
 msgstr "{0} game terinstal"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 
