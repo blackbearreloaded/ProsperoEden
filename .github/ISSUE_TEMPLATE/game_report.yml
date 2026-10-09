@@ -1,0 +1,80 @@
+name: "Game report"
+description: "How a game runs: works, glitches, crashes"
+title: "[Game] "
+labels: ["compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you post**
+
+        - Naming a game is fine; compatibility reports need it.
+        - Do not post or ask for links to games, keys, firmware, shader caches or save files.
+        - Do not report on games that are not on sale yet, or on copies you did not dump yourself.
+        - Issues that break these rules are closed and may be deleted without a reply.
+        - Do not post Sony SDK files, firmware, decrypted system files, keys or links to them.
+  - type: input
+    id: game
+    attributes:
+      label: "Game"
+      description: "Title, region and update version"
+      placeholder: "Example Game (USA), update 1.2.0"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "App version"
+      description: "For example 1.000.095"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: "PS5 system software version"
+      placeholder: "12.70"
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: "Result"
+      options:
+        - "Plays well"
+        - "Plays with glitches"
+        - "Starts but cannot be played"
+        - "Does not start"
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: "Settings changed from the defaults"
+      description: "Renderer, resolution scale, per-game settings, mods"
+    validations:
+      required: false
+  - type: textarea
+    id: what
+    attributes:
+      label: "What happens"
+      description: "Where it breaks, how often, frame rate if you measured it"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Log or screenshot"
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: "Checks"
+      options:
+        - label: "I dumped this game and its keys myself, from a copy and a console I own."
+          required: true
+        - label: "This game is on sale; it is not a leaked or early copy."
+          required: true
+        - label: "This report contains no links to games, keys or firmware."
+          required: true

@@ -1,0 +1,34 @@
+name: "Feature request"
+description: "An idea or improvement for ProsperoEden"
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you post**
+
+        - Naming a game is fine; compatibility reports need it.
+        - Do not post or ask for links to games, keys, firmware, shader caches or save files.
+        - Do not report on games that are not on sale yet, or on copies you did not dump yourself.
+        - Issues that break these rules are closed and may be deleted without a reply.
+        - Do not post Sony SDK files, firmware, decrypted system files, keys or links to them.
+  - type: textarea
+    id: problem
+    attributes:
+      label: "What would you like to do that you cannot do now?"
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: "How could it work?"
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: "Checks"
+      options:
+        - label: "I searched the open and closed issues for this idea."
+          required: true
