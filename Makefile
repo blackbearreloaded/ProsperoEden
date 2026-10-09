@@ -20,7 +20,7 @@ PS5_PORT ?= 2121
 PYTHON := python3 -B
 RELEASE_APP := build/release/PPSA99008
 
-.PHONY: help release package image dev prepare deps deps-status toolchain test install clean distclean
+.PHONY: help release package dev prepare deps deps-status toolchain test install clean distclean
 
 help: ## List the targets and variables
 	@echo 'ProsperoEden build - make [target] [VARIABLE=value]'
@@ -32,14 +32,11 @@ help: ## List the targets and variables
 	@echo '  DEV_TITLE=$(DEV_TITLE)  title ID the development build boots (make dev)'
 	@echo '  PS5_HOST=$(PS5_HOST) PS5_PORT=$(PS5_PORT)  console for make install'
 
-release: package ## Release files in dist/: ZIP, .ffpfsc image, SHA256SUMS, release notes (default)
+release: package ## Release files in dist/: ZIP, SHA256SUMS, release notes (default)
 	$(PYTHON) tools/ci/make-dist.py $(RELEASE_APP)
 
 package: prepare ## Build the app as released: build/release/PPSA99008
 	bash tools/build-package.sh release
-
-image: package ## Only the ShadowMountPlus package image in dist/
-	$(PYTHON) tools/ci/make-dist.py --image-only $(RELEASE_APP)
 
 dev: prepare ## Development build that boots DEV_TITLE: build/dev/PPSA99008
 	@[[ -n "$(DEV_TITLE)" ]] || { echo 'Set DEV_TITLE=<16-digit title ID> (or write it to .local/dev-profile-title)'; exit 2; }

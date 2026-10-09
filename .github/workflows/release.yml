@@ -9,6 +9,8 @@ name: Release build
 # Release build > Run workflow). Every run builds the ZIP, checks it (intact, eboot.bin, every
 # entry 0777) and keeps it as a 7-day artifact; only a v* tag also publishes it, as a pre-release.
 # A tag's or a manual run's ZIP also gets a signed attestation of where it was built.
+# The release's files come from this workflow: a release that already exists for the tag gets
+# them when it has no ZIP yet, and keeps its own (with a warning) when it has one.
 #
 # Downloads, ccache and the RADV driver are cached between runs. A build with these caches takes
 # about ten minutes; one without them compiles everything on four cores and takes about an hour.
@@ -237,7 +239,22 @@ jobs:
       - name: Publish the pre-release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >
-          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --prerelease
-          --title "ProsperoEden $GITHUB_REF_NAME" --notes-file dist/release-notes.md
-          "dist/ProsperoEden-$GITHUB_REF_NAME.zip" dist/SHA256SUMS
+        run: |
+          set -euo pipefail
+          # The names of the files of the tag's release, when there is one (a draft counts).
+          if ! assets=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null); then
+            # No release yet: this run makes it.
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --prerelease \
+              --title "ProsperoEden $GITHUB_REF_NAME" --notes-file dist/release-notes.md \
+              "dist/ProsperoEden-$GITHUB_REF_NAME.zip" dist/SHA256SUMS
+          elif grep -qi '\.zip$' <<< "$assets"; then
+            # A published ZIP is never replaced or deleted: the catalog at homebrew.page records
+            # each release ZIP's checksum.
+            echo "::warning title=Release files not from this run::A release for $GITHUB_REF_NAME already has a ZIP; it was not replaced. Its files were not published by this run and may have no attestation."
+          else
+            # A release written in advance (notes only, or a draft): it gets this run's files;
+            # its title, notes and state stay as they are. Without --clobber, nothing is replaced.
+            gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+              "dist/ProsperoEden-$GITHUB_REF_NAME.zip" dist/SHA256SUMS
+            echo "::notice title=Files added to the existing release::The release for $GITHUB_REF_NAME had no ZIP; this run's ZIP and SHA256SUMS were added. Its title and notes were not changed."
+          fi

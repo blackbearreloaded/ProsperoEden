@@ -10,9 +10,7 @@ The first run fetches every dependency at its pinned revision, builds the RADV d
 Eden for the PS5, and writes the release files to `dist/`:
 
 - `ProsperoEden-vX.Y.Z.zip`: the `PPSA99008` folder to copy to `/data/homebrew/PPSA99008`;
-- `ProsperoEden-vX.Y.Z.ffpfsc`: the same folder as a compressed PFS image that
-  ShadowMountPlus installs like a package;
-- `SHA256SUMS` and `release-notes.md`.
+- `SHA256SUMS` (the ZIP's checksum) and `release-notes.md`.
 
 The app package includes an exact-title one-shot helper built from the pinned upstream
 [PS5-Lapy-JB-Daemon](https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon) source. Its generated
@@ -39,7 +37,6 @@ already exists: the dependencies, this checkout's build cache in
 |---|---|
 | `make` / `make release` | Release files in `dist/` |
 | `make package` | Only the app folder, `build/release/PPSA99008` |
-| `make image` | Only the `.ffpfsc` package image |
 | `make install PS5_HOST=<address>` | Copy `build/release/PPSA99008` to a console over FTP (close ProsperoEden first) |
 | `make dev DEV_TITLE=<title ID>` | Development build, `build/dev/PPSA99008` (or `EDEN_DEV_PACKAGE_DIR`): profiling counters, `dev-settings.txt` switches, boots the given title |
 | `make test` | Host (Linux) build of the emulator and its test suites |
@@ -136,8 +133,6 @@ What the PS5's home screen shows for the app is in `sce_sys/`, as it goes into t
 `make toolchain` checks them: `clang-18`, `lld-18` and the LLVM 18 tools, `cmake`, `ninja`,
 `ccache`, `make`, `nasm`, `meson`, `rsync`, `git`, `glslangValidator`, `spirv-val`, `bison`,
 `flex`, `curl`, `wget`, `unzip`, and Python 3.11 or later with `venv`, `mako` and `yaml`.
-The image step fetches [PSBrew/MkPFS](https://github.com/PSBrew/MkPFS) at a pinned commit into
-`~/.cache/prosperoeden-mkpfs`.
 
 RADV's host tools (`mesa_clc`, `vtn_bindgen2`) are built against the host's LLVM 21: its
 development files, Clang 21 libraries, libclc and the SPIR-V LLVM translator. The Payload SDK's
@@ -193,14 +188,15 @@ dependencies are reused instead of fetched) for a build on your own machine.
 
 - **Pull request** (by itself, at every push to it) and **manual run** (Actions > Release build >
   Run workflow): builds the release files, checks the ZIP (intact, `eboot.bin` present, every
-  entry stored as 0777) and keeps `dist/` as a 7-day artifact. Nothing is published. A push to
+  entry stored as 0777) and keeps `dist/` (the ZIP, `SHA256SUMS` and `release-notes.md`) as a
+  7-day artifact. Nothing is published. A push to
   `main` builds nothing: a build of `main` is a manual run. The artifact is `ProsperoEden`; for
   a pull request it is `ProsperoEden-PR<number>-<commit>`, with the first seven characters of
   the pull request's own head commit. A newer push to a pull request, or a newer manual run on
   the same branch, cancels the run in progress.
 - **Tag `vX.Y.Z`** (by itself, when the tag is pushed): builds and checks them the same way, checks that the tag matches the package
-  version, and publishes a pre-release (a second job, outside the container). The release notes
-  come from the README's "Changes in vX.Y.Z" section.
+  version, and publishes a pre-release with the ZIP and `SHA256SUMS` (a second job, outside the
+  container). The release notes come from the README's "Changes in vX.Y.Z" section.
 - Every run also keeps `build/symbols/` as an artifact with `-symbols` after the name: 90 days
   for a tag, 7 days otherwise.
 - A tag's or a manual run's ZIP is attested (signed build provenance): a release ZIP built by
@@ -208,6 +204,14 @@ dependencies are reused instead of fetched) for a build on your own machine.
   `gh attestation verify ProsperoEden-vX.Y.Z.zip -R blackbearreloaded/ProsperoEden` (GitHub
   CLI). This covers releases built by GitHub Actions from now on (after v1.000.090), not
   earlier ones.
+
+A release is made by pushing the tag: the workflow builds, attests and publishes the ZIP and
+`SHA256SUMS`. Do not attach files to a release by hand. With no release for the tag, the workflow
+creates it. A release that already exists without a ZIP (notes written in advance, or a draft)
+gets the workflow's ZIP and `SHA256SUMS`, and keeps its title and notes. A release that already
+has a ZIP keeps its files (the catalog at homebrew.page records each release ZIP's checksum, so
+a published ZIP is never replaced): the run ends successfully with a warning that those files
+were not published by it and may have no attestation.
 
 To cut a release:
 
