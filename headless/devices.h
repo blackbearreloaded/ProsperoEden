@@ -18,6 +18,13 @@ namespace Eden {
 // The PS5 controllers as the "virtual_gamepad" input engine that Eden binds every guest
 // controller to (buttons, sticks, motion), plus DualSense rumble: Eden's controllers send each
 // player's vibration here (hid_core output params, headless/CMakeLists.txt), one device per side.
+// Whether Eden's handheld controller is the one in use this session: chosen for the game
+// (Game settings > Controls > Controller type) or given to a game that takes nothing else
+// (controller_applet.h). Only then does player 1's DualSense play it as well (pad.cpp). Eden
+// connects its handheld controller by itself as soon as a button reaches it, so fed all the time
+// it appeared beside the player's own controller at the first press, in every game.
+inline std::atomic<bool> handheld_in_use{false};
+
 class PadEngine final : public InputCommon::InputEngine {
 public:
     using VirtualButton = InputCommon::VirtualGamepad::VirtualButton;

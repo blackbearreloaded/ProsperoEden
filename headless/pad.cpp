@@ -38,13 +38,13 @@ PadEngine::PadEngine(std::string name) : InputEngine(std::move(name)) {
 PadIdentifier PadEngine::Identifier(std::size_t player) const {
     return {.guid = Common::UUID{}, .port = player, .pad = 0};
 }
-// Eden's handheld controller is a controller of its own (port 8), played on player 1's DualSense:
-// what player 1 sends goes to both, and the game reads the one it has connected.
+// Eden's handheld controller is a controller of its own (port 8), played on player 1's DualSense
+// while it is the one in use (handheld_in_use, devices.h): what player 1 sends then goes to both.
 constexpr std::size_t kHandheld = 8;
 
 void PadEngine::SetButtonState(std::size_t player, int button, bool value) {
     if (player < kPlayers) SetButton(Identifier(player), button, value);
-    if (player == 0) SetButton(Identifier(kHandheld), button, value);
+    if (player == 0 && handheld_in_use.load()) SetButton(Identifier(kHandheld), button, value);
 }
 void PadEngine::SetButtonState(std::size_t player, VirtualButton button, bool value) {
     SetButtonState(player, static_cast<int>(button), value);
@@ -53,7 +53,7 @@ void PadEngine::SetStickPosition(std::size_t player, int axis, float x, float y)
     if (player >= kPlayers) return;
     SetAxis(Identifier(player), axis * 2, x);
     SetAxis(Identifier(player), axis * 2 + 1, y);
-    if (player != 0) return;
+    if (player != 0 || !handheld_in_use.load()) return;
     SetAxis(Identifier(kHandheld), axis * 2, x);
     SetAxis(Identifier(kHandheld), axis * 2 + 1, y);
 }
@@ -64,7 +64,7 @@ void PadEngine::SetMotionState(std::size_t player, u64 delta_us, float gyro_x, f
                              .accel_x = accel_x, .accel_y = accel_y, .accel_z = accel_z,
                              .delta_timestamp = delta_us};
     SetMotion(Identifier(player), 0, motion);
-    if (player == 0) SetMotion(Identifier(kHandheld), 0, motion);
+    if (player == 0 && handheld_in_use.load()) SetMotion(Identifier(kHandheld), 0, motion);
 }
 void PadEngine::ResetControllers() {
     for (std::size_t player = 0; player < kPlayers; ++player) {
