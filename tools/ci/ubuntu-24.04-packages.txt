@@ -1,0 +1,23 @@
+# Ubuntu 24.04 packages for the release build on the GitHub-hosted runner (docs/BUILDING.md).
+# tools/ci/setup-ubuntu-24.04.sh installs exactly these, after adding apt.llvm.org for LLVM 21.
+# Not here, because Ubuntu 24.04's are too old or missing: meson and the SPIR-V LLVM translator
+# (that script provides both) and cmake (Eden needs 3.31; the runner has it).
+#
+# Basics, downloads and archives
+ca-certificates git curl wget unzip zip xz-utils file make build-essential pkgconf gnupg
+# rev: the Payload SDK's prospero-* wrappers use it
+bsdextrautils
+# patch: Eden's package step (CPMUtil) applies its patches with it
+patch
+# Build tools (make toolchain)
+ninja-build ccache nasm rsync bison flex glslang-tools spirv-tools
+# Python 3 with venv (the image step's MkPFS), mako and yaml (Mesa)
+python3 python3-venv python3-pip python3-mako python3-yaml python3-packaging python3-ply
+# LLVM 18: the compiler of Eden, FFmpeg and the boilerplate (make toolchain)
+clang-18 lld-18 llvm-18 libclang-rt-18-dev
+# LLVM 21 (apt.llvm.org): the Payload SDK's prospero-* wrappers (the RADV build and the final
+# link); the releases are linked with LLD 21.
+clang-21 lld-21 llvm-21 libclang-rt-21-dev
+# LLVM 21 development files and OpenCL C: RADV's host tools (mesa_clc, vtn_bindgen2)
+llvm-21-dev libclang-21-dev libclang-cpp21-dev libclc-21 libclc-21-dev
+spirv-headers libexpat1-dev zlib1g-dev

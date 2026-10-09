@@ -1,5 +1,6 @@
-# Ubuntu 26.04 packages for the release build (docs/BUILDING.md). The release workflow installs
-# exactly these: apt-get install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
+# Ubuntu 26.04 packages for the release build on a developer machine (docs/BUILDING.md):
+# apt-get install --no-install-recommends $(grep -v '^#' tools/ci/ubuntu-packages.txt)
+# The release workflow runs on Ubuntu 24.04 and has its own list (ubuntu-24.04-packages.txt).
 #
 # Basics, downloads and archives
 ca-certificates git curl wget unzip zip xz-utils file make build-essential pkgconf
