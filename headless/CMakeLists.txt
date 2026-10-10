@@ -2212,6 +2212,10 @@ else()
         "${EDEN_PORT_DIR}/update_check_check.cpp" "${EDEN_PORT_DIR}/update_check/update_check.c")
     target_compile_definitions(eden-update-check PRIVATE UPDATE_CHECK_NO_NETWORK=1)
     target_compile_options(eden-update-check PRIVATE -UNDEBUG)
+    # The self-update helper keeps the version it replaces: moving it to where it is kept.
+    add_executable(eden-update-files-check
+        "${EDEN_PORT_DIR}/self_update_files_check.cpp" "${EDEN_PORT_DIR}/self_update_helper/files.cpp")
+    target_include_directories(eden-update-files-check PRIVATE "${EDEN_PORT_DIR}")
 endif()
 target_include_directories(eden-headless PRIVATE "${PROJECT_SOURCE_DIR}/src")
 # The app version has one home, sce_sys/param.json (contentVersion), which the package carries as
