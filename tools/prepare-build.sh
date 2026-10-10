@@ -25,9 +25,9 @@ eden="$scratch/source"
 if [[ ! -f $eden/CMakeLists.txt ]]; then
     step "Eden source"
     mkdir -p "$eden"
-    tar -xzf .deps/eden-5f142c79.tar.gz --strip-components=1 -C "$eden"
+    tar -xzf .deps/eden-67bada77.tar.gz --strip-components=1 -C "$eden"
 fi
-printf '%s\n' '5f142c7926d0c7fcbbd0ce30794d72f638a43b2a' > "$eden/GIT-COMMIT"
+printf '%s\n' '67bada77f8a43a90da2e94e89b8e7da73c256989' > "$eden/GIT-COMMIT"
 printf '%s\n' 'ps5-headless' > "$eden/GIT-REFSPEC"
 # Optional: seed Eden's package cache from another checkout's (CI reuses a development cache).
 if [[ -n ${EDEN_CPM_CACHE_SEED:-} && ! -d $eden/.cache/cpm ]]; then
