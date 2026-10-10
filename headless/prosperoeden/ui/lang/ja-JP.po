@@ -671,6 +671,10 @@ msgstr "フレーム生成の目標"
 msgid "Frame generation"
 msgstr "フレーム生成"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "フレーム生成には、lossless フォルダーに Lossless Scaling の Lossless.dll が必要です。"
+
 #: settings_store.h
 msgid "French"
 msgstr "フランス語"
@@ -1860,7 +1864,7 @@ msgstr "再試行します。"
 msgid "Turn on or off"
 msgstr "オン/オフ"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "利用不可"
 

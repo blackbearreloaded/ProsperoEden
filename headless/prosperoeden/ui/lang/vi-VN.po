@@ -671,6 +671,10 @@ msgstr "Mục tiêu tạo khung hình"
 msgid "Frame generation"
 msgstr "Tạo khung hình"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Tạo khung hình cần Lossless.dll của Lossless Scaling trong thư mục lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Tiếng Pháp"
@@ -1860,7 +1864,7 @@ msgstr "Đang thử lại."
 msgid "Turn on or off"
 msgstr "Bật hoặc tắt"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Không khả dụng"
 

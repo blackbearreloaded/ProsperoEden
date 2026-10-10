@@ -143,7 +143,7 @@ msgstr ""
 msgid "Australia"
 msgstr ""
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr ""
 
@@ -659,16 +659,20 @@ msgstr ""
 msgid "FPS OVERLAY"
 msgstr ""
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr ""
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr ""
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
+msgstr ""
+
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr ""
 
 #: settings_store.h
@@ -1860,7 +1864,7 @@ msgstr ""
 msgid "Turn on or off"
 msgstr ""
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr ""
 
@@ -2084,7 +2088,7 @@ msgid "{0} games installed"
 msgstr ""
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr ""
 

@@ -432,6 +432,12 @@ class Services
     virtual const std::vector<std::string> &resolution_labels() = 0; // "1x (native)"
     virtual const std::vector<std::string> &resolution_keys() = 0;   // "1x"
     virtual const std::vector<std::string> &filter_labels() = 0;
+    // Frame generation: 0 this build has none (its settings are not shown), 1 the user's
+    // Lossless.dll is missing (they are shown greyed out), 2 ready.
+    virtual int frame_gen_state()
+    {
+        return 0;
+    }
     virtual const std::vector<std::string> &language_labels() = 0;
     virtual std::string language_region(int language) = 0;
     virtual std::string setup_details() = 0;

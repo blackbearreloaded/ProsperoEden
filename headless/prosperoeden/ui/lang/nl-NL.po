@@ -671,6 +671,10 @@ msgstr "Doel framegeneratie"
 msgid "Frame generation"
 msgstr "Framegeneratie"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Framegeneratie heeft Lossless.dll van Lossless Scaling nodig in de map lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Frans"
@@ -1860,7 +1864,7 @@ msgstr "Nieuwe poging."
 msgid "Turn on or off"
 msgstr "In- of uitschakelen"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Niet beschikbaar"
 

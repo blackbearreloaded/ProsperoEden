@@ -54,8 +54,14 @@ enum VideoRow : int
     video_filter,
     video_refresh,
     video_overlay,
+    // Frame generation: not shown in a build without it (Services::frame_gen_state).
+    video_frame_gen,
+    video_frame_gen_target,
+    video_frame_gen_multiplier,
     kVideoRows,
 };
+constexpr int kFrameGenTargets = 6;     // Auto, 60, 90, 120, 144, 240 Hz (settings_store.h)
+constexpr int kFrameGenMultipliers = 3; // 2x, 3x, 4x
 constexpr float kVideoRowsTop = 334.0f;
 constexpr float kVideoRowPitch = 96.0f;
 constexpr float kVideoRowHeight = 94.0f;
@@ -85,6 +91,9 @@ const char *output_name(int output)
 {
     return kOutputs[std::clamp(output, 0, 2)];
 }
+
+constexpr const char *kFrameGenTargetNames[] = {"", "60", "90", "120", "144", "240"};
+constexpr const char *kFrameGenMultiplierNames[] = {"2x", "3x", "4x"};
 
 const char *on_off(bool value)
 {
@@ -151,7 +160,7 @@ void Launcher::press_settings(Key key)
             open_modal(Modal::video);
             video_rows_.visible = kVideoRowsShown;
             video_rows_.pitch = kVideoRowPitch;
-            video_rows_.reset(kVideoRows, 0);
+            video_rows_.reset(dialog_rows(Modal::video), 0);
             break;
         case kPerformance:
             open_modal(Modal::performance);
@@ -382,7 +391,7 @@ int Launcher::dialog_rows(Modal modal) const
     switch (modal)
     {
     case Modal::video:
-        return kVideoRows;
+        return services_.frame_gen_state() == 0 ? static_cast<int>(video_frame_gen) : static_cast<int>(kVideoRows);
     case Modal::performance:
         return kPerformanceRows;
     case Modal::audio:
@@ -483,6 +492,20 @@ void Launcher::press_dialog(Key key)
         }
         else if (option_ == video_refresh)
             prefs_.refresh = prefs_.refresh != 0 ? 0 : 1;
+        else if (option_ >= video_frame_gen && services_.frame_gen_state() != 2)
+        {
+            say(tr("Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."), true);
+            cue(Cue::error);
+            return;
+        }
+        else if (option_ == video_frame_gen)
+            prefs_.frame_gen = !prefs_.frame_gen;
+        else if (option_ == video_frame_gen_target)
+            prefs_.frame_gen_target =
+                (std::clamp(prefs_.frame_gen_target, 0, kFrameGenTargets - 1) + step + kFrameGenTargets) % kFrameGenTargets;
+        else if (option_ == video_frame_gen_multiplier)
+            prefs_.frame_gen_multiplier = (std::clamp(prefs_.frame_gen_multiplier, 0, kFrameGenMultipliers - 1) + step +
+                                           kFrameGenMultipliers) % kFrameGenMultipliers;
         else
             prefs_.hud = !prefs_.hud;
         break;
@@ -647,10 +670,17 @@ void Launcher::draw_dialog(Canvas &c, Modal modal, float open)
             pick(services_.resolution_labels(), prefs_.resolution),
             pick(services_.filter_labels(), prefs_.filter),
             hertz(prefs_.refresh),
+            std::string{}, // FPS overlay: a switch
+            on_off(prefs_.frame_gen),
+            prefs_.frame_gen_target <= 0 ? std::string{tr("Auto")} :
+                fill(tr("{0} Hz"), {kFrameGenTargetNames[std::clamp(prefs_.frame_gen_target, 1, kFrameGenTargets - 1)]}),
+            kFrameGenMultiplierNames[std::clamp(prefs_.frame_gen_multiplier, 0, kFrameGenMultipliers - 1)],
         };
+        const bool frame_gen_locked = services_.frame_gen_state() != 2;
         static constexpr const char *kNames[kVideoRows] = {
             TR("Renderer"),         TR("Output resolution"), TR("Resolution"),
-            TR("Upscaling filter"), TR("Refresh rate"),      TR("FPS overlay")};
+            TR("Upscaling filter"), TR("Refresh rate"),      TR("FPS overlay"),
+            TR("Frame generation"), TR("Frame gen target"),  TR("Frame gen multiplier")};
         for (int row = first; row <= last; ++row)
         {
             list.push_opacity(video_rows_.row_alpha(row, kVideoRowHeight));
@@ -658,6 +688,13 @@ void Launcher::draw_dialog(Canvas &c, Modal modal, float open)
             {
                 label(row, tr(kNames[row]), kToggle);
                 toggle(c, 1292.0f, row_centre(row), knob);
+            }
+            else if (row >= video_frame_gen && frame_gen_locked)
+            {
+                // Greyed out: the user's Lossless.dll is not there.
+                list.push_opacity(0.38f);
+                label(row, tr(kNames[row]), choice(row, tr("Unavailable")));
+                list.pop_opacity();
             }
             else
             {

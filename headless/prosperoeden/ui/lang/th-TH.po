@@ -671,6 +671,10 @@ msgstr "เป้าหมายการสร้างเฟรม"
 msgid "Frame generation"
 msgstr "การสร้างเฟรม"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "การสร้างเฟรมต้องใช้ Lossless.dll จาก Lossless Scaling ในโฟลเดอร์ lossless"
+
 #: settings_store.h
 msgid "French"
 msgstr "ฝรั่งเศส"
@@ -1860,7 +1864,7 @@ msgstr "กำลังลองอีกครั้ง"
 msgid "Turn on or off"
 msgstr "เปิด​หรือ​ปิด"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "ใช้ไม่ได้"
 

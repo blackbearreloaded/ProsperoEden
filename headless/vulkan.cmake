@@ -6,7 +6,9 @@ endif()
 # "Only Android"), so -DENABLE_LSFG=ON alone is silently forced back OFF. Enable
 # it here rather than with -DANDROID=ON: that would also flip ENABLE_OPENGL and
 # other options OFF, and the console build needs the OpenGL renderer too.
-option(EDEN_PS5_FRAMEGEN "Build Eden's Lossless Scaling frame generation (LSFG)" OFF)
+# On in every build: without the user's own Lossless.dll it does nothing, and the launcher shows
+# its settings greyed out (Services::frame_gen_state).
+option(EDEN_PS5_FRAMEGEN "Build Eden's Lossless Scaling frame generation (LSFG)" ON)
 execute_process(COMMAND python3 "${PORT_ROOT}/tools/prepare-vulkan-port.py"
     "${PROJECT_SOURCE_DIR}" "${PORT_BUILD_DIR}" COMMAND_ERROR_IS_FATAL ANY)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS

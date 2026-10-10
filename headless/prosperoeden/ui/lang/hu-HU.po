@@ -671,6 +671,10 @@ msgstr "Képkockagenerálás célértéke"
 msgid "Frame generation"
 msgstr "Képkockagenerálás"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "A képkockagenerálásnak a Lossless Scaling Lossless.dll fájlja kell a lossless mappában."
+
 #: settings_store.h
 msgid "French"
 msgstr "Francia"
@@ -1860,7 +1864,7 @@ msgstr "Újrapróbálkozás."
 msgid "Turn on or off"
 msgstr "Be- vagy kikapcsolás"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Nem érhető el"
 

@@ -671,6 +671,10 @@ msgstr "هدف توليد الإطارات"
 msgid "Frame generation"
 msgstr "توليد الإطارات"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "يحتاج توليد الإطارات إلى Lossless.dll من Lossless Scaling في مجلد lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "الفرنسية"
@@ -1860,7 +1864,7 @@ msgstr "جارٍ إعادة المحاولة."
 msgid "Turn on or off"
 msgstr "تشغيل أو إيقاف"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "غير متوفر"
 

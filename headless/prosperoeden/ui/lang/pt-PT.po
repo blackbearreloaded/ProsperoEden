@@ -671,6 +671,10 @@ msgstr "Objetivo de geração de fotogramas"
 msgid "Frame generation"
 msgstr "Geração de fotogramas"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "A geração de fotogramas precisa do Lossless.dll, do Lossless Scaling, na pasta lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Francês"
@@ -1860,7 +1864,7 @@ msgstr "A tentar novamente."
 msgid "Turn on or off"
 msgstr "Ativar ou desativar"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Indisponível"
 

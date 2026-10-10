@@ -671,6 +671,10 @@ msgstr "프레임 생성 목표"
 msgid "Frame generation"
 msgstr "프레임 생성"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "프레임 생성에는 lossless 폴더에 Lossless Scaling의 Lossless.dll이 필요합니다."
+
 #: settings_store.h
 msgid "French"
 msgstr "프랑스어"
@@ -1860,7 +1864,7 @@ msgstr "다시 시도합니다."
 msgid "Turn on or off"
 msgstr "켜기/끄기"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "사용할 수 없음"
 
