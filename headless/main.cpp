@@ -904,11 +904,31 @@ int main(int argc, char** argv) {
                 Settings::values.frame_gen_multiplier.SetValue(
                     static_cast<unsigned>(std::clamp(multiplier, 2, 4)));
                 if (active)
+                {
+                    // Both of frame generation's gates give up silently, so a session that
+                    // cannot run it looks exactly like one that never asked: the shaders load
+                    // only from the user's own Lossless Scaling library, and the shader stage
+                    // needs Vulkan memory model plus robustBufferAccess2's null descriptors.
+                    // Say what this session found, in the log and in the crash report, so the
+                    // answer does not need another console round trip.
+                    const auto folder = Common::FS::GetEdenPath(Common::FS::EdenPath::LosslessDir);
+                    const auto status =
+                        static_cast<unsigned>(VideoCore::FrameGen::GetInstalledLosslessStatus());
+                    constexpr const char* kLosslessStates[] = {
+                        "ok",         "Lossless.dll not installed", "Lossless.dll unreadable",
+                        "not a PE",   "no LSFG shaders in it",      "shader translation failed",
+                        "shader cache unusable"};
                     Eden::Report("launch",
                                  ("Frame generation: " +
                                   std::string(target > 0 ? std::to_string(target) + " Hz target"
-                                                         : std::to_string(multiplier) + "x multiplier"))
+                                                         : std::to_string(multiplier) + "x multiplier") +
+                                  "; " + folder.string() +
+                                  ": " + (status < std::size(kLosslessStates) ? kLosslessStates[status]
+                                                                             : "unknown") +
+                                  "; null descriptors " +
+                                  (Eden::DevVulkan::disable_null_descriptor ? "off" : "on"))
                                      .c_str());
+                }
             }
 #endif
             // The output's refresh rate while the game runs (display_refresh.h): the renderer asks
