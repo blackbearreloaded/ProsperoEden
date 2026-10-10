@@ -31,8 +31,8 @@ float glyph_texel(int glyph, int x, int y)
 {
     x = clamp(x, 0, kGlyphWidth - 1);
     y = clamp(y, 0, kGlyphHeight - 1);
-    int at = glyph * kGlyphWidth * kGlyphHeight + y * kGlyphWidth + x;
-    return float((kGlyphs[at >> 2] >> uint((at & 3) * 8)) & 0xffu) / 255.0;
+    int at = y * kGlyphWidth + x;
+    return float((glyph_word(glyph, at >> 2) >> uint((at & 3) * 8)) & 0xffu) / 255.0;
 }
 
 // The lettering is read in one place only, at the end of loading_scene: the console's shader

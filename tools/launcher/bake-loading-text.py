@@ -3,7 +3,7 @@
 # Copyright (C) 2026 BlackBearReloaded
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Writes headless/loading_text.glsl: capitals, digits and a few signs of Montserrat Medium as
-small signed distance fields packed into a constant array, and the loading screen's lines of text
+small signed distance fields packed into constant arrays (one per glyph), and the loading screen's lines of text
 as indexes into them, so the loading shader needs no texture and no font at run time.
 
 A glyph's field is WIDTH x HEIGHT texels, one byte each (four per uint, low byte first, top row
@@ -66,8 +66,9 @@ def main():
         field = distance_field(draw_glyph(font, letter))
         data.append(np.clip(np.round(128 + field / SPREAD * 127), 0, 255).astype(np.uint32).reshape(-1))
         advances.append(font.getlength(letter) / SCALE)
-    data = np.concatenate(data)
-    words = data[0::4] | (data[1::4] << 8) | (data[2::4] << 16) | (data[3::4] << 24)
+    # One table per glyph: a console compiles a shader with one large table very slowly (its time grows
+    # much faster than the table), and several small ones quickly.
+    tables = [d[0::4] | (d[1::4] << 8) | (d[2::4] << 16) | (d[3::4] << 24) for d in data]
     codes, starts = [], []
     for line in LINES:
         starts.append((len(codes), len(line)))
@@ -92,12 +93,17 @@ def main():
         "    " + ", ".join(str(code) for code in codes) + ");",
         f"const ivec2 kLine[{len(starts)}] = ivec2[{len(starts)}](",
         "    " + ", ".join(f"ivec2({start}, {count})" for start, count in starts) + ");",
-        f"const uint kGlyphs[{words.size}] = uint[{words.size}](",
     ]
-    for start in range(0, words.size, 8):
-        chunk = ", ".join(f"0x{value:08x}u" for value in words[start:start + 8])
-        lines.append("    " + chunk + ("," if start + 8 < words.size else ""))
-    lines.append(");")
+    for index, words in enumerate(tables):
+        lines.append(f"const uint kGlyph{index}[{words.size}] = uint[{words.size}](")
+        for start in range(0, words.size, 8):
+            chunk = ", ".join(f"0x{value:08x}u" for value in words[start:start + 8])
+            lines.append("    " + chunk + ("," if start + 8 < words.size else ""))
+        lines.append(");")
+    lines += ["// One word of a glyph's field.", "uint glyph_word(int glyph, int word)", "{", "    switch (glyph)", "    {"]
+    lines += [f"    case {index}: return kGlyph{index}[word];" for index in range(len(tables))]
+    lines += ["    }", "    return 0u;", "}"]
+    words = np.concatenate(tables)
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"{OUTPUT.name}: {len(GLYPHS)} glyphs of {WIDTH}x{HEIGHT} texels, {words.size} words, {len(LINES)} lines")
 
