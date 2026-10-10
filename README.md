@@ -457,7 +457,8 @@ A report that can be acted on has:
 - the game and its version (and any update or mod in use);
 - the ProsperoEden version, the PS5 model and system software version, and what the console runs (kstuff-lite or etaHEN, ShadowMountPlus version);
 - the renderer, resolution and Performance switches;
-- the crash report or the logs from `/data/prosperoeden/logs`, with **Settings > Diagnostics > Detailed logging** on when the problem can be repeated.
+- the debug logs, attached as a ZIP: turn on **Settings > Diagnostics > Detailed logging**, make the problem happen again, then zip `/data/prosperoeden/logs` (after a crash, the crash report and the logs beside it);
+- for a problem at a certain spot in a game, your save data from just before it, attached as a ZIP: Triangle on the game in the Library, **Save data**, **Export a copy**, then zip the folder it writes in `/data/prosperoeden/save-export`. With it the spot can be reached without playing the game up to there.
 
 **No piracy.** ProsperoEden is for games you own and dumped yourself. Do not ask for, post or link to game files, keys or firmware, here or in any of the project's channels, and do not ask where to find them. Such posts are removed.
 
