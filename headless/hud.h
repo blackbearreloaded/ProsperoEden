@@ -172,28 +172,35 @@ struct LoadingPace {
         return true;
     }
 };
-// N is the rate the guest itself produces; F is the rate the display is actually given. They are
-// the same until frame generation is on, and then F is the one that says what is on screen: the
-// renderer presents the frames frame generation adds through PresentManager::Present() without
-// going through OnFrameDisplayed(), which runs once per guest frame (CountPresentedFrame()).
+// N is the rate the guest itself produces; F is the rate the display shows. They are the same
+// until frame generation is on, and the overlay then keeps its usual text (F alone). With frame
+// generation F is counted from every frame handed to the present manager (CountPresentedFrame():
+// the frames it adds do not go through OnFrameDisplayed(), which runs once per guest frame), and
+// never reads above `refresh`, the output's own rate: a display shows no more than that, however
+// many frames it is handed. refresh 0: not known, no limit.
 inline std::array<char, 25> FormatHudText(const HudClock& clock, const HudClock& output,
-                                          double speed, const char* backend) {
+                                          double speed, const char* backend, double refresh = 0) {
     std::array<char, 25> text{};
-    if (clock.fps < 0 || output.fps < 0) {
-        std::snprintf(text.data(), text.size(), "%s N-- F-- S-- W--", backend);
-    } else {
-        std::snprintf(text.data(), text.size(), "%s N%.0f F%.0f S%.0f W%.0f", backend, clock.fps,
-                      output.fps, speed, clock.worst_ms);
+    if (clock.fps < 0) {
+        std::snprintf(text.data(), text.size(), "%s F-- S-- W--", backend);
+        return text;
     }
+    const double shown = output.fps < 0 ? clock.fps : refresh > 0 ? std::min(output.fps, refresh) : output.fps;
+    if (shown < clock.fps + 1.5)
+        std::snprintf(text.data(), text.size(), "%s F%.0f S%.0f W%.0f", backend, clock.fps, speed, clock.worst_ms);
+    else
+        std::snprintf(text.data(), text.size(), "%s N%.0f F%.0f S%.0f W%.0f", backend, clock.fps, shown, speed,
+                      clock.worst_ms);
     return text;
 }
-inline HudSnapshot MakeHudSnapshot(const HudClock& clock, const HudClock& output, double speed) {
-    const auto text = FormatHudText(clock, output, speed, "VLK");
+inline HudSnapshot MakeHudSnapshot(const HudClock& clock, const HudClock& output, double speed,
+                                   double refresh = 0) {
+    const auto text = FormatHudText(clock, output, speed, "VLK", refresh);
     const std::string_view value{text.data()};
     return {HudText(value), static_cast<uint32_t>(value.size() * 16 + 24)};
 }
 // The OpenGL renderer has no frame generation: what it presents is the guest's own rate, so both
-// numbers come from one clock and read alike. Callers that cannot have an output clock use these.
+// numbers come from one clock. Callers that cannot have an output clock use these.
 inline std::array<char, 25> FormatHudText(const HudClock& clock, double speed, const char* backend) {
     return FormatHudText(clock, clock, speed, backend);
 }

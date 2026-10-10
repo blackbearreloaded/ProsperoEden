@@ -639,7 +639,8 @@ void GraphicsWindow::OnFrameDisplayed() {
             vulkan_hud_stats_time = now;
         }
         vulkan_hud =
-            MakeHudSnapshot(vulkan_hud_clock, vulkan_hud_output_clock, vulkan_hud_speed);
+            MakeHudSnapshot(vulkan_hud_clock, vulkan_hud_output_clock, vulkan_hud_speed,
+                            Eden::Display::output_millihertz.load(std::memory_order_relaxed) / 1000.0);
 #endif
         ++frame_total;
         if (frame_sample_start < 0) {

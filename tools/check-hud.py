@@ -59,6 +59,20 @@ int main() {
     auto snapshot = Eden::MakeHudSnapshot(clock, 100);
     assert(snapshot.glyphs == Eden::HudText("VLK F60 S100 W17"));
     assert(snapshot.width == std::string_view("VLK F60 S100 W17").size() * 16 + 24);
+    // With frame generation the display is given more frames than the guest makes: both rates
+    // are shown then, and the output's never above its refresh rate.
+    Eden::HudClock guest = clock, shown = clock;
+    guest.fps = 30;
+    guest.worst_ms = 33;
+    shown.fps = 60;
+    assert(std::string_view(Eden::FormatHudText(guest, shown, 100, "VLK", 59.94).data()) == "VLK N30 F60 S100 W33");
+    shown.fps = 120;
+    assert(std::string_view(Eden::FormatHudText(guest, shown, 100, "VLK", 59.94).data()) == "VLK N30 F60 S100 W33");
+    assert(std::string_view(Eden::FormatHudText(guest, shown, 100, "VLK", 119.88).data()) == "VLK N30 F120 S100 W33");
+    guest.fps = 60;
+    guest.worst_ms = 17;
+    assert(std::string_view(Eden::FormatHudText(guest, shown, 100, "VLK", 59.94).data()) == "VLK F60 S100 W17");
+    assert(Eden::MakeHudSnapshot(guest, shown, 100, 119.88).glyphs == Eden::HudText("VLK N60 F120 S100 W17"));
     clock.fps = -1;
     assert(Eden::MakeHudSnapshot(clock, 0).glyphs == Eden::HudText("VLK F-- S-- W--"));
     clock.fps = 1000000;
