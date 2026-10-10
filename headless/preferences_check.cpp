@@ -133,6 +133,33 @@ int main() {
     std::ofstream(unknown_output) << R"({"video": {"output_resolution": "720p"}})";
     assert(Eden::LoadPreferences(unknown_output).output == 0);
 
+    // Frame generation (Settings > Video): off unless chosen, and a switch, so the file holds a
+    // boolean. Vulkan only, but the setting itself is stored like any other.
+    video = Eden::LoadPreferences(file);
+    assert(!video.frame_gen);
+    video.frame_gen = true;
+    assert(Eden::SavePreferences(video, file) && Eden::LoadPreferences(file).frame_gen);
+    assert(Read(file).find("\"frame_gen\": true") != std::string::npos);
+    video.frame_gen = false;
+    assert(Eden::SavePreferences(video, file) && !Eden::LoadPreferences(file).frame_gen);
+    // The target rate and the multiplier are stored as their keys, and "auto" is the default:
+    // Eden leaves the ratio in charge unless a target is asked for (settings_store.h).
+    assert(video.frame_gen_target == 0 && video.frame_gen_multiplier == 0);
+    assert(Read(file).find("\"frame_gen_target\": \"auto\"") != std::string::npos);
+    assert(Read(file).find("\"frame_gen_multiplier\": \"2\"") != std::string::npos);
+    video.frame_gen_target = 3;      // "120"
+    video.frame_gen_multiplier = 2;  // "4"
+    assert(Eden::SavePreferences(video, file));
+    assert(Eden::LoadPreferences(file).frame_gen_target == 3);
+    assert(Eden::LoadPreferences(file).frame_gen_multiplier == 2);
+    assert(Read(file).find("\"frame_gen_target\": \"120\"") != std::string::npos);
+    assert(Read(file).find("\"frame_gen_multiplier\": \"4\"") != std::string::npos);
+    assert(Eden::kFrameGenTargetHz[Eden::LoadPreferences(file).frame_gen_target] == 120);
+    assert(Eden::kFrameGenMultiplierValue[Eden::LoadPreferences(file).frame_gen_multiplier] == 4);
+    video.frame_gen_target = 0;
+    video.frame_gen_multiplier = 0;
+    assert(Eden::SavePreferences(video, file));
+
     // Vibration (Settings > Controls): on unless turned off.
     auto controls = Eden::LoadPreferences(file);
     assert(controls.vibration);
@@ -169,6 +196,55 @@ int main() {
     assert(game.refresh == 1 && game.resolution == 4 && Eden::LoadGameSettings(quest, file).refresh == -1);
     assert(Eden::SaveGameSettings(racer, {-1, 4, -1, -1}, file) && Eden::LoadGameSettings(racer, file).refresh == -1);
     assert(!Eden::SaveGameSettings(racer, {-1, -1, -1, 2}, file));
+    // The same for frame generation (Library > Triangle > Video): a game's own choice, on top of
+    // Settings', reaching the session through PreferencesFor. SaveGameSettings replaces the whole
+    // record, so this reads it back, changes one field and saves it again, as the launcher does --
+    // a partial initializer here would drop the title's other settings.
+    assert(Eden::LoadGameSettings(racer, file).frame_gen == -1);
+    game = Eden::LoadGameSettings(racer, file);
+    game.frame_gen = 1;
+    assert(Eden::SaveGameSettings(racer, game, file));
+    game = Eden::LoadGameSettings(racer, file);
+    assert(game.frame_gen == 1 && game.resolution == 4 &&
+           Eden::LoadGameSettings(quest, file).frame_gen == -1);
+    assert(Eden::PreferencesFor(racer, file).frame_gen);
+    assert(!Eden::PreferencesFor(quest, file).frame_gen);
+    game.frame_gen = -1;
+    assert(Eden::SaveGameSettings(racer, game, file) &&
+           Eden::LoadGameSettings(racer, file).frame_gen == -1);
+    game.frame_gen = 2;
+    assert(!Eden::SaveGameSettings(racer, game, file));
+
+    // A game's own target rate and multiplier ride along the same path, and an index outside the
+    // tables is refused the way the boolean above is.
+    assert(Eden::LoadGameSettings(racer, file).frame_gen_target == -1);
+    assert(Eden::LoadGameSettings(racer, file).frame_gen_multiplier == -1);
+    assert(!Eden::PreferencesFor(racer, file).frame_gen_target &&
+           !Eden::PreferencesFor(racer, file).frame_gen_multiplier);
+    game = Eden::LoadGameSettings(racer, file);
+    game.frame_gen_target = 4;      // "144"
+    game.frame_gen_multiplier = 1;  // "3"
+    assert(Eden::SaveGameSettings(racer, game, file));
+    game = Eden::LoadGameSettings(racer, file);
+    assert(game.frame_gen_target == 4 && game.frame_gen_multiplier == 1);
+    assert(Read(file).find("\"frame_gen_target\": \"144\"") != std::string::npos);
+    assert(Read(file).find("\"frame_gen_multiplier\": \"3\"") != std::string::npos);
+    assert(Eden::kFrameGenTargetHz[Eden::PreferencesFor(racer, file).frame_gen_target] == 144);
+    assert(Eden::kFrameGenMultiplierValue[Eden::PreferencesFor(racer, file).frame_gen_multiplier] == 3);
+    assert(Eden::LoadGameSettings(quest, file).frame_gen_target == -1 &&
+           Eden::LoadGameSettings(quest, file).frame_gen_multiplier == -1);
+    game.frame_gen_target = -1;
+    game.frame_gen_multiplier = -1;
+    assert(Eden::SaveGameSettings(racer, game, file) &&
+           Eden::LoadGameSettings(racer, file).frame_gen_target == -1 &&
+           Eden::LoadGameSettings(racer, file).frame_gen_multiplier == -1);
+    game.frame_gen_target = 6;  // one past the last target
+    assert(!Eden::SaveGameSettings(racer, game, file));
+    game.frame_gen_target = -1;
+    game.frame_gen_multiplier = 3;  // one past the last multiplier
+    assert(!Eden::SaveGameSettings(racer, game, file));
+    game.frame_gen_multiplier = -1;
+    assert(Eden::SaveGameSettings(racer, game, file));
 
     // Performance ("performance", and one per title): the block list and the trade-offs off
     // unless chosen. A title's own values go before the general ones, one value at a time.
