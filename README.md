@@ -10,7 +10,7 @@
 
 **ProsperoEden is an unofficial PlayStation 5 port of [Eden](https://github.com/eden-emulator/mirror)** - an accurate, high-performance emulator. All credit for the emulator core belongs to the Eden project and its contributors. ProsperoEden is not affiliated with or endorsed by the Eden team or Sony.
 
-This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.095**.
+This is an early alpha. Video, audio, controller input, and saves have been confirmed working. Compatibility and performance will vary between games. The current release is **v1.000.100**.
 
 ## Source code
 
@@ -335,6 +335,18 @@ The launcher follows the language the PS5 is set to: Arabic, Chinese (simplified
 ### Upgrading from an earlier alpha
 
 Earlier versions read everything from `/data/homebrew/PPSA99008/assets/`. That folder keeps working until you choose a game files folder, and settings are migrated automatically on first launch. To move to the new layout, move `assets/keys`, `assets/firmware` and `assets/roms` into any folder, then select it in **Settings > Game files**. The release ZIP contains no user files, so copy its app files over your installation without deleting your own data.
+
+## Changes in v1.000.100
+
+- **Frame generation (new).** Between two pictures a game draws, ProsperoEden can show one made up from them, so a 30 FPS game looks like 60. It is in **Settings > Video** and in each game's own settings, works with the Vulkan renderer, and needs your own copy of Lossless Scaling: without its `Lossless.dll` the settings are greyed out. See [Frame generation](#frame-generation). Contributed by [gyn7561](https://github.com/gyn7561).
+- **A new loading screen.** It lists the steps of a game's start (reading the game, starting graphics, building shaders, starting the game) with a progress bar; while shaders are built it counts them. A step that lasts gets its seconds shown, so a start that is stuck can be told from one that is slow.
+- **Cheats in a file of their own work.** A cheat file placed straight in a game's mods folder (`cheat_<name>.txt`) was listed and switched on, but changed nothing in the game. It does now. The session log also names the game's build ID, the name a cheat file for that version of the game has.
+- **A game no longer fails every start after a crash.** A crash, or a console that went down, could leave a game's shader cache file damaged; that game then crashed at every start on the same renderer. The damaged part is now cut off and the rest is kept.
+- **No more stutter from log writes.** Games dropped frames every few seconds while the logs were written. Logs are now written in the background once a second; **Settings > Diagnostics > Write logs at once** brings the old behaviour back, to find a crash. Contributed by [matschi95](https://github.com/matschi95).
+- **The FPS overlay with frame generation.** It shows the game's own rate (N) beside the rate on screen (F) while frames are being added, and its usual single figure otherwise. Contributed by [gyn7561](https://github.com/gyn7561).
+- **The log says why frame generation is not running**, in lines that start with `framegen:`. Contributed by [gyn7561](https://github.com/gyn7561).
+- **A Nix shell for building.** `shell.nix` sets up the whole build environment. Contributed by [Bauls Deep](https://github.com/bawsdeep).
+- **Issues are open on GitHub**, with forms for bug reports and game reports; they ask for the save data and the debug logs. See [Issues and reports](#issues-and-reports).
 
 ## Changes in v1.000.095
 
