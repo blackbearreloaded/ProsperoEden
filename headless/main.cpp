@@ -14,6 +14,8 @@
 #include "boot_trace.h"
 #ifdef PS5_NATIVE
 #include "elevation/elevation.hpp"
+#include <cerrno>
+#include <cstring>
 #include <sys/stat.h>
 #endif
 #ifdef EDEN_DEV_VULKAN
@@ -157,6 +159,43 @@ static void MigrateSandboxData() {
 }
 #endif
 
+#ifdef PS5_NATIVE
+// Game files an early version kept inside the app's folder (assets/ with keys, firmware and
+// roms) move to /data/prosperoeden, where replacing the app cannot take them away: an update
+// that replaces the whole folder left the app without its keys and games. Both are on /data, so
+// it is a rename of each folder. Nothing moves unless all of it can: a folder chosen in Settings,
+// or anything already in /data/prosperoeden, leaves everything where it is.
+static void MoveGameFilesOutOfTheApp() {
+    const std::string from = std::string{Eden::kInstallDir} + "/assets", to = Eden::kDefaultAssetsDir;
+    const std::string saved = Eden::LoadSavedAssetsDir();
+    if ((!saved.empty() && saved != from) || !Eden::FileExists(from + "/keys/prod.keys") ||
+        Eden::FileExists(to + "/keys/prod.keys"))
+        return;
+    static constexpr const char* kFolders[] = {"keys", "firmware", "roms", "updates", "mods", "ryujinx", "save-import"};
+    (void)mkdir(to.c_str(), 0777);
+    for (const char* folder : kFolders) {
+        const std::string target = to + "/" + folder;
+        if (Eden::DirectoryExists(from + "/" + folder) && rmdir(target.c_str()) != 0 && errno != ENOENT) {
+            Eden::Report("game files", ("Left in the app's folder: " + target + " already holds files").c_str());
+            return;
+        }
+    }
+    int moved = 0;
+    for (const char* folder : kFolders) {
+        const std::string source = from + "/" + folder, target = to + "/" + folder;
+        if (!Eden::DirectoryExists(source)) continue;
+        if (std::rename(source.c_str(), target.c_str()) != 0) {
+            Eden::Report("game files", ("Could not move " + source + " to " + target + ": " + std::strerror(errno)).c_str());
+            continue;
+        }
+        ++moved;
+    }
+    if (!saved.empty()) (void)Eden::SaveAssetsDir(to);
+    Eden::Report("game files", (std::to_string(moved) + " folders moved from " + from + " to " + to +
+                                ", where an update of the app leaves them alone").c_str());
+}
+#endif
+
 // A game that has single Joy-Cons held sideways (their hold type, set by the game) is played on a
 // DualSense held as usual: the pad then turns the stick, the button places and the motion by a
 // quarter for each player who has such a Joy-Con (Pad::Grip). Asked a few times a second.
@@ -205,6 +244,11 @@ int main(int argc, char** argv) {
         // the packaged exact-title upstream helper is sent to the local elfldr. ProsperoEden
         // contains no locally implemented kernel mutation code. If neither path works, the app
         // keeps its sandbox paths.
+#if defined(EDEN_DEV_PROFILE)
+        // Development: a start without access, to see what the launcher says then.
+        if (access("/app0/no-filesystem-access.txt", F_OK) == 0) Eden::FilesystemAccessStatus() = 99;
+        else
+#endif
         Eden::FilesystemAccessStatus() = static_cast<int>(elevation::request(elevation::Capability::filesystem));
         Eden::BootTrace::Line("filesystem access returned status=%d, uid %d/%d gid %d/%d", Eden::FilesystemAccessStatus(),
                               static_cast<int>(getuid()), static_cast<int>(geteuid()), static_cast<int>(getgid()),
@@ -220,7 +264,10 @@ int main(int argc, char** argv) {
         // root, which may set its group.
         if (getegid() != getgid() && setegid(getgid()) != 0)
             Eden::Report("filesystem access", "Could not match the effective group; RADV's disk cache stays off");
-        if (Eden::FilesystemAccess()) MigrateSandboxData();
+        if (Eden::FilesystemAccess()) {
+            MigrateSandboxData();
+            MoveGameFilesOutOfTheApp();
+        }
         for (const auto& folder : {Eden::UserDir(), Eden::ConfigDir(), Eden::CoversDir(), Eden::LogsDir()}) {
             std::error_code folder_error;
             std::filesystem::create_directories(folder, folder_error);

@@ -143,7 +143,7 @@ msgstr "オーディオ"
 msgid "Australia"
 msgstr "オーストラリア"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "自動"
 
@@ -659,19 +659,19 @@ msgstr "FPS表示"
 msgid "FPS OVERLAY"
 msgstr "FPS表示"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "フレーム生成の倍率"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "フレーム生成の目標"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "フレーム生成"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "フレーム生成には、lossless フォルダーに Lossless Scaling の Lossless.dll が必要です。"
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEdenを終了します。"
 msgid "ProsperoEden closes to finish the update."
 msgstr "アップデートを完了するためProsperoEdenを終了します。"
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden は本体のストレージにアクセスできなかったため、設定、セーブデータ、ゲームを読み込めません。何も変更されていません。ProsperoEden を終了して、もう一度開いてください。（コード {0}）"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEdenは、BlackBearReloadedがお届けする非公式のPS5移植版です。"
@@ -1864,7 +1868,7 @@ msgstr "再試行します。"
 msgid "Turn on or off"
 msgstr "オン/オフ"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "利用不可"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "{0}本のゲームをインストール済み"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

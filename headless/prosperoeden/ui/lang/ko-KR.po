@@ -143,7 +143,7 @@ msgstr "오디오"
 msgid "Australia"
 msgstr "호주"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "자동"
 
@@ -659,19 +659,19 @@ msgstr "FPS 표시"
 msgid "FPS OVERLAY"
 msgstr "FPS 표시"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "프레임 생성 배율"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "프레임 생성 목표"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "프레임 생성"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "프레임 생성에는 lossless 폴더에 Lossless Scaling의 Lossless.dll이 필요합니다."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden이 지금 종료됩니다."
 msgid "ProsperoEden closes to finish the update."
 msgstr "업데이트를 마치기 위해 ProsperoEden이 종료됩니다."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden이 콘솔 저장 공간에 접근하지 못해 설정, 저장 데이터, 게임을 읽을 수 없습니다. 아무것도 변경되지 않았습니다. ProsperoEden을 닫고 다시 여세요. (코드 {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden은 BlackBearReloaded가 제공하는 비공식 PS5 이식판입니다."
@@ -1864,7 +1868,7 @@ msgstr "다시 시도합니다."
 msgid "Turn on or off"
 msgstr "켜기/끄기"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "사용할 수 없음"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "게임 {0}개 설치됨"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0}Hz"
 

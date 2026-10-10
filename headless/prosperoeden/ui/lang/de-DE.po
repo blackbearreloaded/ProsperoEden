@@ -143,7 +143,7 @@ msgstr "AUDIO"
 msgid "Australia"
 msgstr "Australien"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Automatisch"
 
@@ -659,19 +659,19 @@ msgstr "FPS-Anzeige"
 msgid "FPS OVERLAY"
 msgstr "FPS-ANZEIGE"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Multiplikator der Bildgenerierung"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Ziel der Bildgenerierung"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Frame-Generierung"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Die Zwischenbildberechnung braucht Lossless.dll aus Lossless Scaling im Ordner lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden wird jetzt geschlossen."
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden wird geschlossen, um das Update abzuschließen."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden hat keinen Zugriff auf den Speicher der Konsole erhalten und kann deine Einstellungen, Speicherdaten und Spiele nicht lesen. Es wurde nichts geändert. Schließe ProsperoEden und öffne es erneut. (Code {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden ist eine inoffizielle PS5-Portierung, präsentiert von BlackBearReloaded."
@@ -1864,7 +1868,7 @@ msgstr "Neuer Versuch."
 msgid "Turn on or off"
 msgstr "Ein- oder ausschalten"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "{0} Spiele installiert"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

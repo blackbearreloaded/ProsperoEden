@@ -143,7 +143,7 @@ msgstr "เสียง"
 msgid "Australia"
 msgstr "ออสเตรเลีย"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "อัตโนมัติ"
 
@@ -659,19 +659,19 @@ msgstr "ตัวแสดง FPS"
 msgid "FPS OVERLAY"
 msgstr "ตัวแสดง FPS"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "ตัวคูณการสร้างเฟรม"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "เป้าหมายการสร้างเฟรม"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "การสร้างเฟรม"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "การสร้างเฟรมต้องใช้ Lossless.dll จาก Lossless Scaling ในโฟลเดอร์ lossless"
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden จะปิดตอนนี้"
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden จะปิดเพื่อให้การอัปเดตเสร็จสมบูรณ์"
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden ไม่สามารถเข้าถึงพื้นที่จัดเก็บของเครื่องได้ จึงอ่านการตั้งค่า ข้อมูลเซฟ และเกมของคุณไม่ได้ ไม่มีอะไรถูกเปลี่ยนแปลง ปิด ProsperoEden แล้วเปิดใหม่อีกครั้ง (รหัส {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden ​เป็น​พอร์ต PS5 ​อย่าง​ไม่เป็นทางการ​โดย BlackBearReloaded"
@@ -1864,7 +1868,7 @@ msgstr "กำลังลองอีกครั้ง"
 msgid "Turn on or off"
 msgstr "เปิด​หรือ​ปิด"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "ใช้ไม่ได้"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "ติดตั้งแล้ว {0} เกม"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

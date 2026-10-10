@@ -143,7 +143,7 @@ msgstr "ЗВУК"
 msgid "Australia"
 msgstr "Австралия"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Авто"
 
@@ -659,19 +659,19 @@ msgstr "Счетчик FPS"
 msgid "FPS OVERLAY"
 msgstr "СЧЕТЧИК FPS"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Множитель генерации кадров"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Цель генерации кадров"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Генерация кадров"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Для генерации кадров нужен Lossless.dll из Lossless Scaling в папке lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden сейчас закроется."
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden закроется, чтобы завершить обновление."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden не получил доступ к хранилищу консоли и поэтому не может прочитать ваши настройки, сохранения и игры. Ничего не изменено. Закройте ProsperoEden и откройте снова. (Код {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden — неофициальный порт для PS5 от BlackBearReloaded."
@@ -1864,7 +1868,7 @@ msgstr "Повторная попытка."
 msgid "Turn on or off"
 msgstr "Включить или выключить"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Недоступно"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "Установлено игр: {0}"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Гц"
 

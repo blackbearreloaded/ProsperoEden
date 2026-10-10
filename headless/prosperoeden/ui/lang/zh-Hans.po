@@ -143,7 +143,7 @@ msgstr "音频"
 msgid "Australia"
 msgstr "澳大利亚"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "自动"
 
@@ -659,19 +659,19 @@ msgstr "帧率显示"
 msgid "FPS OVERLAY"
 msgstr "帧率显示"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "补帧倍率"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "补帧目标帧率"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "帧生成"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "帧生成需要将 Lossless Scaling 的 Lossless.dll 放在 lossless 文件夹中。"
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden 现在将关闭。"
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden 将关闭以完成更新。"
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden 无法访问主机的存储空间，因此无法读取你的设置、存档和游戏。没有任何内容被更改。请关闭 ProsperoEden 后重新打开。（代码 {0}）"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden 是由 BlackBearReloaded 带来的非官方 PS5 移植版。"
@@ -1864,7 +1868,7 @@ msgstr "正在重试。"
 msgid "Turn on or off"
 msgstr "开启或关闭"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "不可用"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "已安装 {0} 个游戏"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 
