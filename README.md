@@ -508,9 +508,11 @@ Thank you to the people who test ProsperoEden on their own consoles and report w
 - **szampan** ([GitHub](https://github.com/heni0xyz)), for helping with testing.
 - **BunkinBacon**, for helping with testing.
 - **Cold** ([GitHub](https://github.com/JMUtechnologies)), for helping with testing.
+- **Bauls Deep** ([GitHub](https://github.com/bawsdeep)), for helping with testing and for a pull request.
 
 And to the people who contribute code:
 
+- **matschi95** ([GitHub](https://github.com/matschi95)), for the RomM integration (download sources and save sync) and for the fix of the stutter that log writes caused.
 - **gyn7561** ([GitHub](https://github.com/gyn7561)), for bringing frame generation to the PS5 and for the log lines that say why it is or is not running.
 
 <!-- bbr-footer:start -->
