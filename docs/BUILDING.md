@@ -134,6 +134,8 @@ What the PS5's home screen shows for the app is in `sce_sys/`, as it goes into t
 `ccache`, `make`, `nasm`, `meson`, `rsync`, `git`, `glslangValidator`, `spirv-val`, `bison`,
 `flex`, `curl`, `wget`, `unzip`, and Python 3.11 or later with `venv`, `mako` and `yaml`.
 
+**Nix shell.** With the [Nix](https://nixos.org/download/) package manager, `shell.nix` provides all of these tools (LLVM 18 and 21, Meson, CMake, Ninja and the rest): `nix-shell shell.nix --run "make"`.
+
 RADV's host tools (`mesa_clc`, `vtn_bindgen2`) are built against the host's LLVM 21: its
 development files, Clang 21 libraries, libclc and the SPIR-V LLVM translator. The Payload SDK's
 `prospero-*` wrappers (the RADV build and the final link) use `$LLVM_CONFIG`, else the newest of
