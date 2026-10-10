@@ -32,7 +32,7 @@ float glyph_texel(int glyph, int x, int y)
     x = clamp(x, 0, kGlyphWidth - 1);
     y = clamp(y, 0, kGlyphHeight - 1);
     int at = y * kGlyphWidth + x;
-    return float((glyph_word(glyph, at >> 2) >> uint((at & 3) * 8)) & 0xffu) / 255.0;
+    return float((glyph_word(glyph, at >> 3) >> uint((at & 7) * 4)) & 0xfu) / 15.0;
 }
 
 // The lettering is read in one place only, at the end of loading_scene: the console's shader
@@ -235,7 +235,7 @@ vec3 loading_scene(vec2 pixel, vec2 size, float seconds, uint state[24])
         float value = mix(mix(glyph_texel(pick.glyph, i.x, i.y), glyph_texel(pick.glyph, i.x + 1, i.y), f.x),
                           mix(glyph_texel(pick.glyph, i.x, i.y + 1), glyph_texel(pick.glyph, i.x + 1, i.y + 1), f.x),
                           f.y);
-        float cover = clamp((value - 128.0 / 255.0) * 2.0 * kGlyphSpread * pick.texel + 0.5, 0.0, 1.0);
+        float cover = clamp((value - 0.5) * 2.0 * kGlyphSpread * pick.texel + 0.5, 0.0, 1.0);
         vec3 ink = pick.ink >= kInkLime ? kLime : vec3(1.0);
         float strength = pick.ink == kInkBrand ? 0.34 : pick.ink == kInkDone ? 0.42 : pick.ink == kInkNow ? 0.96 :
                          pick.ink == kInkLater ? 0.20 : pick.ink == kInkWord ? 0.52 : pick.ink == kInkFigure ? 0.96 :

@@ -6,8 +6,9 @@
 small signed distance fields packed into constant arrays (one per glyph), and the loading screen's lines of text
 as indexes into them, so the loading shader needs no texture and no font at run time.
 
-A glyph's field is WIDTH x HEIGHT texels, one byte each (four per uint, low byte first, top row
-first): 128 on the outline, 255 SPREAD texels inside, 0 SPREAD texels outside. The glyph stands on
+A glyph's field is WIDTH x HEIGHT texels of four bits each (eight per uint, lowest bits first, top
+row first): 7.5 on the outline, 15 SPREAD texels inside, 0 SPREAD texels outside. The fields are
+kept this small on purpose: a console takes about a millisecond per word to compile them. The glyph stands on
 a baseline BASE texels above the field's bottom, LEFT texels from its left edge, with capitals CAP
 texels high.
 """
@@ -21,13 +22,14 @@ ROOT = Path(__file__).resolve().parents[2]
 FONT = ROOT / "third_party/fonts/Montserrat-Medium.ttf"
 OUTPUT = ROOT / "headless/loading_text.glsl"
 
-GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%/"
 # The lines the screen shows, in the order the shader names them (loading_scene.glsl).
 LINES = ["PROSPEROEDEN", "READING THE GAME", "STARTING GRAPHICS", "BUILDING SHADERS", "STARTING THE GAME",
          "LOADING", "S"]
-WIDTH, HEIGHT = 32, 28    # texels of one glyph's field
-CAP, BASE, LEFT = 16, 6, 4
-SPREAD = 4.0              # texels of distance stored each side of the outline
+# Only the glyphs the lines use, then the digits and signs of the figures.
+GLYPHS = "".join(sorted(set("".join(LINES)) - {" "})) + "0123456789%/"
+WIDTH, HEIGHT = 24, 20    # texels of one glyph's field
+CAP, BASE, LEFT = 12, 4, 3
+SPREAD = 2.0              # texels of distance stored each side of the outline
 SCALE = 8                 # a glyph is drawn this much larger, then measured
 
 
@@ -64,11 +66,11 @@ def main():
     data, advances = [], []
     for letter in GLYPHS:
         field = distance_field(draw_glyph(font, letter))
-        data.append(np.clip(np.round(128 + field / SPREAD * 127), 0, 255).astype(np.uint32).reshape(-1))
+        data.append(np.clip(np.round(7.5 + field / SPREAD * 7.5), 0, 15).astype(np.uint32).reshape(-1))
         advances.append(font.getlength(letter) / SCALE)
     # One table per glyph: a console compiles a shader with one large table very slowly (its time grows
     # much faster than the table), and several small ones quickly.
-    tables = [d[0::4] | (d[1::4] << 8) | (d[2::4] << 16) | (d[3::4] << 24) for d in data]
+    tables = [sum(d[shift::8] << (4 * shift) for shift in range(8)) for d in data]
     codes, starts = [], []
     for line in LINES:
         starts.append((len(codes), len(line)))
