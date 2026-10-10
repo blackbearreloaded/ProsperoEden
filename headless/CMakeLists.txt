@@ -995,6 +995,28 @@ if(PS5_NATIVE)
     string(REPLACE "                ASSERT(r == int(nso_header.segments[i].size));" "                if (r != int(nso_header.segments[i].size)) return std::nullopt;" nso_source "${nso_source}")
     string(REPLACE "                std::memcpy(codeset.memory.data() + module_start + nso_header.segments[i].location, decompressed_size.data(), nso_header.segments[i].size);" "" nso_source "${nso_source}")
     string(REPLACE "            } else {\n                std::memcpy(codeset.memory.data() + module_start + nso_header.segments[i].location, compressed_data.data(), nso_header.segments[i].size);" "" nso_source "${nso_source}")
+    # Cheats address the game's main module. Eden registers a cheat list for every module that
+    # has one, and the last registration wins: a cheat file without a build ID in its name
+    # (mods/<title ID>/cheat_<name>.txt) matches every module, so its cheats were applied
+    # against the last module loaded (sdk) and changed nothing in the game.
+    set(old_nso_cheats [=[        if (!cheats.empty()) {
+            system.RegisterCheatList(cheats, nso_header.build_id, load_base, image_size);]=])
+    set(new_nso_cheats [=[        if (name == "main") {
+            // The build ID a cheat file for this version of the game is named after.
+            char build[17]{};
+            for (int i = 0; i < 8; ++i)
+                std::snprintf(build + i * 2, 3, "%02X", static_cast<unsigned>(nso_header.build_id[i]));
+            std::fprintf(stderr, "[ProsperoEden] cheats: %zu entries for main (build ID %s) at %#llx (%llu bytes)\n",
+                         cheats.size(), build, static_cast<unsigned long long>(load_base),
+                         static_cast<unsigned long long>(image_size));
+        }
+        if (name == "main" && !cheats.empty()) {
+            system.RegisterCheatList(cheats, nso_header.build_id, load_base, image_size);]=])
+    string(FIND "${nso_source}" "${old_nso_cheats}" nso_cheats_offset)
+    if(nso_cheats_offset LESS 0)
+        message(FATAL_ERROR "Pinned NSO cheat registration changed")
+    endif()
+    string(REPLACE "${old_nso_cheats}" "${new_nso_cheats}" nso_source "${nso_source}")
     string(PREPEND nso_source "#include <cstdio>\n")
     write_derived("${PORT_BUILD_DIR}/nso.cpp" "${nso_source}")
     list(REMOVE_ITEM core_sources loader/nso.cpp)
