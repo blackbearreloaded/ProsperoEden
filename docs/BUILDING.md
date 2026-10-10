@@ -114,8 +114,8 @@ The tools that made them are in `tools/launcher`:
 - `assets.sh` bakes the font (`third_party/fonts/Montserrat-Medium.ttf`) and renders the art from
   the source pictures in `sce_sys/`; it needs a host C++ compiler and Python with Pillow.
 - `process-sfx.py` trims and levels the raw sound effects (needs `ffmpeg` and `numpy`).
-- `bake-loading-text.py` writes the lettering of the loading screen
-  (`headless/loading_text.glsl`).
+- `bake-wordmark.py` writes the "LOADING" lettering of the loading screen
+  (`headless/loading_wordmark.glsl`).
 - `preview.sh` draws every launcher screen on a PC (Mesa's software renderer, sample games) to
   PNG files or a video, with the same code, shaders and font as on the console.
 - `strings.py` keeps the translations: `extract` writes the template (`launcher.pot`) from the
@@ -133,6 +133,8 @@ What the PS5's home screen shows for the app is in `sce_sys/`, as it goes into t
 `make toolchain` checks them: `clang-18`, `lld-18` and the LLVM 18 tools, `cmake`, `ninja`,
 `ccache`, `make`, `nasm`, `meson`, `rsync`, `git`, `glslangValidator`, `spirv-val`, `bison`,
 `flex`, `curl`, `wget`, `unzip`, and Python 3.11 or later with `venv`, `mako` and `yaml`.
+
+**Nix shell (recommended):** this repo includes `shell.nix` with all toolchain deps (LLVM 18/21, meson, cmake, ninja, etc). Build with `nix-shell shell.nix --run "make"`.
 
 RADV's host tools (`mesa_clc`, `vtn_bindgen2`) are built against the host's LLVM 21: its
 development files, Clang 21 libraries, libclc and the SPIR-V LLVM translator. The Payload SDK's
