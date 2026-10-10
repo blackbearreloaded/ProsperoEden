@@ -21,11 +21,13 @@ resident service, ProsperoEden has no access to its data and says so; it keeps n
 
 The pinned commit includes the donor-release and firmware 13.60 corrections merged in
 [PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48) and
-[PR #49](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/49).
+[PR #49](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/49), plus the guarded
+target-lifetime and fail-closed accounting changes from
+[PR #50](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/50).
 The previous `54a095c` pin passed five automated launch/elevate/close cycles on both firmware 6.02
-and 12.70. Each run proved root `/data` access, reaped and balanced donors, a clean helper exit, and
-no fatal signal, app crash, coredump, nonsleeping-lock warning, or kernel panic in its captured
-kernel-log window. The new `c3bdfe3` helper still requires attended qualification runs.
+and 12.70 with root `/data` access and balanced donors. The pinned `57fcc19` helper completed the
+target-exit stress and a full one-shot elevation on firmware 12.70; it still requires an attended
+ProsperoEden qualification run on firmware 6.02.
 
 The first build takes a while (RADV and Eden are large). Later builds reuse everything that
 already exists: the dependencies, this checkout's build cache in
