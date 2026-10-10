@@ -671,6 +671,10 @@ msgstr "Στόχος παραγωγής καρέ"
 msgid "Frame generation"
 msgstr "Δημιουργία καρέ"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Η δημιουργία καρέ χρειάζεται το Lossless.dll από το Lossless Scaling στον φάκελο lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Γαλλικά"
@@ -1860,7 +1864,7 @@ msgstr "Νέα προσπάθεια."
 msgid "Turn on or off"
 msgstr "Εναλλαγή"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Μη διαθέσιμο"
 

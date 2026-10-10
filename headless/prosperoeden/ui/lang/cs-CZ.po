@@ -671,6 +671,10 @@ msgstr "Cíl generování snímků"
 msgid "Frame generation"
 msgstr "Generování snímků"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Generování snímků potřebuje Lossless.dll z Lossless Scaling ve složce lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Francouzština"
@@ -1860,7 +1864,7 @@ msgstr "Další pokus."
 msgid "Turn on or off"
 msgstr "Zapnout nebo vypnout"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Není k dispozici"
 

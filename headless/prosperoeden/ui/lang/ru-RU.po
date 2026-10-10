@@ -671,6 +671,10 @@ msgstr "Цель генерации кадров"
 msgid "Frame generation"
 msgstr "Генерация кадров"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Для генерации кадров нужен Lossless.dll из Lossless Scaling в папке lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Французский"
@@ -1860,7 +1864,7 @@ msgstr "Повторная попытка."
 msgid "Turn on or off"
 msgstr "Включить или выключить"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Недоступно"
 

@@ -671,6 +671,10 @@ msgstr "Țintă generare cadre"
 msgid "Frame generation"
 msgstr "Generare de cadre"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Generarea de cadre are nevoie de Lossless.dll, din Lossless Scaling, în dosarul lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Franceză"
@@ -1860,7 +1864,7 @@ msgstr "Se încearcă din nou."
 msgid "Turn on or off"
 msgstr "Activează sau dezactivează"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Indisponibil"
 

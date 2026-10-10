@@ -671,6 +671,10 @@ msgstr "Docelowa liczba klatek"
 msgid "Frame generation"
 msgstr "Generowanie klatek"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Generowanie klatek wymaga pliku Lossless.dll z Lossless Scaling w folderze lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Francuski"
@@ -1860,7 +1864,7 @@ msgstr "Ponowna próba."
 msgid "Turn on or off"
 msgstr "Włącz lub wyłącz"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Niedostępny"
 

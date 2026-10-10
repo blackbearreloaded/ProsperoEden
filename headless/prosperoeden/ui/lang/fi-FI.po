@@ -671,6 +671,10 @@ msgstr "Kuvien luonnin tavoite"
 msgid "Frame generation"
 msgstr "Kehysten luonti"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Kuvien generointi tarvitsee Lossless Scalingin Lossless.dll-tiedoston kansioon lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Ranska"
@@ -1860,7 +1864,7 @@ msgstr "Yritetään uudelleen."
 msgid "Turn on or off"
 msgstr "Ota käyttöön tai pois"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Ei käytettävissä"
 

@@ -671,6 +671,10 @@ msgstr "Mål för bildgenerering"
 msgid "Frame generation"
 msgstr "Bildgenerering"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "Bildgenerering kräver Lossless.dll från Lossless Scaling i mappen lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Franska"
@@ -1860,7 +1864,7 @@ msgstr "Försöker igen."
 msgid "Turn on or off"
 msgstr "Slå på eller av"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Inte tillgängligt"
 

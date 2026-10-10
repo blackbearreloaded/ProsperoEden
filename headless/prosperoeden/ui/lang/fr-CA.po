@@ -671,6 +671,10 @@ msgstr "Cible de génération d'images"
 msgid "Frame generation"
 msgstr "Génération d'images"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "La génération d’images nécessite Lossless.dll, de Lossless Scaling, dans le dossier lossless."
+
 #: settings_store.h
 msgid "French"
 msgstr "Français"
@@ -1860,7 +1864,7 @@ msgstr "Nouvelle tentative."
 msgid "Turn on or off"
 msgstr "Activer ou désactiver"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "Indisponible"
 

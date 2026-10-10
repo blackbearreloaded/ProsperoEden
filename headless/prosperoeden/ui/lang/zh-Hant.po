@@ -671,6 +671,10 @@ msgstr "補幀目標幀率"
 msgid "Frame generation"
 msgstr "幀生成"
 
+#: pe/ui/game_options.cpp
+msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
+msgstr "畫格生成需要將 Lossless Scaling 的 Lossless.dll 放在 lossless 資料夾中。"
+
 #: settings_store.h
 msgid "French"
 msgstr "法文"
@@ -1860,7 +1864,7 @@ msgstr "正在重試。"
 msgid "Turn on or off"
 msgstr "開啟或關閉"
 
-#: pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp
 msgid "Unavailable"
 msgstr "無法使用"
 

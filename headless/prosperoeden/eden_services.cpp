@@ -951,6 +951,15 @@ const std::vector<std::string>& EdenServices::resolution_keys() {
     return labels;
 }
 
+// The library is the user's own copy from Lossless Scaling: <user folder>/lossless/Lossless.dll.
+int EdenServices::frame_gen_state() {
+#ifdef EDEN_PS5_FRAMEGEN
+    return Eden::FileExists(Eden::UserDir() + "/lossless/Lossless.dll") ? 2 : 1;
+#else
+    return 0;
+#endif
+}
+
 const std::vector<std::string>& EdenServices::filter_labels() {
     static const std::vector<std::string> labels = Labels(Eden::kUpscalingFilterLabels);
     return labels;
