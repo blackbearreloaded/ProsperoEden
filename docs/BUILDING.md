@@ -189,7 +189,8 @@ ccache of its own.
 
 GitHub drops a cache that nobody used for a week, and `main` is only built by hand, so ccache has
 a second source: `ccache-u24.tar`, a file of the `build-cache` release. A run that finds no ccache
-downloads it. To replace it, start the workflow on `main` by hand with "snapshot" ticked.
+downloads it. To replace it, start the workflow on `main` by hand with "snapshot" ticked;
+`.github/workflows/build-cache.yml` then publishes that run's ccache.
 
 `tools/ci/build-release.sh` still accepts `EDEN_DEV_CHECKOUT` (a development checkout whose
 dependencies are reused instead of fetched) for a build on your own machine.

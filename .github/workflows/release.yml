@@ -19,7 +19,8 @@ name: Release build
 # the workflow again continues from there.
 # GitHub drops a cache nobody used for a week, and a pull request only sees the caches of main.
 # So ccache has a second source: a snapshot kept as a file of the `build-cache` release, which
-# any run downloads when it finds no ccache. A manual run with "snapshot" ticked replaces it.
+# any run downloads when it finds no ccache. A manual run on main with "snapshot" ticked keeps
+# its ccache as an artifact, which build-cache.yml publishes as the new snapshot.
 # The actions are the Node 24 versions, pinned by commit.
 on:
   # A build on main is started by hand (Run workflow): pushes to main build nothing.
@@ -255,25 +256,6 @@ jobs:
           name: ${{ steps.label.outputs.artifact }}-symbols
           path: build/symbols/
           retention-days: ${{ github.ref_type == 'tag' && 90 || 7 }}
-
-  # The only job that may write to a release besides `publish`; the build job cannot. Only a run
-  # started by hand reaches it, so a pull request never writes what later builds start from.
-  snapshot:
-    if: github.event_name == 'workflow_dispatch' && inputs.snapshot
-    needs: build
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: ccache-snapshot
-          path: snapshot
-
-      - name: Replace the snapshot in the build-cache release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release upload build-cache snapshot/ccache-u24.tar --clobber --repo "$GITHUB_REPOSITORY"
 
   publish:
     if: startsWith(github.ref, 'refs/tags/')
