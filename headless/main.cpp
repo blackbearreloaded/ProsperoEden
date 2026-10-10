@@ -33,6 +33,7 @@
 #include <nlohmann/json.hpp>
 #include "devices.h"
 #include "diagnostics.h"
+#include "hud.h"
 #include "display_refresh.h"
 #include "log_flusher.h"
 #include "mods.h"
@@ -1152,6 +1153,7 @@ int main(int argc, char** argv) {
                     }
                 });
 #endif
+                Eden::Loading::Set(Eden::Loading::Step::game);
                 Eden::BootTrace::Line("loading the game");
                 Core::SystemResultStatus loaded;
                 try {
@@ -1189,6 +1191,7 @@ int main(int argc, char** argv) {
 #endif
                 Eden::BootTrace::Line("game loaded (status %u)", static_cast<unsigned>(loaded));
                 Eden::Report("loader", "Game loaded; initializing renderer");
+                Eden::Loading::Set(Eden::Loading::Step::graphics);
 #ifdef EDEN_PS5_OPENGL
                 // Retain the failure, then release CPU readiness and complete normal
                 // shutdown before reporting it. Unwinding before OnGpuReady can hang.
@@ -1224,6 +1227,7 @@ int main(int argc, char** argv) {
                     // every five seconds so a slow build can be told apart from a stalled one.
                     std::atomic<size_t> built{0}, total{0};
                     std::atomic<bool> counted{false};
+                    Eden::Loading::Set(Eden::Loading::Step::shaders);
                     const auto load_start = std::chrono::steady_clock::now();
                     std::jthread reporter([&](std::stop_token stop) {
 #if defined(EDEN_DEV_PROFILE) && defined(PS5_NATIVE)
@@ -1247,6 +1251,7 @@ int main(int argc, char** argv) {
                         [&](VideoCore::LoadCallbackStage stage, size_t value, size_t count) {
                             if (stage != VideoCore::LoadCallbackStage::Build) return;
                             built = value;
+                            Eden::Loading::Shaders(value, count);
                             total = count;
                             counted = true;
 #if defined(EDEN_DEV_PROFILE) && defined(PS5_NATIVE)
@@ -1324,6 +1329,7 @@ int main(int argc, char** argv) {
                     jit_list.Start(system.GetApplicationProcessProgramID(), build, code_start, code_end - code_start);
                 }
                 Eden::TakeGuestFault(); // Nothing from an earlier session belongs to this one.
+                Eden::Loading::Set(Eden::Loading::Step::starting);
                 system.Run();
 #if defined(EDEN_DEV_PROFILE) && defined(PS5_NATIVE)
                 Eden::Stall::Trace("main running");

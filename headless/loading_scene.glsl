@@ -1,16 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// The screen shown while a game loads: dusk over the water, drawn entirely in this shader (no
-// textures), with a turning ring and the LOADING wordmark. Shared by both graphics backends,
-// which add their own #version line, loading_wordmark.glsl before this file, and a main().
+// The screen shown while a game loads: a progress bar and the steps of the start, drawn entirely
+// in this shader (no textures). Shared by both graphics backends, which add their own #version
+// line, loading_text.glsl before this file, and a main().
 //
-//   vec3 loading_scene(vec2 pixel, vec2 size, float seconds)
+//   vec3 loading_scene(vec2 pixel, vec2 size, float seconds, uint state[24])
 //
 // pixel has its origin at the bottom left; seconds counts from the start of loading. With 1000
-// added to it the scenery holds one moment and only the ring turns (Settings > Accessibility,
-// reduced motion).
+// added to it nothing on the screen moves (Settings > Accessibility, reduced motion).
+// state comes from hud.h (Loading::State): the step the start is at (1 to 4, 0 before the first),
+// the progress in thousandths, the shaders built and their total, and the seconds the step has
+// lasted.
 
-const float kHorizon = 0.40;   // height of the horizon, as a fraction of the screen
-const float kSunRadius = 0.085;
+const vec3 kLime = vec3(0.72, 0.95, 0.05);
+const vec3 kGreen = vec3(0.16, 0.70, 0.30);
+const int kLineBrand = 0; // then the four steps: kLine[step]
+const int kLineLoading = 5;
+const int kLineSeconds = 6;
+// The inks of the lettering; from kInkLime on they are lime, before it white.
+const int kInkBrand = 0, kInkDone = 1, kInkNow = 2, kInkLater = 3, kInkWord = 4, kInkFigure = 5, kInkLime = 6,
+          kInkLimeDim = 7;
 
 float hash21(vec2 p)
 {
@@ -19,242 +27,224 @@ float hash21(vec2 p)
     return fract(p.x * p.y);
 }
 
-float value_noise(vec2 p)
+float glyph_texel(int glyph, int x, int y)
 {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x),
-               mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x), f.y);
+    x = clamp(x, 0, kGlyphWidth - 1);
+    y = clamp(y, 0, kGlyphHeight - 1);
+    int at = y * kGlyphWidth + x;
+    return float((glyph_word(glyph, at >> 3) >> uint((at & 7) * 4)) & 0xfu) / 15.0;
 }
 
-float fbm(vec2 p)
+// The lettering is read in one place only, at the end of loading_scene: the console's shader
+// compiler copes badly with the glyph table being read from many. So the text is laid out first,
+// which only decides which glyph, if any, this pixel falls in (a Pick), and what ink it gets.
+struct Pick
 {
-    float sum = 0.0;
-    float amplitude = 0.5;
-    for (int octave = 0; octave < 4; ++octave)
-    {
-        sum += amplitude * value_noise(p);
-        p = p * 2.03 + vec2(17.1, 9.2);
-        amplitude *= 0.5;
-    }
-    return sum;
+    int glyph;   // -1: no text here
+    int ink;
+    vec2 st;     // where in the glyph's field, in texels
+    float texel; // pixels per texel
+};
+
+float pen_step(int glyph, float cap, float tracking)
+{
+    return (glyph < 0 ? 0.30 * kGlyphCap / 0.70 : kAdvance[glyph]) * cap / kGlyphCap + tracking * cap;
 }
 
-// The sky at q (x in screen heights, y up from 0 to 1), with the sun at `sun`.
-vec3 sky_color(vec2 q, vec2 sun, float seconds)
+// Takes the pixel for this glyph when it lies between the glyph's pen and the next one.
+// at is where the pen stands (left end of the baseline), cap the height of a capital in pixels.
+void pick_glyph(inout Pick pick, int glyph, int ink, vec2 pixel, vec2 at, float cap, float tracking)
 {
-    float height = clamp((q.y - kHorizon) / (1.0 - kHorizon), 0.0, 1.0);
-    vec3 color = mix(vec3(0.150, 0.125, 0.035), vec3(0.016, 0.086, 0.066), smoothstep(0.0, 0.34, height));
-    color = mix(color, vec3(0.003, 0.018, 0.016), smoothstep(0.22, 1.0, height));
-    float distance_to_sun = length(q - sun);
-    // The glow of the setting sun, and the band of light it leaves along the horizon.
-    color += vec3(1.00, 0.60, 0.12) * 0.50 * exp(-distance_to_sun * 5.0);
-    color += vec3(1.00, 0.82, 0.32) * 0.30 * exp(-distance_to_sun * 15.0);
-    color += vec3(0.95, 0.52, 0.10) * 0.26 * exp(-abs(q.y - kHorizon) * 13.0) *
-             exp(-abs(q.x - sun.x) * 1.3);
-    // Thin clouds drift across, lit from below near the sun.
-    vec2 cloud_at = vec2(q.x * 1.5 + seconds * 0.010, q.y * 7.5);
-    float cloud = fbm(cloud_at + fbm(cloud_at * 0.5 + 3.7) * 0.9);
-    cloud = smoothstep(0.50, 0.80, cloud) * smoothstep(0.02, 0.16, height) *
-            (1.0 - smoothstep(0.50, 0.92, height));
-    vec3 lit = vec3(1.00, 0.55, 0.13) * exp(-distance_to_sun * 2.0) * 0.85 + vec3(0.016, 0.042, 0.030);
-    float disc = smoothstep(kSunRadius + 0.0025, kSunRadius - 0.0025, distance_to_sun);
-    // The disc is paler at its heart and deeper orange towards its rim and its foot.
-    float rim = smoothstep(0.15, 1.0, distance_to_sun / kSunRadius);
-    vec3 sun_color = mix(vec3(1.00, 0.91, 0.50), vec3(1.00, 0.60, 0.14), rim * 0.75);
-    sun_color = mix(sun_color, vec3(1.00, 0.52, 0.10), smoothstep(0.02, -0.07, q.y - sun.y) * 0.5);
-    color = mix(color, sun_color, disc);
-    return mix(color, lit, cloud * (0.72 - 0.30 * disc));
-}
-
-// How high the land rises above the horizon at x (in screen heights).
-float land_height(float x, float aspect)
-{
-    float land = 0.0;
-    land += 0.052 * smoothstep(0.26, 0.0, abs(x - 0.52 * aspect));
-    land += 0.030 * smoothstep(0.13, 0.0, abs(x - 0.40 * aspect));
-    land += 0.018 * smoothstep(0.07, 0.0, abs(x - 0.33 * aspect));
-    land += 0.200 * smoothstep(0.76 * aspect, 1.02 * aspect, x); // the coast on the right
-    land *= 0.72 + 0.56 * value_noise(vec2(x * 19.0, 3.0));
-    land += 0.012 * value_noise(vec2(x * 70.0, 7.0)) * step(0.004, land);
-    return land;
-}
-
-// Distance to a leaf blade: the lens between two circles of `radius`, `half_width` wide.
-float leaf_distance(vec2 p, float radius, float offset)
-{
-    p = abs(p);
-    float b = sqrt(radius * radius - offset * offset);
-    return ((p.y - b) * offset > p.x * b) ? length(p - vec2(0.0, b)) :
-                                            length(p - vec2(-offset, 0.0)) - radius;
-}
-
-vec2 rotate(vec2 p, float angle)
-{
-    float c = cos(angle);
-    float s = sin(angle);
-    return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
-}
-
-// A banana leaf in the foreground, from `base` to `tip`: lit through by the low sun, veined,
-// with the light caught along the edge that faces it. `blur` puts it out of focus.
-void add_leaf(inout vec3 color, vec2 q, vec2 base, vec2 tip, float half_width, float blur,
-              float lit_side, float seconds, float phase)
-{
-    float sway = 0.030 * sin(seconds * 0.55 + phase) + 0.010 * sin(seconds * 1.3 + phase * 2.0);
-    vec2 axis = rotate(tip - base, sway);
-    float half_length = 0.5 * length(axis);
-    vec2 along = axis / (2.0 * half_length);
-    vec2 across = vec2(along.y, -along.x);
-    vec2 v = q - base;
-    vec2 p = vec2(dot(v, across), dot(v, along) - half_length);
-    float radius = (half_length * half_length + half_width * half_width) / (2.0 * half_width);
-    float distance_ = leaf_distance(p, radius, radius - half_width);
-    float cover = 1.0 - smoothstep(-blur, blur, distance_);
-    if (cover <= 0.0 && distance_ > 0.05)
+    float texel = cap / kGlyphCap;
+    float step = pen_step(glyph, cap, tracking);
+    if (pixel.x < at.x - 0.5 * tracking * cap || pixel.x >= at.x + step - 0.5 * tracking * cap)
         return;
-    // Brighter towards the lit edge and the tip; veins run out from the midrib.
-    float side = clamp(0.5 + 0.5 * lit_side * p.x / half_width, 0.0, 1.0);
-    float veins = 0.5 + 0.5 * sin((p.y + abs(p.x) * 0.8) * 150.0);
-    vec3 blade = mix(vec3(0.010, 0.060, 0.020), vec3(0.085, 0.340, 0.060), side * side);
-    blade *= 0.86 + 0.14 * veins;
-    blade *= 0.55 + 0.45 * smoothstep(-half_length, half_length, p.y);
-    blade = mix(blade, vec3(0.20, 0.42, 0.10), (1.0 - smoothstep(0.0, 0.0035 + blur, abs(p.x))) * 0.5);
-    color = mix(color, blade, cover);
-    float edge = exp(-abs(distance_) / (0.0035 + blur * 0.7)) * smoothstep(-0.2, 0.6, lit_side * p.x / half_width);
-    color += vec3(0.78, 0.90, 0.22) * edge * 0.60;
+    pick.glyph = glyph;
+    pick.ink = ink;
+    pick.st = vec2((pixel.x - at.x) / texel + kGlyphLeft,
+                   float(kGlyphHeight) - ((pixel.y - at.y) / texel + kGlyphBase)) - 0.5;
+    pick.texel = texel;
 }
 
-float word_texel(int x, int y)
+float line_width(int line, float cap, float tracking)
 {
-    int index = clamp(y, 0, kWordHeight - 1) * kWordWidth + clamp(x, 0, kWordWidth - 1);
-    return float((kWord[index >> 2] >> uint((index & 3) * 8)) & 255u) / 255.0;
+    float width = 0.0;
+    for (int i = 0; i < kLine[line].y; ++i)
+        width += pen_step(kText[kLine[line].x + i], cap, tracking);
+    return width - tracking * cap;
 }
 
-// Signed distance to the wordmark's outline in texels of its field (positive inside).
-float word_distance(vec2 st)
+// A line of text with the left end of its baseline at `at`.
+void pick_line(inout Pick pick, int line, int ink, vec2 pixel, vec2 at, float cap, float tracking)
 {
-    vec2 at = st - 0.5;
-    ivec2 i = ivec2(floor(at));
-    vec2 f = at - vec2(i);
-    float value = mix(mix(word_texel(i.x, i.y), word_texel(i.x + 1, i.y), f.x),
-                      mix(word_texel(i.x, i.y + 1), word_texel(i.x + 1, i.y + 1), f.x), f.y);
-    return (value - 128.0 / 255.0) * 2.0 * kWordSpread;
+    if (pixel.y < at.y - 0.4 * cap || pixel.y > at.y + 1.4 * cap || pixel.x < at.x - cap)
+        return;
+    float pen = at.x;
+    for (int i = 0; i < kLine[line].y; ++i)
+    {
+        int glyph = kText[kLine[line].x + i];
+        if (glyph >= 0)
+            pick_glyph(pick, glyph, ink, pixel, vec2(pen, at.y), cap, tracking);
+        pen += pen_step(glyph, cap, tracking);
+    }
 }
 
-vec3 loading_scene(vec2 pixel, vec2 size, float seconds)
+float number_width(uint value, float cap, float tracking)
+{
+    float width = 0.0;
+    for (int i = 0; i < 6; ++i)
+    {
+        width += pen_step(kDigit + int(value % 10u), cap, tracking);
+        value /= 10u;
+        if (value == 0u)
+            break;
+    }
+    return width - tracking * cap;
+}
+
+// A number with the right end of its baseline at `at`.
+void pick_number(inout Pick pick, uint value, int ink, vec2 pixel, vec2 at, float cap, float tracking)
+{
+    if (pixel.y < at.y - 0.4 * cap || pixel.y > at.y + 1.4 * cap)
+        return;
+    float pen = at.x + tracking * cap;
+    for (int i = 0; i < 6; ++i)
+    {
+        int glyph = kDigit + int(value % 10u);
+        pen -= pen_step(glyph, cap, tracking);
+        pick_glyph(pick, glyph, ink, pixel, vec2(pen, at.y), cap, tracking);
+        value /= 10u;
+        if (value == 0u)
+            break;
+    }
+}
+
+// A box with round ends: how much of a pixel it covers.
+float pill(vec2 pixel, vec2 from, vec2 to, float radius)
+{
+    vec2 a = vec2(from.x + radius, 0.5 * (from.y + to.y));
+    vec2 b = vec2(max(to.x - radius, a.x), a.y);
+    float along = clamp(pixel.x, a.x, b.x);
+    return clamp(radius - length(pixel - vec2(along, a.y)) + 0.5, 0.0, 1.0);
+}
+
+vec3 loading_scene(vec2 pixel, vec2 size, float seconds, uint state[24])
 {
     bool calm = seconds >= 1000.0;
     if (calm)
         seconds -= 1000.0;
-    float world = calm ? 4.0 : seconds; // the time the scenery lives in
-    vec2 uv = pixel / size;
-    float aspect = size.x / size.y;
-    vec2 q = vec2(uv.x * aspect, uv.y);
-    vec2 sun = vec2(0.655 * aspect, kHorizon + 0.030);
-    vec3 color;
-
-    if (uv.y >= kHorizon)
-    {
-        color = sky_color(q, sun, world);
-        // Islands and the coast stand dark against the light, hazier towards the sun.
-        float land = land_height(q.x, aspect);
-        float shore = smoothstep(0.0025, -0.0025, uv.y - kHorizon - land);
-        vec3 silhouette = vec3(0.008, 0.030, 0.020) +
-                          vec3(0.20, 0.12, 0.03) * exp(-abs(q.x - sun.x) * 2.2) * 0.45;
-        color = mix(color, silhouette, shore);
-    }
-    else
-    {
-        // Water: the sky upside down, broken by ripples that grow towards the viewer.
-        float depth = (kHorizon - uv.y) / kHorizon; // 0 at the horizon, 1 at the bottom
-        vec2 wave = vec2((q.x - sun.x) / (0.022 + 0.085 * depth),
-                         48.0 * log(1.0 + 3.0 * depth) + world * 0.8);
-        float coarse = value_noise(wave);
-        float fine = value_noise(wave * vec2(2.1, 2.6) + vec2(11.0 - world * 0.35, 3.0));
-        float ripple = (coarse - 0.5) + 0.5 * (fine - 0.5);
-        vec2 mirrored = vec2(q.x + ripple * 0.030 * (0.2 + depth),
-                             2.0 * kHorizon - uv.y + ripple * 0.060 * (0.15 + depth));
-        mirrored.y = max(mirrored.y, kHorizon);
-        color = sky_color(mirrored, sun, world) * vec3(0.50, 0.70, 0.62) * (0.82 - 0.46 * depth);
-        float land = land_height(mirrored.x, aspect) * 0.85;
-        float shore = smoothstep(0.004, -0.004, mirrored.y - kHorizon - land);
-        color = mix(color, vec3(0.004, 0.018, 0.013), shore * (0.9 - 0.3 * depth));
-        // The sun's path across the water breaks into glints.
-        float path = exp(-abs(q.x - sun.x) / (0.030 + depth * 0.33));
-        float glint = smoothstep(0.54, 0.90, coarse * 0.62 + fine * 0.38);
-        color += vec3(1.00, 0.74, 0.24) * path * glint * (1.35 - 0.80 * depth);
-        // A thin bright line where water meets sky.
-        color += vec3(0.80, 0.55, 0.16) * 0.22 * exp(-depth * 90.0) * exp(-abs(q.x - sun.x) * 1.6);
-    }
-
-    // Motes of light rise slowly, as in the menu.
-    for (int i = 0; i < 16; ++i)
-    {
-        float n = float(i);
-        float speed = 0.010 + 0.016 * hash21(vec2(n, 1.0));
-        float travel = fract(world * speed + hash21(vec2(n, 2.0)));
-        vec2 at = vec2((0.08 + 0.84 * hash21(vec2(n, 3.0))) * aspect +
-                           0.018 * sin(world * (0.3 + 0.4 * hash21(vec2(n, 4.0))) + n * 1.7),
-                       0.16 + 0.62 * travel);
-        float radius = 0.0022 + 0.0030 * hash21(vec2(n, 5.0));
-        float twinkle = 0.6 + 0.4 * sin(world * (1.2 + 1.8 * hash21(vec2(n, 6.0))) + n * 2.3);
-        float life = sin(3.14159265 * travel);
-        float glow = exp(-length(q - at) / radius);
-        color += mix(vec3(0.87, 0.91, 0.65), vec3(1.00, 0.84, 0.42), hash21(vec2(n, 7.0))) *
-                 glow * 0.30 * life * twinkle;
-    }
-
-    // Leaves frame the view from the corners, swaying.
-    add_leaf(color, q, vec2(0.99 * aspect, 1.12), vec2(0.60 * aspect, 0.88), 0.070, 0.006, 1.0, world, 1.7);
-    add_leaf(color, q, vec2(1.07 * aspect, 1.04), vec2(0.72 * aspect, 0.60), 0.090, 0.004, 1.0, world, 0.0);
-    add_leaf(color, q, vec2(1.09 * aspect, 0.66), vec2(0.83 * aspect, 0.25), 0.080, 0.009, 1.0, world, 3.1);
-    add_leaf(color, q, vec2(-0.07 * aspect, 0.50), vec2(0.17 * aspect, 0.83), 0.075, 0.013, -1.0, world, 4.4);
-
-    // Darker towards the edges, and at the bottom where the wordmark sits.
-    vec2 centred = uv - vec2(0.5, 0.52);
-    color *= 1.0 - 0.55 * smoothstep(0.35, 0.95, length(centred * vec2(1.0, 1.25)));
-    color *= 0.55 + 0.45 * smoothstep(0.0, 0.30, uv.y);
-
-    // ---- the ring and the wordmark, bottom centre ----
+    int step = int(min(state[0], 4u));
+    float progress = clamp(float(state[1]) / 1000.0, 0.0, 1.0);
     float unit = size.y / 1080.0; // one design pixel
-    float word_height = 38.0 * unit;
-    float texel = word_height / float(kWordHeight);
-    float word_width = texel * float(kWordWidth);
-    float ring_radius = 17.0 * unit;
-    float gap = 16.0 * unit;
-    float group = ring_radius * 2.0 + gap + word_width;
-    vec2 origin = vec2(0.5 * size.x - 0.5 * group, 0.118 * size.y);
-    vec3 lime = vec3(0.663, 0.859, 0.388);
-    vec3 pale = vec3(0.875, 0.910, 0.651);
+    float left = 120.0 * unit;
+    float right = size.x - 120.0 * unit;
+    vec2 uv = pixel / size;
+    Pick pick = Pick(-1, 0, vec2(0.0), 1.0);
 
-    // The ring: a faint track with an arc that runs round it, stretching and closing.
-    vec2 from_centre = pixel - (origin + vec2(ring_radius, 0.0));
-    float ring = abs(length(from_centre) - ring_radius) - 1.8 * unit;
-    float ring_cover = clamp(0.5 - ring, 0.0, 1.0);
-    float angle = atan(from_centre.y, from_centre.x);
-    float turn = seconds * 3.3;
-    float reach = 1.9 + 1.2 * sin(seconds * 1.7); // length of the arc, radians
-    float along = mod(turn - angle, 6.2831853);
-    float arc = smoothstep(reach, reach - 0.9, along) * smoothstep(0.0, 0.12, along);
-    color = mix(color, pale, ring_cover * 0.14);
-    color = mix(color, lime, ring_cover * arc);
-    color += lime * 0.22 * arc * exp(-max(ring, 0.0) / (5.0 * unit));
+    // ---- the backdrop: near black, a little lighter towards the top, lit faintly from the bar ----
+    vec3 color = mix(vec3(0.012, 0.015, 0.020), vec3(0.030, 0.038, 0.050), smoothstep(0.0, 1.0, uv.y));
+    vec2 glow_from = (pixel - vec2(mix(left, right, progress), 168.0 * unit)) / (size.y * vec2(1.6, 0.9));
+    color += kLime * 0.030 * exp(-dot(glow_from, glow_from) * 6.0);
+    color *= 1.0 - 0.35 * smoothstep(0.45, 1.05, length((uv - 0.5) * vec2(1.0, 1.15)));
 
-    // The wordmark, with a slow glimmer passing along it.
-    vec2 word_at = pixel - vec2(origin.x + ring_radius * 2.0 + gap, origin.y - 0.5 * word_height);
-    if (word_at.x > -texel && word_at.x < word_width + texel && word_at.y > -texel &&
-        word_at.y < word_height + texel)
+    // ---- the name, top left ----
+    pick_line(pick, kLineBrand, kInkBrand, pixel, vec2(left, size.y - 132.0 * unit), 15.0 * unit, 0.34);
+
+    // ---- the steps, one under the other ----
+    for (int i = 1; i <= 4; ++i)
     {
-        vec2 st = vec2(word_at.x, word_height - word_at.y) / texel;
-        float cover = clamp(word_distance(st) * texel + 0.5, 0.0, 1.0);
-        float glimmer = exp(-pow((word_at.x / word_width - fract(world * 0.38) * 1.6 + 0.3) * 5.0, 2.0));
-        color = mix(color, mix(pale, vec3(1.0), glimmer * 0.8), cover * (0.80 + 0.20 * glimmer));
+        float y = (486.0 - float(i - 1) * 58.0) * unit;
+        vec2 centre = vec2(left + 9.0 * unit, y + 9.0 * unit);
+        float away = length(pixel - centre);
+        float ring = clamp(1.6 * unit - abs(away - 8.0 * unit) + 0.5, 0.0, 1.0);
+        float dot_cover = clamp(4.2 * unit - away + 0.5, 0.0, 1.0);
+        pick_line(pick, i, i < step ? kInkDone : i == step ? kInkNow : kInkLater, pixel,
+                  vec2(left + 44.0 * unit, y), 18.0 * unit, 0.16);
+        if (i < step)
+        {
+            // Done: a filled mark.
+            color = mix(color, kGreen, 0.85 * clamp(8.8 * unit - away + 0.5, 0.0, 1.0));
+        }
+        else if (i == step)
+        {
+            float breath = calm ? 1.0 : 0.82 + 0.18 * sin(seconds * 3.2);
+            color = mix(color, kLime, ring);
+            color = mix(color, kLime, dot_cover * breath);
+        }
+        else
+        {
+            color = mix(color, vec3(1.0), 0.16 * ring);
+        }
+    }
+
+    // ---- above the bar: the word on the left, the figure on the right ----
+    float baseline = 196.0 * unit;
+    float small = 15.0 * unit;
+    pick_line(pick, kLineLoading, kInkWord, pixel, vec2(left, baseline), small, 0.34);
+    float percent_step = pen_step(kPercent, 34.0 * unit, 0.04);
+    if (pixel.y > baseline - 14.0 * unit && pixel.y < baseline + 48.0 * unit)
+        pick_glyph(pick, kPercent, kInkFigure, pixel, vec2(right - percent_step, baseline), 34.0 * unit, 0.04);
+    pick_number(pick, uint(progress * 100.0 + 0.001), kInkFigure, pixel, vec2(right - percent_step, baseline),
+                34.0 * unit, 0.04);
+    // Beside the word: the shaders built of their total, or the seconds a slow step has lasted.
+    float detail_at = left + line_width(kLineLoading, small, 0.34) + 26.0 * unit;
+    if (step == 3 && state[3] > 0u)
+    {
+        float built_to = detail_at + number_width(state[2], small, 0.10);
+        float slash_at = built_to + 7.0 * unit;
+        float total_to = slash_at + pen_step(kSlash, small, 0.0) + 7.0 * unit + number_width(state[3], small, 0.10);
+        pick_number(pick, state[2], kInkLime, pixel, vec2(built_to, baseline), small, 0.10);
+        if (pixel.y > baseline - 0.4 * small && pixel.y < baseline + 1.4 * small)
+            pick_glyph(pick, kSlash, kInkLimeDim, pixel, vec2(slash_at, baseline), small, 0.0);
+        pick_number(pick, state[3], kInkLimeDim, pixel, vec2(total_to, baseline), small, 0.10);
+    }
+    else if (state[4] >= 20u)
+    {
+        float number_to = detail_at + number_width(state[4], small, 0.10);
+        pick_number(pick, state[4], kInkLime, pixel, vec2(number_to, baseline), small, 0.10);
+        pick_line(pick, kLineSeconds, kInkLime, pixel, vec2(number_to + 6.0 * unit, baseline), small, 0.0);
+    }
+
+    // ---- the bar ----
+    vec2 bar_from = vec2(left, 150.0 * unit);
+    vec2 bar_to = vec2(right, 158.0 * unit);
+    float radius = 4.0 * unit;
+    color = mix(color, vec3(1.0), 0.10 * pill(pixel, bar_from, bar_to, radius));
+    float filled_to = mix(left + 2.0 * radius, right, progress);
+    float fill = pill(pixel, bar_from, vec2(filled_to, bar_to.y), radius);
+    float along = clamp((pixel.x - left) / max(filled_to - left, 1.0), 0.0, 1.0);
+    vec3 fill_color = mix(kGreen, kLime, along);
+    if (!calm)
+    {
+        // A light passing along the filled part.
+        float sweep = fract(seconds * 0.45) * 1.4 - 0.2;
+        fill_color += vec3(0.30) * exp(-pow((along - sweep) * 7.0, 2.0));
+    }
+    color = mix(color, fill_color, fill);
+    // The glow of the filled part, strongest at its end.
+    float under = exp(-abs(pixel.y - 154.0 * unit) / (9.0 * unit)) *
+                  smoothstep(left - 20.0 * unit, left, pixel.x) * (1.0 - smoothstep(filled_to, filled_to + 26.0 * unit, pixel.x));
+    color += kLime * 0.10 * under * (0.35 + 0.65 * along) * (1.0 - fill);
+
+    // ---- the lettering: the one place the glyph table is read ----
+    if (pick.glyph >= 0 && pick.st.x > -1.0 && pick.st.y > -1.0 && pick.st.x < float(kGlyphWidth) &&
+        pick.st.y < float(kGlyphHeight))
+    {
+        ivec2 i = ivec2(floor(pick.st));
+        vec2 f = pick.st - vec2(i);
+        float value = mix(mix(glyph_texel(pick.glyph, i.x, i.y), glyph_texel(pick.glyph, i.x + 1, i.y), f.x),
+                          mix(glyph_texel(pick.glyph, i.x, i.y + 1), glyph_texel(pick.glyph, i.x + 1, i.y + 1), f.x),
+                          f.y);
+        float cover = clamp((value - 0.5) * 2.0 * kGlyphSpread * pick.texel + 0.5, 0.0, 1.0);
+        vec3 ink = pick.ink >= kInkLime ? kLime : vec3(1.0);
+        float strength = pick.ink == kInkBrand ? 0.34 : pick.ink == kInkDone ? 0.42 : pick.ink == kInkNow ? 0.96 :
+                         pick.ink == kInkLater ? 0.20 : pick.ink == kInkWord ? 0.52 : pick.ink == kInkFigure ? 0.96 :
+                         pick.ink == kInkLime ? 0.90 : 0.54;
+        color = mix(color, ink, strength * cover);
     }
 
     // Arrive out of the dark; a little noise keeps the gradients from banding.
-    color *= smoothstep(0.0, 0.7, seconds);
+    color *= smoothstep(0.0, 0.5, seconds);
     color += (hash21(pixel + fract(seconds) * 61.0) - 0.5) / 255.0 * 1.4;
     return clamp(color, 0.0, 1.0);
 }
