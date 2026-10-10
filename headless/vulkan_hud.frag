@@ -3,7 +3,7 @@
 #extension GL_GOOGLE_include_directive : enable
 layout(push_constant) uniform Text { uint glyphs[24]; uint width; uint x; uint y; uint loading; } text;
 layout(location = 0) out vec4 color;
-#include "loading_wordmark.glsl"
+#include "loading_text.glsl"
 #include "loading_scene.glsl"
 void main() {
     // Vulkan push-constant arrays require dynamically uniform indices. Load
@@ -17,11 +17,11 @@ void main() {
         text.glyphs[20], text.glyphs[21], text.glyphs[22], text.glyphs[23]);
     if (text.loading != 0u) {
         // The loading screen: x and y carry the picture's size, loading the milliseconds since
-        // it began (plus one), the glyphs the step's name. Vulkan counts rows from the top.
+        // it began (plus one), the glyphs' words what the start is doing (hud.h). Vulkan counts
+        // rows from the top.
         vec2 size = vec2(float(text.x), float(text.y));
-        vec2 pixel = vec2(gl_FragCoord.x, size.y - gl_FragCoord.y);
-        color = vec4(loading_status(loading_scene(pixel, size, float(text.loading - 1u) * 0.001),
-                                    pixel, size, glyphs), 1.0);
+        color = vec4(loading_scene(vec2(gl_FragCoord.x, size.y - gl_FragCoord.y), size,
+                                   float(text.loading - 1u) * 0.001, glyphs), 1.0);
         return;
     }
     // The overlay: x and y are where its text starts, width the picture's height. The text is

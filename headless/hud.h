@@ -4,9 +4,9 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
-#include <string>
 #include <string_view>
 
 namespace Eden {
@@ -73,19 +73,6 @@ inline uint32_t HudGlyph(char c) {
     case 'V': return 0x5b6a;
     case 'K': return 0x5bad;
     case 'W': return 0x5fed;
-    case 'B': return 0x6bae;
-    case 'C': return 0x7927;
-    case 'E': return 0x79e7;
-    case 'H': return 0x5bed;
-    case 'J': return 0x126f;
-    case 'M': return 0x5f6d;
-    case 'Q': return 0x7b79;
-    case 'R': return 0x6bad;
-    case 'T': return 0x7492;
-    case 'U': return 0x5b6f;
-    case 'X': return 0x5aad;
-    case 'Y': return 0x5a92;
-    case 'Z': return 0x72a7;
     case '.': return 0x0002;
     case '-': return 0x01c0;
     default: return 0;
@@ -105,11 +92,12 @@ struct HudSnapshot {
     uint32_t width{};
     uint32_t x{28}, y{30}, loading{};
 };
-// The step a game's start is at, named under the loading screen's scene so that a start that is
-// stuck can be told from one that is slow (main.cpp sets it; both backends draw it). A step that
-// lasts gets its seconds added.
+// What a game's start is doing, for the loading screen (loading_scene.glsl draws it: the steps
+// one under the other and a progress bar). main.cpp says which step the start is at; the bar's
+// share of each step is an estimate, except while shaders are built, where it is counted. Within
+// a step of unknown length the bar creeps towards the step's end and never reaches it.
 namespace Loading {
-enum class Step : uint32_t { none, game, graphics, reading_shaders, shaders, starting };
+enum class Step : uint32_t { none, game, graphics, shaders, starting };
 inline std::atomic<uint32_t> step{0}, built{0}, total{0};
 inline std::atomic<int64_t> since{0};  // when the step began, in milliseconds
 inline int64_t Now() {
@@ -117,43 +105,55 @@ inline int64_t Now() {
         std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 inline void Set(Step next) {
+    if (next <= Step::game) built = total = 0;
     since.store(Now(), std::memory_order_relaxed);
     step.store(static_cast<uint32_t>(next), std::memory_order_relaxed);
 }
 inline void Shaders(size_t done, size_t of) {
     built.store(static_cast<uint32_t>(done), std::memory_order_relaxed);
     total.store(static_cast<uint32_t>(of), std::memory_order_relaxed);
-    if (step.load(std::memory_order_relaxed) != static_cast<uint32_t>(Step::shaders)) Set(Step::shaders);
 }
-// At most 24 characters, of the overlay's letters (HudGlyph).
-inline std::string Line(int64_t now = Now()) {
-    const char* name = "";
-    switch (static_cast<Step>(step.load(std::memory_order_relaxed))) {
-    case Step::none: return {};
-    case Step::game: name = "READING THE GAME"; break;
-    case Step::graphics: name = "STARTING GRAPHICS"; break;
-    case Step::reading_shaders: name = "READING SHADERS"; break;
-    case Step::shaders: {
-        char text[32];
-        std::snprintf(text, sizeof(text), "SHADERS %u OF %u", built.load(std::memory_order_relaxed) % 100000u,
-                      total.load(std::memory_order_relaxed) % 100000u);
-        return text;
+// Where the bar should stand, 0 to 1.
+inline double Target(int64_t now) {
+    static constexpr double kFrom[] = {0.0, 0.02, 0.25, 0.40, 0.90}, kTo[] = {0.02, 0.25, 0.40, 0.90, 0.99};
+    const uint32_t at = std::min<uint32_t>(step.load(std::memory_order_relaxed), 4);
+    const double seconds = static_cast<double>(now - since.load(std::memory_order_relaxed)) / 1000.0;
+    double part = 1.0 - std::exp(-std::max(seconds, 0.0) / (at == 4 ? 12.0 : 4.0));
+    if (at == 3) {
+        const uint32_t of = total.load(std::memory_order_relaxed);
+        part = of ? std::min(1.0, static_cast<double>(built.load(std::memory_order_relaxed)) / of) : part * 0.1;
     }
-    case Step::starting: name = "STARTING THE GAME"; break;
-    }
-    const int64_t seconds = (now - since.load(std::memory_order_relaxed)) / 1000;
-    if (seconds < 20) return name;
-    char text[32];
-    std::snprintf(text, sizeof(text), "%s %lld S", name, static_cast<long long>(std::min<int64_t>(seconds, 9999)));
-    return text;
+    return kFrom[at] + (kTo[at] - kFrom[at]) * part;
+}
+// What the shader is given (the overlay's 24 words): the step, the progress in thousandths,
+// the shaders built and their total, the seconds the step has lasted. The bar moves towards
+// its target a little with every picture and never back within one start.
+inline std::array<uint32_t, 24> State() {
+    static double shown = 0;
+    static int64_t last = 0;
+    static uint32_t last_step = 0;
+    const int64_t now = Now();
+    const uint32_t at = step.load(std::memory_order_relaxed);
+    if (at < last_step || at == 0) shown = 0;  // a new start
+    last_step = at;
+    const double elapsed = std::clamp(static_cast<double>(now - last) / 1000.0, 0.0, 0.25);
+    last = now;
+    shown = std::max(shown, shown + (Target(now) - shown) * (1.0 - std::exp(-elapsed * 6.0)));
+    std::array<uint32_t, 24> state{};
+    state[0] = at;
+    state[1] = static_cast<uint32_t>(std::clamp(shown, 0.0, 1.0) * 1000.0);
+    state[2] = built.load(std::memory_order_relaxed);
+    state[3] = total.load(std::memory_order_relaxed);
+    state[4] = static_cast<uint32_t>(std::clamp<int64_t>((now - since.load(std::memory_order_relaxed)) / 1000, 0, 99999));
+    return state;
 }
 } // namespace Loading
-// The loading screen: the shader draws its scene from the time alone (loading_scene.glsl).
+// The loading screen: the shader draws it from the time and that state (loading_scene.glsl).
 // `loading` carries the milliseconds since loading began, plus one; x and y carry the size of the
-// picture, set where it is drawn (vulkan_hud_draw.inc); the glyphs carry the step's name.
+// picture, set where it is drawn (vulkan_hud_draw.inc); the glyphs' words carry the state.
 inline HudSnapshot MakeLoadingSnapshot(double seconds) {
     HudSnapshot snapshot{};
-    snapshot.glyphs = HudText(Loading::Line());
+    snapshot.glyphs = Loading::State();
     snapshot.width = 1920;
     snapshot.x = 1920;
     snapshot.y = 1080;
