@@ -1001,10 +1001,16 @@ if(PS5_NATIVE)
     # against the last module loaded (sdk) and changed nothing in the game.
     set(old_nso_cheats [=[        if (!cheats.empty()) {
             system.RegisterCheatList(cheats, nso_header.build_id, load_base, image_size);]=])
-    set(new_nso_cheats [=[        if (name == "main" && !cheats.empty()) {
-            std::fprintf(stderr, "[ProsperoEden] cheats: %zu entries for main at %#llx (%llu bytes)\n",
-                         cheats.size(), static_cast<unsigned long long>(load_base),
+    set(new_nso_cheats [=[        if (name == "main") {
+            // The build ID a cheat file for this version of the game is named after.
+            char build[17]{};
+            for (int i = 0; i < 8; ++i)
+                std::snprintf(build + i * 2, 3, "%02X", static_cast<unsigned>(nso_header.build_id[i]));
+            std::fprintf(stderr, "[ProsperoEden] cheats: %zu entries for main (build ID %s) at %#llx (%llu bytes)\n",
+                         cheats.size(), build, static_cast<unsigned long long>(load_base),
                          static_cast<unsigned long long>(image_size));
+        }
+        if (name == "main" && !cheats.empty()) {
             system.RegisterCheatList(cheats, nso_header.build_id, load_base, image_size);]=])
     string(FIND "${nso_source}" "${old_nso_cheats}" nso_cheats_offset)
     if(nso_cheats_offset LESS 0)
