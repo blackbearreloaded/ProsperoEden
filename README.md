@@ -521,10 +521,12 @@ verifies the upstream-generated manifest, and includes the resulting ELF in the 
 The donor-release and firmware 13.60 fixes pinned here were merged upstream in
 [PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48) and
 [PR #49](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/49).
-The previous `54a095c` helper passed five automated launch/elevate/close cycles on firmware 6.02
-and five on 12.70 with root access, balanced donor references, clean helper exits, and no fatal
-signal, app crash, coredump, nonsleeping-lock warning, or kernel panic in the captured kernel-log
-windows. The new `c3bdfe3` helper still requires attended qualification runs.
+The pinned `57fcc19` helper also includes the guarded target-lifetime and fail-closed accounting
+changes from [PR #50](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/50). The previous
+`54a095c` helper passed five automated launch/elevate/close cycles on firmware 6.02 and five on
+12.70 with root access and balanced donor references. The pinned helper completed the target-exit
+stress and a full one-shot elevation on firmware 12.70; it still requires an attended
+ProsperoEden qualification run on firmware 6.02.
 
 ## Thanks
 

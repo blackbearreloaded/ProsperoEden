@@ -87,11 +87,11 @@
     },
     {
       "name": "lapy-owned-helper",
-      "about": "Lapy one-shot elfldr owned-root helper with the donor-release and 32-byte credential-attribute fixes",
+      "about": "Lapy one-shot elfldr owned-root helper with guarded target lifetime and balanced vnode ownership",
       "kind": "git",
       "url": "https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon.git",
-      "commit": "c3bdfe3a399366d8eacfc580f20b19fd03b16ca3",
-      "path": ".deps/PS5-Lapy-JB-Daemon-c3bdfe3"
+      "commit": "57fcc19b7f57e46c823d6f2a6c6233ebf3288079",
+      "path": ".deps/PS5-Lapy-JB-Daemon-57fcc19"
     },
     {
       "name": "lapy-payload-sdk",
