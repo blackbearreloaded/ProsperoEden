@@ -340,8 +340,9 @@ private:
         SCOPE_EXIT { Cleanup(eglMakeCurrent(display, surface, surface, context), "loading restore"); };
         if (!loading_program) {
             const std::string fragment = std::string("#version 330 core\n") + kLoadingSceneGlsl +
-                "uniform vec2 size; uniform float seconds; out vec4 color;\n"
-                "void main(){ color = vec4(loading_scene(gl_FragCoord.xy, size, seconds), 1.0); }\n";
+                "uniform vec2 size; uniform float seconds; uniform uint glyphs[24]; out vec4 color;\n"
+                "void main(){ color = vec4(loading_status(loading_scene(gl_FragCoord.xy, size, seconds),"
+                "gl_FragCoord.xy, size, glyphs), 1.0); }\n";
             const char* sources[]{
                 "#version 330 core\nvoid main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);"
                 "gl_Position=vec4(p*2.0-1.0,0.0,1.0);}",
@@ -387,6 +388,9 @@ private:
         glViewport(0, 0, width, height);
         glUniform2f(glGetUniformLocation(loading_program, "size"), float(width), float(height));
         glUniform1f(glGetUniformLocation(loading_program, "seconds"), float(seconds));
+        // The step the start is at (hud.h).
+        const auto glyphs = HudText(Loading::Line());
+        glUniform1uiv(glGetUniformLocation(loading_program, "glyphs[0]"), glyphs.size(), glyphs.data());
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glFlush();
         return true;

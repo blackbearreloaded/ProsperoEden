@@ -258,3 +258,26 @@ vec3 loading_scene(vec2 pixel, vec2 size, float seconds)
     color += (hash21(pixel + fract(seconds) * 61.0) - 0.5) / 255.0 * 1.4;
     return clamp(color, 0.0, 1.0);
 }
+
+// The step a game's start is at, under the wordmark: up to 24 glyphs of the overlay's 3x5 font
+// (hud.h), centred. pixel has its origin at the bottom left.
+vec3 loading_status(vec3 color, vec2 pixel, vec2 size, uint glyphs[24])
+{
+    int count = 0;
+    for (int i = 0; i < 24; ++i)
+        if (glyphs[i] != 0u)
+            count = i + 1;
+    if (count == 0)
+        return color;
+    float cell = 5.0 * size.y / 1080.0; // a glyph is 3 cells wide and 5 high, one cell apart
+    vec2 p = pixel - vec2(0.5 * (size.x - float(count * 4 - 1) * cell), 0.058 * size.y);
+    if (p.x < 0.0 || p.y < 0.0)
+        return color;
+    ivec2 c = ivec2(p / cell);
+    int i = c.x / 4;
+    int x = c.x % 4;
+    if (i >= count || x >= 3 || c.y >= 5)
+        return color;
+    bool ink = ((glyphs[i] >> uint(c.y * 3 + 2 - x)) & 1u) != 0u;
+    return ink ? mix(color, vec3(0.80, 0.86, 0.94), 0.72) : color;
+}
