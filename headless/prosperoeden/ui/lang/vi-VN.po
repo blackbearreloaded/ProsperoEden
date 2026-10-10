@@ -143,7 +143,7 @@ msgstr "ÂM THANH"
 msgid "Australia"
 msgstr "Úc"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Tự động"
 
@@ -659,19 +659,19 @@ msgstr "Bộ đếm FPS"
 msgid "FPS OVERLAY"
 msgstr "BỘ ĐẾM FPS"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Hệ số tạo khung hình"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Mục tiêu tạo khung hình"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Tạo khung hình"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Tạo khung hình cần Lossless.dll của Lossless Scaling trong thư mục lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden sẽ đóng ngay."
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden sẽ đóng để hoàn tất cập nhật."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden không truy cập được bộ nhớ của máy nên không thể đọc cài đặt, dữ liệu lưu và trò chơi của bạn. Không có gì bị thay đổi. Hãy đóng ProsperoEden rồi mở lại. (Mã {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden là bản port PS5 không chính thức do BlackBearReloaded mang đến cho bạn."
@@ -1864,7 +1868,7 @@ msgstr "Đang thử lại."
 msgid "Turn on or off"
 msgstr "Bật hoặc tắt"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Không khả dụng"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "{0} trò chơi đã cài đặt"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

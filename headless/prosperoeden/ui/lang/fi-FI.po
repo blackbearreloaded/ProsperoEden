@@ -143,7 +143,7 @@ msgstr "ÄÄNI"
 msgid "Australia"
 msgstr "Australia"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Automaattinen"
 
@@ -659,19 +659,19 @@ msgstr "FPS-laskuri"
 msgid "FPS OVERLAY"
 msgstr "FPS-LASKURI"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Kuvien luonnin kerroin"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Kuvien luonnin tavoite"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Kehysten luonti"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Kuvien generointi tarvitsee Lossless Scalingin Lossless.dll-tiedoston kansioon lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden sulkeutuu nyt."
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden sulkeutuu päivityksen viimeistelemiseksi."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden ei saanut pääsyä konsolin tallennustilaan, joten se ei voi lukea asetuksiasi, tallennuksiasi eikä pelejäsi. Mitään ei muutettu. Sulje ProsperoEden ja avaa se uudelleen. (Koodi {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden on epävirallinen PS5-versio, jonka tarjoaa BlackBearReloaded."
@@ -1864,7 +1868,7 @@ msgstr "Yritetään uudelleen."
 msgid "Turn on or off"
 msgstr "Ota käyttöön tai pois"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Ei käytettävissä"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "{0} peliä asennettu"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

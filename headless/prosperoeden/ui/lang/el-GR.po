@@ -143,7 +143,7 @@ msgstr "ΗΧΟΣ"
 msgid "Australia"
 msgstr "Αυστραλία"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Αυτόματο"
 
@@ -659,19 +659,19 @@ msgstr "Ένδειξη FPS"
 msgid "FPS OVERLAY"
 msgstr "ΕΝΔΕΙΞΗ FPS"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Πολλαπλασιαστής παραγωγής καρέ"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Στόχος παραγωγής καρέ"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Δημιουργία καρέ"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Η δημιουργία καρέ χρειάζεται το Lossless.dll από το Lossless Scaling στον φάκελο lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "Το ProsperoEden κλείνει τώρα."
 msgid "ProsperoEden closes to finish the update."
 msgstr "Το ProsperoEden κλείνει για να ολοκληρωθεί η ενημέρωση."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "Το ProsperoEden δεν μπόρεσε να αποκτήσει πρόσβαση στον χώρο αποθήκευσης της κονσόλας, οπότε δεν μπορεί να διαβάσει τις ρυθμίσεις, τα αποθηκευμένα δεδομένα και τα παιχνίδια σου. Δεν άλλαξε τίποτα. Κλείσε το ProsperoEden και άνοιξέ το ξανά. (Κωδικός {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "Το ProsperoEden είναι μια ανεπίσημη μεταφορά για PS5 από τον BlackBearReloaded."
@@ -1864,7 +1868,7 @@ msgstr "Νέα προσπάθεια."
 msgid "Turn on or off"
 msgstr "Εναλλαγή"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Μη διαθέσιμο"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "Εγκατεστημένα παιχνίδια: {0}"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

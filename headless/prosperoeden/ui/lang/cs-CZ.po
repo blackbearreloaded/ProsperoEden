@@ -143,7 +143,7 @@ msgstr "ZVUK"
 msgid "Australia"
 msgstr "Austrálie"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Automaticky"
 
@@ -659,19 +659,19 @@ msgstr "Počítadlo FPS"
 msgid "FPS OVERLAY"
 msgstr "POČÍTADLO FPS"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Násobek generování snímků"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Cíl generování snímků"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Generování snímků"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "Generování snímků potřebuje Lossless.dll z Lossless Scaling ve složce lossless."
 
@@ -1318,6 +1318,10 @@ msgstr "ProsperoEden se nyní zavře."
 msgid "ProsperoEden closes to finish the update."
 msgstr "ProsperoEden se zavře, aby dokončil aktualizaci."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "ProsperoEden nezískal přístup k úložišti konzole, takže nemůže načíst vaše nastavení, uložené pozice a hry. Nic se nezměnilo. Zavřete ProsperoEden a otevřete ho znovu. (Kód {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "ProsperoEden je neoficiální port pro PS5, který pro tebe připravil BlackBearReloaded."
@@ -1864,7 +1868,7 @@ msgstr "Další pokus."
 msgid "Turn on or off"
 msgstr "Zapnout nebo vypnout"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Není k dispozici"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "Nainstalované hry: {0}"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 

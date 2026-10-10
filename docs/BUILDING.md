@@ -17,7 +17,7 @@ The app package includes an exact-title one-shot helper built from the pinned up
 manifest, ELF hash, protocol hash, title and required retry feature are checked before packaging.
 At runtime a resident Lapy service gets the first bounded opportunity; otherwise ProsperoEden
 sends the packaged helper to the local ELF loader on TCP port 9021. Without that loader or a
-resident service, ProsperoEden falls back to its sandbox paths.
+resident service, ProsperoEden has no access to its data and says so; it keeps no second copy of it in its sandbox.
 
 The pinned commit includes the donor-release and firmware 13.60 corrections merged in
 [PS5-Lapy-JB-Daemon PR #48](https://github.com/mpereiraesaa/PS5-Lapy-JB-Daemon/pull/48) and

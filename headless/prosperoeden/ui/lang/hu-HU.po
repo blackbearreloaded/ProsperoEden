@@ -143,7 +143,7 @@ msgstr "HANG"
 msgid "Australia"
 msgstr "Ausztrália"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Auto"
 msgstr "Automatikus"
 
@@ -659,19 +659,19 @@ msgstr "FPS-kijelző"
 msgid "FPS OVERLAY"
 msgstr "FPS-KIJELZŐ"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen multiplier"
 msgstr "Képkockagenerálás szorzója"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame gen target"
 msgstr "Képkockagenerálás célértéke"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation"
 msgstr "Képkockagenerálás"
 
-#: pe/ui/game_options.cpp
+#: pe/ui/game_options.cpp, pe/ui/settings.cpp
 msgid "Frame generation needs Lossless.dll, from Lossless Scaling, in the lossless folder."
 msgstr "A képkockagenerálásnak a Lossless Scaling Lossless.dll fájlja kell a lossless mappában."
 
@@ -1318,6 +1318,10 @@ msgstr "A ProsperoEden most bezárul."
 msgid "ProsperoEden closes to finish the update."
 msgstr "A ProsperoEden bezárul a frissítés befejezéséhez."
 
+#: eden_services.cpp
+msgid "ProsperoEden could not get access to the console's storage, so it cannot read your settings, saves and games. Nothing was changed. Close ProsperoEden and open it again. (Code {0})"
+msgstr "A ProsperoEden nem fért hozzá a konzol tárhelyéhez, ezért nem tudja beolvasni a beállításaidat, a mentéseidet és a játékaidat. Semmi sem változott. Zárd be a ProsperoEdent, és nyisd meg újra. (Kód: {0})"
+
 #: pe/ui/browse.cpp
 msgid "ProsperoEden is an unofficial PS5 port brought to you by BlackBearReloaded."
 msgstr "A ProsperoEden egy nem hivatalos PS5-port a BlackBearReloaded jóvoltából."
@@ -1864,7 +1868,7 @@ msgstr "Újrapróbálkozás."
 msgid "Turn on or off"
 msgstr "Be- vagy kikapcsolás"
 
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "Unavailable"
 msgstr "Nem érhető el"
 
@@ -2088,7 +2092,7 @@ msgid "{0} games installed"
 msgstr "{0} játék telepítve"
 
 #. {0} is 60 or 120 (hertz).
-#: pe/ui/game_options.cpp, pe/ui/library.cpp
+#: pe/ui/game_options.cpp, pe/ui/library.cpp, pe/ui/settings.cpp
 msgid "{0} Hz"
 msgstr "{0} Hz"
 
