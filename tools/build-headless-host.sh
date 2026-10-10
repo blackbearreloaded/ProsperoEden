@@ -20,19 +20,19 @@ eden="$scratch/source"
 if [[ ! -f "$eden/CMakeLists.txt" ]]; then
     python3 - <<'PY'
 import hashlib, json, pathlib
-p = pathlib.Path('.deps/eden-5f142c79.tar.gz')
+p = pathlib.Path('.deps/eden-67bada77.tar.gz')
 assert hashlib.sha256(p.read_bytes()).hexdigest() == json.loads(pathlib.Path('UPSTREAM.json').read_text())['archives'][p.name]
 PY
     mkdir -p "$eden"
-    tar -xzf .deps/eden-5f142c79.tar.gz --strip-components=1 -C "$eden"
+    tar -xzf .deps/eden-67bada77.tar.gz --strip-components=1 -C "$eden"
 fi
-printf '%s\n' '5f142c7926d0c7fcbbd0ce30794d72f638a43b2a' > "$eden/GIT-COMMIT"
+printf '%s\n' '67bada77f8a43a90da2e94e89b8e7da73c256989' > "$eden/GIT-COMMIT"
 printf '%s\n' 'ps5-headless' > "$eden/GIT-REFSPEC"
 # FFmpeg links configure probes through the compiler driver, not raw ld.
 # Keep the derivative in our cache and regenerate its Makefile when it changes.
 python3 - "$eden" "$scratch/build" <<'PY'
 import pathlib, sys
-source = pathlib.Path('.deps/mirror-5f142c7926d0c7fcbbd0ce30794d72f638a43b2a/externals/ffmpeg/CMakeLists.txt')
+source = pathlib.Path('.deps/mirror-67bada77f8a43a90da2e94e89b8e7da73c256989/externals/ffmpeg/CMakeLists.txt')
 text = source.read_text()
 for old, new in (
     ('--ld=${CMAKE_LINKER}', '--ld=${CMAKE_C_COMPILER}'),
